@@ -1,9 +1,15 @@
+body {
+	margin-top:20px;
+    font-family: 'Varela Round', sans-serif;
+
+}
 .footer_area {
     position: relative;
     z-index: 1;
     overflow: hidden;
-    padding:31px;
-    box-shadow: 0px 1px 1px 1px rgb(198, 198, 198);
+    padding:30px;
+    box-shadow: 0 1px 1px 1px rgb(198, 198, 198);
+
 }
 .footer_area .row {
     margin-left: -25px;
@@ -161,6 +167,10 @@ ol, ul {
     margin: 0;
     padding: 0;
 }
+
+
+
+
 
 
 .form-control {
@@ -349,111 +359,89 @@ ol, ul {
 }
 
 
-	.form-control {
-	font-size: 16px;
-	transition: all 0.4s;
-	box-shadow: none;
+
+
+
+body {
+	margin: 0;
+	font-size: .88rem;
+	font-weight: 400;
+	line-height: 1.5;
+	color: #495057;
+	text-align: left;
+	background-color: #eef1f3
 	}
-	.form-control:focus {
-	border-color: #5cb85c;
+	body .mt-100 {
+		margin-top: 80px;
+		width: 70%;
 	}
-	.form-control, .btn {
-	border-radius: 50px;
-	outline: none !important;
+	.card {
+	box-shadow: 0 0.46875rem 2.1875rem rgba(4, 9, 20, 0.03), 0 0.9375rem 1.40625rem rgba(4, 9, 20, 0.03), 0 0.25rem 0.53125rem rgba(4, 9, 20, 0.05), 0 0.125rem 0.1875rem rgba(4, 9, 20, 0.03);
+	border-width: 0;
+	transition: all .2s
 	}
-	.signup-form {
-	width: 480px;
-	margin: 0 auto;
-	padding: 30px 0;
+	.card-header:first-child {
+	border-radius: calc(.25rem - 1px) calc(.25rem - 1px) 0 0
 	}
-	.signup-form form {
-	border-radius: 5px;
-	margin-bottom: 20px;
-	background: #fff;
-	box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
-	padding: 40px;
+	.card-header {
+	display: flex;
+	align-items: center;
+	border-bottom-width: 1px;
+	padding-top: 0;
+	padding-bottom: 0;
+	padding-right: .625rem;
+	height: 3.5rem;
+	background-color: #fff;
+	border-bottom: 1px solid rgba(26, 54, 126, 0.125)
 	}
-	.signup-form a {
-	color: #5cb85c;
+	.btn-primary.btn-shadow {
+	box-shadow: 0 0.125rem 0.625rem rgba(63, 106, 216, 0.4), 0 0.0625rem 0.125rem rgba(63, 106, 216, 0.5)
 	}
-	.signup-form h2 {
-	text-align: center;
-	font-size: 34px;
-	margin: 10px 0 15px;
+	.btn.btn-wide {
+	padding: .375rem 1.5rem;
+	font-size: .8rem;
+	line-height: 1.5;
+	border-radius: .25rem
 	}
-	.signup-form .hint-text {
-	color: #999;
-	text-align: center;
-	margin-bottom: 20px;
-	}
-	.signup-form .form-group {
-	margin-bottom: 20px;
-	}
-	.signup-form .btn {
-	font-size: 18px;
-	line-height: 26px;
-	font-weight: bold;
-	text-align: center;
-	}
-	.signup-btn {
-	text-align: center;
-	border-color: #5cb85c;
-	transition: all 0.4s;
-	}
-	.signup-btn:hover {
-	background: #5cb85c;
-	opacity: 0.8;
-	}
-	.or-seperator {
-	margin: 50px 0 15px;
-	text-align: center;
-	border-top: 1px solid #e0e0e0;
-	}
-	.or-seperator b {
-	padding: 0 10px;
-	width: 40px;
-	height: 40px;
-	font-size: 16px;
-	text-align: center;
-	line-height: 40px;
-	background: #fff;
-	display: inline-block;
-	border: 1px solid #e0e0e0;
-	border-radius: 50%;
-	position: relative;
-	top: -22px;
-	z-index: 1;
-	}
-	.social-btn .btn {
+	.btn-primary {
 	color: #fff;
-	margin: 10px 0 0 15px;
-	font-size: 15px;
-	border-radius: 50px;
-	font-weight: normal;
-	border: none;
-	transition: all 0.4s;
+	background-color: #3f6ad8;
+	border-color: #3f6ad8
 	}
-	.social-btn .btn:first-child {
-	margin-left: 0;
+	.form-control {
+	display: block;
+	width: 100%;
+	height: calc(2.25rem + 2px);
+	padding: .375rem .75rem;
+	font-size: 1rem;
+	font-weight: 400;
+	line-height: 1.5;
+	color: #495057;
+	background-color: #fff;
+	background-clip: padding-box;
+	border: 1px solid #ced4da;
+	border-radius: .25rem;
+	transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out
 	}
-	.social-btn .btn:hover {
-	opacity: 0.8;
+	.card-body {
+	flex: 1 1 auto;
+	padding: 1.25rem
 	}
-	.social-btn .btn-primary {
-	background: #507cc0;
+	.flex-truncate {
+	min-width: 0 !important
 	}
-	.social-btn .btn-info {
-	background: #64ccf1;
+	.d-block {
+	display: block !important
 	}
-	.social-btn .btn-danger {
-	background: #df4930;
+	a {
+	color: #E91E63;
+	text-decoration: none !important;
+	background-color: transparent
 	}
-	.social-btn .btn i {
-	float: left;
-	margin: 3px 10px;
-	font-size: 20px;
+	.media img {
+	width: 40px;
+	height: auto
 	}
-	body {
-		background: #dfe7e9;
-		font-family:'Varela Round', sans-serif; 
-		}
+
+
+ 

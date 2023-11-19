@@ -26,7 +26,7 @@ if($email == "" || $pw == ""){
 }
 
 //2.입력된 사용자 정보와 일치하는지 확인하는 쿼리 작성
-$sql = "SELECT * FROM signup WHERE userEmail = '$email' AND userPw = '$pw'";
+$sql = "SELECT * FROM user WHERE userEmail = '$email' AND userPw = '$pw'";
 //$sql에 저장된 쿼리문을 MySQL 데이터베이스에 전송하고, 그 결과를 $result 변수에 저장
 $result = $conn ->query($sql);
 
