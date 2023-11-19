@@ -2,17 +2,13 @@ body {
     font-family: 'Varela Round', sans-serif;
 
 }
-
-.require {
-    color: #666;
-}
 label small {
     color: #999;
     font-weight: normal;
 }
 
 .container{
-	margin-top:3%;
+	margin-top:5%;
 }
 
 .body{
@@ -20,6 +16,21 @@ label small {
 	flex-direction: column;
 	justify-content: center;
 }
+
+.row{
+	justify-content: center;
+}
+
+.postbox{
+	padding: 3rem;
+	margin-bottom: 3rem;
+	box-shadow: 0 1px 1px 1px rgb(198, 198, 198);
+}
+
+
+
+
+
 
 
 
