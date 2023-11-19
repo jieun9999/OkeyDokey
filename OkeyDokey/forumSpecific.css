@@ -359,10 +359,62 @@ ol, ul {
 }
 
 .forum-container{
-	width: 70%;
+	width: 50%;
     margin-top: 100px;
 }
 
 
 
+.title{
+	font-size: 1.3rem;
+}
 
+.card-body{
+	font-size: 0.85rem;
+	font-weight: 100;
+}
+
+.align-middle{
+	font-size: 0.9rem;
+}
+
+
+
+
+
+.box {
+	width: 40px;
+	background: white;
+	padding: 10px;
+	border-radius: 5px;
+	box-shadow: 0px 0px 5px 1px #ccc;
+	font-size: 2em;
+	text-align: center;
+	line-height:1.5em;
+	height: 9rem;
+	margin-right: 2rem;
+  }
+  .up {
+	color:#00a47a;
+  }
+  .up:hover {
+	color:#00fdbc;
+	font-size:1.1em;
+	text-shadow: 0px 2px 2px black;
+	
+  }
+  .down {
+	color:#e75a48;
+	
+  }
+  .down:hover {
+	font-size:1.1em;
+	text-shadow: 0px 2px 2px black;
+  }
+.card-body{
+	display: flex;
+	flex-direction: row;
+}
+.hits{
+	font-size: 0.8rem;
+}
