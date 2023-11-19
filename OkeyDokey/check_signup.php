@@ -8,6 +8,7 @@ $user = 'datagrip';
 $pw = 'abc123';
 $db_name = 'mydb';
 $conn = mysqli_connect($host, $user, $pw, $db_name);
+
 $username = $_POST['username'];
 $signup_email = $_POST['email'];
 $signup_pw = $_POST['password'];
