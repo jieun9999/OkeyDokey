@@ -39,8 +39,8 @@ if($result -> num_rows == 1 ){
 }else {
     // 로그인 실패
     echo "<script>alert('잘못 입력하셨거나 존재하지 않는 유저입니다.');</script>";
+    echo '<script>history.back();</script>';
 }
 // 데이터베이스 연결 닫기
 $conn->close();
-
 ?>
