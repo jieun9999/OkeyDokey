@@ -31,7 +31,10 @@
   }
 
   //2. SELECT 쿼리 전송 
-  $sql = "SELECT forumTitle, forumWriter, forumDate  FROM forums ORDER BY forumId DESC"; //내림차순으로 글목록 번호 가져옴
+  //(join사용해서 forums 테이블과 answers 테이블의 데이터를 한번에 가져온다)
+  
+  $sql = "SELECT forums.forumTitle, forums.forumWriter, forums.forumDate, answers.answerWriter, answers.answerDate FROM forums 
+        JOIN answers USING forumId ORDER BY forumId DESC"; //내림차순으로 글목록 번호 가져옴
   $result=$connect->query($sql);
   ?>
     <!--따온 코드 넣기-->
@@ -104,8 +107,8 @@
         ?>
         <div class="card-body py-3">
         <div class="row no-gutters align-items-center">
-        <div class="col"> <a href="javascript:void(0)" class="text-big" data-abc="true"><?php echo $rows['forumTitle']?></a>
-        <div class="text-muted small mt-1">Started <?php echo $rows['forumDate']?> &nbsp;·&nbsp; <a href="javascript:void(0)" class="text-muted" data-abc="true"><?php echo $rows['forumWriter']?></a></div>
+        <div class="col"> <a href="javascript:void(0)" class="text-big" data-abc="true"><?php echo $rows['forums.forumTitle']?></a>
+        <div class="text-muted small mt-1">Started <?php echo $rows['forums.forumDate']?> &nbsp;·&nbsp; <a href="javascript:void(0)" class="text-muted" data-abc="true"><?php echo $rows['forums.forumWriter']?></a></div>
         </div>
         <div class="d-none d-md-block col-4">
         <div class="row no-gutters align-items-center">
@@ -113,8 +116,8 @@
         <div class="col-4">0</div>
         <div class="media col-8 align-items-center"> <img src="https://res.cloudinary.com/dxfq3iotg/image/upload/v1574583246/AAA/2.jpg" alt="" class="d-block ui-w-30 rounded-circle">
         <div class="media-body flex-truncate ml-2">
-        <div class="line-height-1 text-truncate">1 day ago</div>
-        <div class="text-muted small text-truncate">by Tim cook</div>
+        <div class="line-height-1 text-truncate"><?php echo $rows['answers.answerDate']?></div>
+        <div class="text-muted small text-truncate">by <?php echo $rows['answers.answerWriter']?></div>
         </div>
         </div>
         </div>
