@@ -11,6 +11,29 @@
     <link rel="stylesheet" href="forumList.css">
 </head>
 <body>
+  <?php
+  // PHP 코드를 여기에 작성합니다.
+  //이렇게 하면 브라우저에 에러 메시지가 표시됩니다. 
+  error_reporting(E_ALL);
+  ini_set('display_errors', 1);
+  //
+
+  //1. mysql과 연결하기
+  $host = '52.79.41.79';
+  $user = 'datagrip';
+  $pw = 'abc123';
+  $db_name = 'mydb';
+
+  $connect = mysqli_connect($host, $user, $pw, $db_name);
+
+  if ($connect->connect_error) {
+      die("Connection failed: " . $connect->connect_error);
+  }
+
+  //2. SELECT 쿼리 전송 
+  $sql = "SELECT forumTitle, forumWriter, forumDate  FROM forums ORDER BY forumId DESC"; //내림차순으로 글목록 번호 가져옴
+  $result=$connect->query($sql);
+  ?>
     <!--따온 코드 넣기-->
     <!-- Header-->
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -69,113 +92,42 @@
       </div>
       </div>
       </div>
-      <div class="card-body py-3">
-      <div class="row no-gutters align-items-center">
-      <div class="col"> <a href="javascript:void(0)" class="text-big" data-abc="true">How can i change the username?</a>
-      <div class="text-muted small mt-1">Started 25 days ago &nbsp;·&nbsp; <a href="javascript:void(0)" class="text-muted" data-abc="true">Neon Mandela</a></div>
-      </div>
-      <div class="d-none d-md-block col-4">
-      <div class="row no-gutters align-items-center">
-      <div class="col-4">12</div>
-      <div class="media col-8 align-items-center"> <img src="https://res.cloudinary.com/dxfq3iotg/image/upload/v1574583246/AAA/2.jpg" alt="" class="d-block ui-w-30 rounded-circle">
-      <div class="media-body flex-truncate ml-2">
-      <div class="line-height-1 text-truncate">1 day ago</div> <a href="javascript:void(0)" class="text-muted small text-truncate" data-abc="true">by Tim cook</a>
-      </div>
-      </div>
-      </div>
-      </div>
-      </div>
-      </div>
-      <hr class="m-0">
-      <div class="card-body py-3">
-      <div class="row no-gutters align-items-center">
-      <div class="col"> <a href="javascript:void(0)" class="text-big" data-abc="true">How to change the theme to dark mode?</a> <span class="badge badge-success align-text-bottom ml-1">Solved</span>
-      <div class="text-muted small mt-1">Started 5 days ago &nbsp;·&nbsp; <a href="javascript:void(0)" class="text-muted" data-abc="true">Allize Rome</a></div>
-      </div>
-      <div class="d-none d-md-block col-4">
-      <div class="row no-gutters align-items-center">
-      <div class="col-4">43</div>
-      <div class="media col-8 align-items-center"> <img src="https://res.cloudinary.com/dxfq3iotg/image/upload/v1574583319/AAA/3.jpg" alt="" class="d-block ui-w-30 rounded-circle">
-      <div class="media-body flex-truncate ml-2">
-      <div class="line-height-1 text-truncate">1 day ago</div> <a href="javascript:void(0)" class="text-muted small text-truncate" data-abc="true">by Steve smith</a>
-      </div>
-      </div>
-      </div>
-      </div>
-      </div>
-      </div>
-      <hr class="m-0">
-      <div class="card-body py-3">
-      <div class="row no-gutters align-items-center">
-      <div class="col"> <a href="javascript:void(0)" class="text-big" data-abc="true">Is it possible to get the refund of the product i purhcased today?</a> <span class="badge badge-default align-text-bottom ml-1">Locked</span>
-      <div class="text-muted small mt-1">Started 21 days ago &nbsp;·&nbsp; <a href="javascript:void(0)" class="text-muted" data-abc="true">Kane William</a></div>
-      </div>
-      <div class="d-none d-md-block col-4">
-      <div class="row no-gutters align-items-center">
-      <div class="col-4">42</div>
-      <div class="media col-8 align-items-center"> <img src="https://res.cloudinary.com/dxfq3iotg/image/upload/v1574583336/AAA/4.jpg" alt="" class="d-block ui-w-30 rounded-circle">
-      <div class="media-body flex-truncate ml-2">
-      <div class="line-height-1 text-truncate">2 day ago</div> <a href="javascript:void(0)" class="text-muted small text-truncate" data-abc="true">by Brethwett sonm</a>
-      </div>
-      </div>
-      </div>
-      </div>
-      </div>
-      </div>
-      <hr class="m-0">
-      <div class="card-body py-3">
-      <div class="row no-gutters align-items-center">
-      <div class="col"> <a href="javascript:void(0)" class="text-big" data-abc="true">Do you have android application for this tool?</a>
-      <div class="text-muted small mt-1">Started 56 days ago &nbsp;·&nbsp; <a href="javascript:void(0)" class="text-muted" data-abc="true">Glen Maxwell</a></div>
-      </div>
-      <div class="d-none d-md-block col-4">
-      <div class="row no-gutters align-items-center">
-      <div class="col-4">632</div>
-      <div class="media col-8 align-items-center"> <img src="https://res.cloudinary.com/dxfq3iotg/image/upload/v1574583246/AAA/2.jpg" alt="" class="d-block ui-w-30 rounded-circle">
-      <div class="media-body flex-truncate ml-2">
-      <div class="line-height-1 text-truncate">11 day ago</div> <a href="javascript:void(0)" class="text-muted small text-truncate" data-abc="true">by Neil patels</a>
-      </div>
-      </div>
-      </div>
-      </div>
-      </div>
-      </div>
-      <hr class="m-0">
-      <div class="card-body py-3">
-      <div class="row no-gutters align-items-center">
-      <div class="col"> <a href="javascript:void(0)" class="text-big" data-abc="true">How can i transfer my fund to my friend</a> <span class="badge badge-secondary align-text-bottom ml-1">Closed</span>
-      <div class="text-muted small mt-1">Started 25 days ago &nbsp;·&nbsp; <a href="javascript:void(0)" class="text-muted" data-abc="true">Marry Tom</a></div>
-      </div>
-      <div class="d-none d-md-block col-4">
-      <div class="row no-gutters align-items-center">
-      <div class="col-4">53</div>
-      <div class="media col-8 align-items-center"> <img src="https://res.cloudinary.com/dxfq3iotg/image/upload/v1574583336/AAA/4.jpg" alt="" class="d-block ui-w-30 rounded-circle">
-      <div class="media-body flex-truncate ml-2">
-      <div class="line-height-1 text-truncate">1 day ago</div> <a href="javascript:void(0)" class="text-muted small text-truncate" data-abc="true">by Tibok tom</a>
-      </div>
-      </div>
-      </div>
-      </div>
-      </div>
-      </div>
-      <hr class="m-0">
-      <div class="card-body py-3">
-      <div class="row no-gutters align-items-center">
-      <div class="col"> <a href="javascript:void(0)" class="text-big" data-abc="true">How can i delete my account?</a> <span class="badge badge-danger align-text-bottom ml-1">Hot!</span>
-      <div class="text-muted small mt-1">Started 25 days ago &nbsp;·&nbsp; <a href="javascript:void(0)" class="text-muted" data-abc="true">Bob bulmer</a></div>
-      </div>
-      <div class="d-none d-md-block col-4">
-      <div class="row no-gutters align-items-center">
-      <div class="col-4">12</div>
-      <div class="media col-8 align-items-center"> <img src="https://res.cloudinary.com/dxfq3iotg/image/upload/v1574583246/AAA/2.jpg" alt="" class="d-block ui-w-30 rounded-circle">
-      <div class="media-body flex-truncate ml-2">
-      <div class="line-height-1 text-truncate">1 day ago</div> <a href="javascript:void(0)" class="text-muted small text-truncate" data-abc="true">by Ross taylor</a>
-      </div>
-      </div>
-      </div>
-      </div>
-      </div>
-      </div>
+
+      <!--db에서 데이터 가져옴-->
+      <?php
+      //3. 가져온 데이터로 목차 생성
+
+      //while 반복문은 mysql 결과 집합에서 각 행을 하나씩 가져와서 html 목차를 동적으로 생성합니다.
+      //이때, 'fetch_assoc()' 함수를 통해  MySQL 결과 집합의 한 행을 연관배열(associative array)로 가져옵니다
+      
+      while($rows = mysqli_fetch_assoc($result)){
+        ?>
+        <div class="card-body py-3">
+        <div class="row no-gutters align-items-center">
+        <div class="col"> <a href="javascript:void(0)" class="text-big" data-abc="true"><?php echo $rows['forumTitle']?></a>
+        <div class="text-muted small mt-1">Started <?php echo $rows['forumDate']?> &nbsp;·&nbsp; <a href="javascript:void(0)" class="text-muted" data-abc="true"><?php echo $rows['forumWriter']?></a></div>
+        </div>
+        <div class="d-none d-md-block col-4">
+        <div class="row no-gutters align-items-center">
+          <!-- 나중에 Answers 테이블 참고-->
+        <div class="col-4">0</div>
+        <div class="media col-8 align-items-center"> <img src="https://res.cloudinary.com/dxfq3iotg/image/upload/v1574583246/AAA/2.jpg" alt="" class="d-block ui-w-30 rounded-circle">
+        <div class="media-body flex-truncate ml-2">
+        <div class="line-height-1 text-truncate">1 day ago</div>
+         <a href="javascript:void(0)" class="text-muted small text-truncate" data-abc="true">by Tim cook</a>
+        </div>
+        </div>
+        </div>
+        </div>
+        </div>
+        </div>
+        <hr class="m-0">
+        <?php
+      }
+        // MySQL 연결 닫기
+        $connect->close();
+      ?>
+
       </div>
       <nav>
       <ul class="pagination mb-5">
