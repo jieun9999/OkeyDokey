@@ -54,7 +54,7 @@
     <!-- Main-->
     <div class="container-fluid mt-100">
       <div class="d-flex flex-wrap justify-content-between">
-      <div> <button type="button" class="btn btn-shadow btn-wide btn-primary"> <span class="btn-icon-wrapper pr-2 opacity-7"> <i class="fa fa-plus fa-w-20"></i> </span> New thread </button> </div>
+      <div> <button type="button" class="btn btn-shadow btn-wide btn-primary" id="newThreadBtn"> <span class="btn-icon-wrapper pr-2 opacity-7"> <i class="fa fa-plus fa-w-20"></i> </span> New thread </button> </div>
       <div class="col-12 col-md-3 p-0 mb-3"> <input type="text" class="form-control" placeholder="Search..."> </div>
       </div>
       <div class="card mb-3">
@@ -264,11 +264,11 @@
     <script src="../jQuery/jquery-3.7.1.js"></script>
     <!-- <body> 태그가 끝나기 전 js 파일 로드 시 웹 페이지 로딩 속도 향상된다.-->
     <script src="../bootstrap-4.6.2-dist/js/bootstrap.js"></script>
-    <script>
-        // Prevent dropdown menu from closing when click inside the form
-        $(document).on("click", ".action-buttons .dropdown-menu",function(e){
-            e.stopPropagation();
-        });
-        </script>
+<script>
+  document.getElementById('newThreadBtn').addEventListener('click', function() {
+      // 클릭 이벤트 발생 시 forumWriting.html로 페이지 이동
+      window.location.href = 'forumWriting.html';
+  });
+</script>
 </body>
 </html>

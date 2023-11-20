@@ -3,7 +3,7 @@ error_reporting( E_ALL );
 ini_set( "display_errors", 1 );
 session_start();
 
-$host = '3.39.243.166';
+$host = '52.79.41.79';
 $user = 'datagrip';
 $pw = 'abc123';
 $db_name = 'mydb';
