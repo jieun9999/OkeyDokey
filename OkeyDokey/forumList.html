@@ -34,7 +34,7 @@
   //(join사용해서 forums 테이블과 answers 테이블의 데이터를 한번에 가져온다)
   
   $sql = "SELECT forums.forumTitle, forums.forumWriter, forums.forumDate, answers.answerWriter, answers.answerDate FROM forums 
-        JOIN answers USING forumId 
+        JOIN answers USING (forumId)
         ORDER BY forums.forumDate DESC"; //내림차순으로 글목록 번호 가져옴
   $result=$connect->query($sql);
 
