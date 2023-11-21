@@ -21,8 +21,8 @@ $title = $_POST['title'];
 $description = $_POST['description'];
 
 //3. INSERT 쿼리 전송 (회원정보는 고정된 값을 넣어줌)
-$query = "INSERT INTO forums (forumTitle, forumContents, forumWriter, userId) 
-          VALUES ('$title', '$description', 'Tim cook', 3)";
+$query = "INSERT INTO forums (forumTitle, forumContents, userId) 
+          VALUES ('$title', '$description', 3)";
 
 $result = $connect->query($query);
 if($result){
