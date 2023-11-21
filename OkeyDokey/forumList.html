@@ -33,9 +33,13 @@
   //2. SELECT 쿼리 전송 
   //(join사용해서 forums 테이블과 answers 테이블의 데이터를 한번에 가져온다)
   
-  $sql = "SELECT forums.forumTitle, forums.forumWriter, forums.forumDate, answers.userId, answers.answerDate FROM forums 
+  $sql = "SELECT forums.forumTitle, forums.userId, forums.forumDate, answers.userId, answers.answerDate, users.userImg, users.userName, users2.userName AS forumUserName
+        FROM forums 
         JOIN answers USING (forumId)
+        JOIN users ON answers.userId = users.userId
+        JOIN users AS users2 ON forums.userId = users2.userId
         ORDER BY forums.forumDate DESC"; //내림차순으로 글목록 번호 가져옴
+
   $result=$connect->query($sql);
 
   ?>
@@ -110,16 +114,17 @@
         <div class="card-body py-3">
         <div class="row no-gutters align-items-center">
         <div class="col"> <a href="javascript:void(0)" class="text-big" data-abc="true"><?php echo $rows['forumTitle']?></a>
-        <div class="text-muted small mt-1">Started <?php echo $rows['forumDate']?> &nbsp;·&nbsp; <a href="javascript:void(0)" class="text-muted" data-abc="true"><?php echo $rows['forumWriter']?></a></div>
+          <!--forums 테이블의 userId 행의 userName이 들어가야 함-->
+        <div class="text-muted small mt-1">Started <?php echo $rows['forumDate']?> &nbsp;·&nbsp; <a href="javascript:void(0)" class="text-muted" data-abc="true"><?php echo $rows['forumUserName']?></a></div>
         </div>
         <div class="d-none d-md-block col-4">
         <div class="row no-gutters align-items-center">
           <!-- 나중에 Answers 테이블 참고-->
         <div class="col-4">0</div>
-        <div class="media col-8 align-items-center"> <img src="https://res.cloudinary.com/dxfq3iotg/image/upload/v1574583246/AAA/2.jpg" alt="" class="d-block ui-w-30 rounded-circle">
+        <div class="media col-8 align-items-center"> <img src="<?php echo $rows['userImg']?>" alt="" class="d-block ui-w-30 rounded-circle">
         <div class="media-body flex-truncate ml-2">
         <div class="line-height-1 text-truncate"><?php echo $rows['answerDate']?></div>
-        <div class="text-muted small text-truncate">by <?php echo $rows['userId']?></div>
+        <div class="text-muted small text-truncate">by <?php echo $rows['userName']?></div>
         </div>
         </div>
         </div>
