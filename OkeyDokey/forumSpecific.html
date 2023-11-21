@@ -41,6 +41,16 @@
     
     $forumId = isset($_GET['글아이디']) ? $_GET['글아이디'] : null;
 
+    
+    // 조회수 업데이트 하는 쿼리 생성함
+    // forums 테이블의 forumHits 칼럼이 +1 씩 증가함
+    $updateForumHitsSql = "UPDATE forums SET forumHits = forumHits + 1
+                          WHERE forumId =  $forumId";
+
+    $connect->query($updateForumHitsSql);                      
+
+
+    //3. 쿼리문으로 데이터 가져오기
     $sql = "SELECT forumTitle, forumContents, forumDate, forumHits, forumVotingCounts,
             users.userName, users.userImg,
             answers.answerContents, answers.answerDate, answers.answerVotingCounts,
