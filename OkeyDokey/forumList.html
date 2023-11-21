@@ -98,9 +98,20 @@
     <!-- Main-->
     <div class="container-fluid mt-100">
       <div class="d-flex flex-wrap justify-content-between">
-      <div> <button type="button" class="btn btn-shadow btn-wide btn-primary" id="newThreadBtn"> <span class="btn-icon-wrapper pr-2 opacity-7"> <i class="fa fa-plus fa-w-20"></i> </span> New thread </button> </div>
+      <button type="button" class="btn btn-shadow btn-wide btn-primary" id="newThreadBtn"> 
+        <div class="newThreadBtnTxt"><i class="fa fa-plus fa-w-20"></i> New thread</div>
+      </button>
       <div class="col-12 col-md-3 p-0 mb-3"> <input type="text" class="form-control" placeholder="Search..."> </div>
       </div>
+            <!-- 목록으로, 수정, 삭제 버튼-->
+      <div class="buttons-forums-container">
+        <div class="buttons-forums">
+          <button type="button" class="btn btn-light">목록으로</button>
+          <button type="button" class="btn btn-dark">수정</button>
+          <button type="button" class="btn btn-danger">삭제</button>
+        </div>
+      </div>
+
       <div class="card mb-3">
       <div class="card-header pl-0 pr-0">
       <div class="row no-gutters w-100 align-items-center">
