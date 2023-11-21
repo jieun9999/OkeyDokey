@@ -126,7 +126,7 @@
                     </div>
                   </div>
                   <div class="card-footer d-flex flex-wrap justify-content-between align-items-center px-0 pt-0 pb-3">
-                      <div class="px-4 pt-3"> <button type="button" class="btn btn-primary"><i class="ion ion-md-create"></i>&nbsp; Reply</button> </div>
+                      <div class="px-4 pt-3"> <button type="button" class="btn btn-primary"><i class="fa fa-reply"></i> Reply</button> </div>
                   </div>
               </div>
           </div>
@@ -141,6 +141,9 @@
         </div>   
     </div>   
 </div>
+
+<!-- answerContents가 있으면 답변 ui 보이고, 없으면 안보이게 -->
+<?php if($rows['answerContents'] != null): ?>
   <!--answer 부분-->
   <div class="container answer-container">
     <div class="card">
@@ -154,7 +157,7 @@
                   </div>
                   <div class="answer-date-box">
                     <img class="answer-user-img" src="<?php echo $rows['answerUserImg']?>" class="img img-rounded img-fluid"/>
-                    <div class="text-secondary text-center"><?php echo $rows['answerDate']?></div></div>
+                    <div class="text-secondary text-center answerDate"><?php echo $rows['answerDate']?></div></div>
                   </div>
                 </div>
                 <div class="answer-content-box">
@@ -167,10 +170,7 @@
                    </p>
                    <div class="clearfix"></div>
                     <div class="answerContents"><?php echo $rows['answerContents']?></div>
-                    <p>
-                        <a class="float-right btn btn-outline-primary ml-2"> <i class="fa fa-reply"></i>Reply</a>
-                        <a class="float-right btn text-white btn-danger"> <i class="fa fa-heart"></i> Like</a>
-                   </p>
+                        <a class="float-right btn btn-outline-primary ml-2"> <i class="fa fa-reply"></i> Reply</a>
                 </div>
             </div>
               <div class="card card-inner">
@@ -186,6 +186,8 @@
                 </div>
         </div>
     </div>
+    <?php else: ?>
+    <?php endif; ?>
   </div>
 
    <!-- Footer-->

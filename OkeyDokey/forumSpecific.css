@@ -432,7 +432,7 @@ ol, ul {
 }
 .answer-container{
 	width: 80%;
-	margin-top: 5%;;
+	margin-top: 5%;
 }
 .answer-post-form{
 	display: flex;
@@ -492,10 +492,10 @@ ol, ul {
 	flex-direction: row;
 }
 .answer-content-box{
-	width: 80%;
-	min-width: 600px;
+	width: 75%;
+	min-width: 500px;
 	min-height: 100px;
-	margin-left: 40px;
+	margin-left: 60px;
 	font-size: 1rem;
 }
 .answer-user-img{
@@ -504,18 +504,20 @@ ol, ul {
 }
 .answer-date-box{
 	display: flex;
-	flex-direction: column;
+	flex-direction: column;	
+}
+.answerDate{
+	font-size: 0.8rem;
 }
 .vote-box-margin{
-	margin-right: 20px;
-	margin-left: 20px;
+	margin-right: 30px;
+
 }
 .answer-total-box{
 	display: flex;
 	justify-content: space-around;
-}
-.answer-container{
-	margin-bottom: 5%;
+	margin-left: 10px;
+	min-width: 200px;
 }
 .answerContents{
 	min-width: 500px;
@@ -526,4 +528,7 @@ ol, ul {
 }
 .card-text{
 	font-size: 1rem;
+}
+footer{
+	margin-top: 5%;
 }
