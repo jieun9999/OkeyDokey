@@ -418,3 +418,8 @@ ol, ul {
 .hits{
 	font-size: 0.8rem;
 }
+
+.fixed-size-image {
+    width: 64px;
+    height: 64px;
+}

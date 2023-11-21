@@ -37,8 +37,12 @@
     
     $forumId = isset($_GET['글아이디']) ? $_GET['글아이디'] : null;
 
-    $sql = "SELECT forumTitle, forumContents, forumDate, forumHits, forumVotingCounts
-              FROM forums WHERE forumId = $forumId";
+    $sql = "SELECT forumTitle, forumContents, forumDate, forumHits, forumVotingCounts,
+            users.userName, users.userImg
+            FROM forums 
+            LEFT JOIN users ON forums.userId = users.userId
+            WHERE forumId = $forumId";
+
 
     $result=$connect->query($sql);
     $rows=mysqli_fetch_assoc($result);
@@ -91,11 +95,11 @@
           <div class="col-md-12">
               <div class="card mb-4">
                   <div class="card-header">
-                      <div class="media flex-wrap w-100 align-items-center"> <img src="https://i.imgur.com/iNmBizf.jpg" class="d-block ui-w-40 rounded-circle" alt="">
+                      <div class="media flex-wrap w-100 align-items-center"> <img src="<?php echo $rows['userImg']?>" class="d-block ui-w-40 rounded-circle fixed-size-image" alt="">
                           <div class="media-body ml-3"> 
                             <div class="title"><?php echo $rows['forumTitle']?></div>
                             <div class="text-muted small">
-                              <div>Tim cook</div>
+                              <div><?php echo $rows['userName']?></div>
                             </div>
                           </div>
                           <div class="text-muted small ml-3">
