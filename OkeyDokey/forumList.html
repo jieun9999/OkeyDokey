@@ -33,7 +33,8 @@
   //2. SELECT 쿼리 전송 
   /* join사용해서 forums 테이블과 answers 테이블의 데이터를 한번에 가져온다 */
 
-  $sql = "SELECT forums.forumTitle, forums.userId, forums.forumDate, answers.userId, answers.answerDate, users.userImg, users.userName, users2.userName AS forumUserName,
+  $sql = "SELECT forums.forumTitle, forums.userId, forums.forumDate, forums.forumId AS FI, /*forums.forumId는 아래에서 렌더링해야하니 별칭 정해줌 */
+  answers.userId, answers.answerDate, users.userImg, users.userName, users2.userName AS forumUserName,
  /* 서브쿼리 COUNT 함수를 사용해서 forumId에 대한 answers 테이블의 행의 갯수 가져오기 */
   (
     SELECT COUNT(*)
@@ -121,7 +122,9 @@
         ?>
         <div class="card-body py-3">
         <div class="row no-gutters align-items-center">
-        <div class="col"> <a href="javascript:void(0)" class="text-big" data-abc="true"><?php echo $rows['forumTitle']?></a>
+        <div class="col">
+          <!-- 이때, ?뒤의 파라미터의 키는 무조건 유일해야 한다. 따라서 한번쓴 단어인 forumId는 쓰지 않도록 한다! -->
+          <a href="http://52.79.41.79/OkeyDokey/forumSpecific.html?글아이디=<?php echo $rows['FI']?>" class="text-big" data-abc="true"><?php echo $rows['forumTitle']?></a>
           <!--forums 테이블의 userId 행의 userName이 들어가야 함-->
         <div class="text-muted small mt-1">Started <?php echo $rows['forumDate']?> &nbsp;·&nbsp; <a href="javascript:void(0)" class="text-muted" data-abc="true"><?php echo $rows['forumUserName']?></a></div>
         </div>

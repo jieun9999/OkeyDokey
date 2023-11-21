@@ -13,6 +13,38 @@
     <link rel="stylesheet" href="forumSpecific.css">
 </head>
 <body>
+    <?php
+    // PHP 코드를 여기에 작성합니다.
+    //이렇게 하면 브라우저에 에러 메시지가 표시됩니다. 
+    error_reporting(E_ALL);
+    ini_set('display_errors', 1);
+    //
+
+    //1. mysql과 연결하기
+    $host = '52.79.41.79';
+    $user = 'datagrip';
+    $pw = 'abc123';
+    $db_name = 'mydb';
+
+    $connect = mysqli_connect($host, $user, $pw, $db_name);
+
+    if ($connect->connect_error) {
+        die("Connection failed: " . $connect->connect_error);
+    }
+
+    //2. GET 요청으로 forumId 가져오기 
+    //isset 함수를 사용하여 해당 매개변수가 있는지 확인하고, 있다면 $forumId 변수에 할당합니다.
+    
+    $forumId = isset($_GET['글아이디']) ? $_GET['글아이디'] : null;
+
+    $sql = "SELECT forumTitle, forumContents, forumDate, forumHits, forumVotingCounts
+              FROM forums WHERE forumId = $forumId";
+
+    $result=$connect->query($sql);
+    $rows=mysqli_fetch_assoc($result);
+     
+    ?>
+
     <!--따온 코드 넣기-->
     <!-- Header-->
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -61,29 +93,26 @@
                   <div class="card-header">
                       <div class="media flex-wrap w-100 align-items-center"> <img src="https://i.imgur.com/iNmBizf.jpg" class="d-block ui-w-40 rounded-circle" alt="">
                           <div class="media-body ml-3"> 
-                            <div class="title">How can i change my username?</div>
+                            <div class="title"><?php echo $rows['forumTitle']?></div>
                             <div class="text-muted small">
                               <div>Tim cook</div>
                             </div>
                           </div>
                           <div class="text-muted small ml-3">
-                            <div>13 days ago</div>
-                            <div class="hits"> <i class="fa fa-eye text-muted fsize-3"></i>&nbsp;14532</div>
+                            <div><?php echo $rows['forumDate']?></div>
+                            <div class="hits"> <i class="fa fa-eye text-muted fsize-3"></i>&nbsp;<?php echo $rows['forumHits']?></div>
                           </div>
                       </div>
                   </div>
                   <div class="card-body">
                     <div class = "box">
                       <div class = "up">&#9650;</div>
-                      <div class = "voteNum">0</div>
+                      <div class = "voteNum"><?php echo $rows['forumVotingCounts']?></div>
                       <div class = "down">&#9660;</div>
                     </div>
                     <div class= "card-text">
-                      <p> For me, getting my business website made was a lot of tech wizardry things. Thankfully i get an ad on Facebook ragarding commence website. I get connected with BBB team. They made my stunning website live in just 3 days.
-                          With the increase demand of online customers. I had to take my business online. BBB Team guided me at each step and enabled me to centralise my work and have control on all aspect of my online business.
-                      </p>
-                      <p> For me, getting my business website made was a lot of tech wizardry things. Thankfully i get an ad on Facebook ragarding commence website. I get connected with BBB team. They made my stunning website live in just 3 days.
-                          With the increase demand of online customers. I had to take my business online. BBB Team guided me at each step and enabled me to centralise my work and have control on all aspect of my online business.
+                      <p> 
+                        <?php echo $rows['forumContents']?>
                       </p>
                     </div>
                   </div>
