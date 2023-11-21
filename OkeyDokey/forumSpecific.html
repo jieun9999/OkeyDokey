@@ -6,8 +6,12 @@
     <title>forumSpecific</title>
     <!--폰트 적용-->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Varela+Round">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kalam:wght@300;400;700&family=Noto+Sans+KR:wght@300&family=Open+Sans:ital@1&display=swap" rel="stylesheet">
     <!-- Font Awesome -->
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
     <!-- 가장기본이 되는 css 코드-->
     <link rel="stylesheet" href="../bootstrap-4.6.2-dist/css/bootstrap.css">
     <link rel="stylesheet" href="forumSpecific.css">
@@ -38,11 +42,14 @@
     $forumId = isset($_GET['글아이디']) ? $_GET['글아이디'] : null;
 
     $sql = "SELECT forumTitle, forumContents, forumDate, forumHits, forumVotingCounts,
-            users.userName, users.userImg
+            users.userName, users.userImg,
+            answers.answerContents, answers.answerDate, answers.answerVotingCounts,
+            users2.userName AS answerUserName, users2.userImg AS answerUserImg
             FROM forums 
+            LEFT JOIN answers ON forums.forumId = answers.forumId
             LEFT JOIN users ON forums.userId = users.userId
-            WHERE forumId = $forumId";
-
+            LEFT JOIN users AS users2 ON answers.userId = users2.userId /* users테이블 겹치니까 별칭사용함 */
+            WHERE forums.forumId = $forumId";
 
     $result=$connect->query($sql);
     $rows=mysqli_fetch_assoc($result);
@@ -109,15 +116,13 @@
                       </div>
                   </div>
                   <div class="card-body">
-                    <div class = "box">
+                    <div class = "box vote-box">
                       <div class = "up">&#9650;</div>
                       <div class = "voteNum"><?php echo $rows['forumVotingCounts']?></div>
                       <div class = "down">&#9660;</div>
                     </div>
                     <div class= "card-text">
-                      <p> 
                         <?php echo $rows['forumContents']?>
-                      </p>
                     </div>
                   </div>
                   <div class="card-footer d-flex flex-wrap justify-content-between align-items-center px-0 pt-0 pb-3">
@@ -128,8 +133,60 @@
       </div>
   </div>
 
+  <!-- answer 작성폼-->
+  <div class="answer-post-form">
+    <div class="post-form-border"">
+        <textarea class="textarea" placeholder="Add your replies here..."></textarea>  
+        <div class=""> <button type="button" class="btn btn-success">Submit Reply</button>
+        </div>   
+    </div>   
+</div>
   <!--answer 부분-->
-  
+  <div class="container answer-container">
+    <div class="card">
+        <div class="card-body card-answers">
+            <div class="row answer-total-box">
+                <div class=" answer-profile">
+                  <div class = "box vote-box vote-box-margin">
+                    <div class = "up">&#9650;</div>
+                    <div class = "voteNum"><?php echo $rows['answerVotingCounts']?></div>
+                    <div class = "down">&#9660;</div>
+                  </div>
+                  <div class="answer-date-box">
+                    <img class="answer-user-img" src="<?php echo $rows['answerUserImg']?>" class="img img-rounded img-fluid"/>
+                    <div class="text-secondary text-center"><?php echo $rows['answerDate']?></div></div>
+                  </div>
+                </div>
+                <div class="answer-content-box">
+                    <p>
+                        <a class="float-left" href="https://maniruzzaman-akash.blogspot.com/p/contact.html"><strong><?php echo $rows['answerUserName']?></strong></a>
+                        <span class="float-right"><i class="text-warning fa fa-star"></i></span>
+                          <span class="float-right"><i class="text-warning fa fa-star"></i></span>
+                        <span class="float-right"><i class="text-warning fa fa-star"></i></span>
+                        <span class="float-right"><i class="text-warning fa fa-star"></i></span>
+                   </p>
+                   <div class="clearfix"></div>
+                    <div class="answerContents"><?php echo $rows['answerContents']?></div>
+                    <p>
+                        <a class="float-right btn btn-outline-primary ml-2"> <i class="fa fa-reply"></i>Reply</a>
+                        <a class="float-right btn text-white btn-danger"> <i class="fa fa-heart"></i> Like</a>
+                   </p>
+                </div>
+            </div>
+              <div class="card card-inner">
+                <div class="media">
+                  <div class="media-body comment-contents">
+                    Will you do the same for me? It's time to face the music I'm no longer your muse. Heard it's beautiful, be the judge and my girls gonna take a vote. I can feel a phoenix inside of me. Heaven is jealous of our love, angels are crying from up above. Yeah, you take me to utopia.
+                  </div>
+                </div>
+                <div class="comment-profile">
+                  <div class="comment-date">2022</div>
+                  <div class="author">author</div>
+                </div>
+                </div>
+        </div>
+    </div>
+  </div>
 
    <!-- Footer-->
   <footer class="footer_area section_padding_130_0">
@@ -202,7 +259,7 @@
           </div>
   </footer>
 
-
+    </script>
     <!--script-->
     <!--jQuery는 bootstrap의 js가 사용하므로 bootstrap js 파일 로드 전 로드한다.-->
     <script src="../jQuery/jquery-3.7.1.js"></script>

@@ -1,6 +1,8 @@
 body {
-    font-family: 'Varela Round', sans-serif;
-
+	font-family: 'Kalam', cursive;
+	font-family: 'Noto Sans KR', sans-serif;
+	font-family: 'Open Sans', sans-serif;
+	font-family: 'Varela Round', sans-serif;
 }
 label small {
     color: #999;
