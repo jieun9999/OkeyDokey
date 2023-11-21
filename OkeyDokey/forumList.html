@@ -129,12 +129,20 @@
         <div class="row no-gutters align-items-center">
           <!-- answerCount 부분은 각 forumId에 대한 answers 테이블 행의 갯수를 의미한다-->
         <div class="col-4"><?php echo $rows['answerCount']?></div>
+          <!-- answerCount가 0보다 크면, 답변자의 프로필이 보이도록, 답변x인 경우에는 waiting for 출력 -->
+        <?php if($rows['answerCount'] > 0): ?>
         <div class="media col-8 align-items-center"> <img src="<?php echo $rows['userImg']?>" alt="" class="d-block ui-w-30 rounded-circle">
         <div class="media-body flex-truncate ml-2">
         <div class="line-height-1 text-truncate"><?php echo $rows['answerDate']?></div>
         <div class="text-muted small text-truncate">by <?php echo $rows['userName']?></div>
         </div>
         </div>
+        <?php else: ?>
+          <!-- $rows['answerCount']가 null인 경우 "waiting for you!" 출력 -->
+          <div class="media col-8 align-items-center"> <img src="<?php echo $rows['userImg']?>" alt="" class="d-block ui-w-30 rounded-circle">
+            waiting for you! 🤯
+            </div>
+          <?php endif; ?>
         </div>
         </div>
         </div>
