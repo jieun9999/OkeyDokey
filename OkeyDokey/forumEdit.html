@@ -48,7 +48,7 @@
 }
 
   //3. SELECT 쿼리 전송
-  $sql = "SELECT forumTitle, forumContents
+  $sql = "SELECT forumTitle, forumContents, forumId
           FROM forums
           WHERE forums.forumId = $editForumId";
 
@@ -111,15 +111,19 @@
             <h1>Editing the thread...</h1>
             <!-- 해당 내용을 edit_forum.php 로 보낸다-->
             <form action="edit_forum.php" method="POST">
-                
+
+                <!-- forumId를 hidden 필드로 추가 -->
+                <input type="hidden" name="EditingforumId" value= "<?php echo $rows['forumId']?>" />
+
+                <!-- input과 textarea 요소에 id 속성을 추가, JavaScript에서 해당 요소를 식별합니다.-->
                 <div class="form-group">
                     <label for="title">Title</label>
-                    <input type="text" class="form-control" name="title" value="<?php echo $rows['forumTitle']?>"/>
+                    <input id="titleInput" type="text" class="form-control" name="title" value="<?php echo $rows['forumTitle']?>"/>
                 </div>
                 
                 <div class="form-group">
                     <label for="description">Description</label>
-                    <textarea rows="5" class="form-control" name="description" ><?php echo $rows['forumContents']?></textarea>
+                    <textarea id="descriptionInput" rows="5" class="form-control" name="description" ><?php echo $rows['forumContents']?></textarea>
                 </div>
                 
                 <div class="form-group">
@@ -226,6 +230,29 @@
             e.stopPropagation();
         });
         </script>
+
+    <script>
+      //문서가 준비될때까지 기다립니다
+      $(document).ready(function(){
+        //제목입력란의 변경사항을 추적합니다.
+        $('#titleInput').on('input',function(){
+          //value 값을 업데이트 합니다.
+          $(this).attr('value', $(this).val());
+        })});
+
+      //input 이벤트를 사용하여 textarea의 값이 변경될 때마다 해당 값을 업데이트
+
+      //문서가 준비될때까지 기다립니다
+      $(document).ready(function(){
+      //제목입력란의 변경사항을 추적합니다.
+      $('#descriptionInput').on('input',function(){
+      //value 값을 업데이트 합니다.
+      $(this).val($(this).val());
+        })});   
+
+
+
+    </script>    
 
 </body>
 </html>
