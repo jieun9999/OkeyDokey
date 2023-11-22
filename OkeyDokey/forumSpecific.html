@@ -114,10 +114,13 @@
                   <div class="buttons-forums-container">
                     <div class="buttons-forums">
                       <button type="button" class="btn btn-light" onclick="goToForumList()">목록으로</button>
-                      <button type="button" class="btn btn-dark">수정</button>
-                      <!-- post 요청을 보낼때 name="deleteForum"가 key고 <?php echo $rows['forumIdToDelete']?>가 value가 된다. -->
+                      <!--수정: post 요청을 보낼때 name="editForum"가 key이고, key는 <?php echo $rows['forumIdToDelete']?>가 value가 된다.-->
+                      <form action="forumEdit.html" method="post">
+                        <button type="submit" name="editForum"class="btn btn-dark" value="<?php echo $rows['forumIdToDelete'] ?>">수정</button>
+                      </form>
+                      <!-- 삭제: post 요청을 보낼때 name="deleteForum"가 key고 <?php echo $rows['forumIdToDelete']?>가 value가 된다. -->
                       <form action="delete_forum.php" method="post">
-                        <button type="submit" name="deleteForum" class="btn btn-danger" value="<?php echo $rows['forumIdToDelete']?>"">삭제</button>
+                        <button type="submit" name="deleteForum" class="btn btn-danger" value="<?php echo $rows['forumIdToDelete'] ?>">삭제</button>
                       </form>
                     </div>
                   </div>

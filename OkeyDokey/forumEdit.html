@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>forumWriting</title>
+    <!--폰트 적용-->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Varela+Round">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kalam:wght@300;400;700&family=Noto+Sans+KR:wght@300&family=Open+Sans:ital@1&display=swap" rel="stylesheet">
+    <!-- css 적용-->
+    
+    <!-- 가장기본이 되는 css 코드-->
+    <link rel="stylesheet" href="../bootstrap-4.6.2-dist/css/bootstrap.css">
+    <link rel="stylesheet" href="forumEdit.css">
+</head>
+<body>
+  <?php
+
+  // $editForumId를 사용해서 mysql에서 칼럼 내용들을 가지고 옴  
+
+  //이렇게 하면 브라우저에 에러 메시지가 표시됩니다. 
+  error_reporting(E_ALL);
+  ini_set('display_errors', 1);
+  //
+
+  //1. mysql과 연결하기
+  $host = '52.79.41.79';
+  $user = 'datagrip';
+  $pw = 'abc123';
+  $db_name = 'mydb';
+
+  $connect = mysqli_connect($host, $user, $pw, $db_name);
+
+  if ($connect->connect_error) {
+      die("Connection failed: " . $connect->connect_error);
+  }
+
+  //2. 입력값이 비었는지 확인
+   
+  $editForumId = isset($_POST['editForum']) ? $_POST['editForum'] : null;
+
+  if ($editForumId === null) {
+    echo '<script>alert("글 ID를 찾을 수 없습니다.");</script>';
+    echo '<script>history.back();</script>';
+    exit; // Exit to avoid further execution
+}
+
+  //3. SELECT 쿼리 전송
+  $sql = "SELECT forumTitle, forumContents
+          FROM forums
+          WHERE forums.forumId = $editForumId";
+
+  $result=$connect->query($sql);
+  $rows=mysqli_fetch_assoc($result);
+
+    // 성공,실패 리턴
+    if($result){
+        echo '<script>alert("수정 페이지로 이동합니다.");</script>';
+    }else{
+        echo '<script>alert("수정 페이지 이동에 실패하였습니다.");</script>';
+        echo '<script>history.back();</script>';
+    }
+
+  ?>
+    <!--따온 코드 넣기-->
+    <!-- Header-->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+         <!-- Logo -->
+    <a class="navbar-brand" href="#">
+        <img src="../img/okeydokey1.png" class="h-8" alt="...">
+      </a>
+        <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <!-- Collection of nav links, forms, and other content for toggling -->
+        <div id="navbarCollapse" class="collapse navbar-collapse justify-content-start">
+            <class class="navbar-nav">
+                <a href="#" class="nav-item nav-link">Home</a>
+                <a href="#" class="nav-item nav-link">About</a>			
+                <a href="#" class="nav-item nav-link active">Pricing</a>
+                <a href="#" class="nav-item nav-link">Blog</a>
+                <a href="#" class="nav-item nav-link">Contact</a>
+                <form class="navbar-form form-inline">
+                    <div class="input-group search-box">								
+                        <input type="text" id="search" class="form-control" placeholder="Search here...">
+                        <div class="input-group-append">
+                            <span class="input-group-text">
+                                <i class="material-icons">&#xE8B6;</i>
+                            </span>
+                        </div>
+                    </div>
+                </form>
+                </class>
+            </div>
+            <div class="navbar-nav ml-auto action-buttons">
+                <div class="nav-item dropdown">
+                    <a href="#" data-toggle="dropdown" class="nav-link dropdown-toggle mr-4">Login</a>
+                </div>
+                <div class="nav-item dropdown">
+                    <a href="#" data-toggle="dropdown" class="btn btn-primary dropdown-toggle sign-up-btn">Sign up</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <!-- Main-->
+    <div class="container">
+      <div class="row">
+          <div class="col-md-8 col-md-offset-2 postbox">
+            <h1>Editing the thread...</h1>
+            <!-- 해당 내용을 edit_forum.php 로 보낸다-->
+            <form action="edit_forum.php" method="POST">
+                
+                <div class="form-group">
+                    <label for="title">Title</label>
+                    <input type="text" class="form-control" name="title" value="<?php echo $rows['forumTitle']?>"/>
+                </div>
+                
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea rows="5" class="form-control" name="description" ><?php echo $rows['forumContents']?></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">
+                        Edit
+                    </button>
+                </div>
+            </form>
+            <div class="Cancel-container">
+              <button class="btn btn-default" onclick="goToForumList()">
+                Cancel
+              </button>
+            </div>
+        </div>
+        
+      </div>
+    </div>
+    <!-- Footer-->
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+
+    <footer class="footer_area section_padding_130_0">
+          <div class="container">
+            <div class="row">
+              <!-- Single Widget-->
+              <div class="col-12 col-sm-6 col-lg-4">
+                <div class="single-footer-widget section_padding_0_130">
+                  <!-- Footer Logo-->
+                  <div class="footer-logo mb-3"></div>
+                  <p>Appland is completely creative, lightweight, clean app landing page.</p>
+                  <!-- Copywrite Text-->
+                  <div class="copywrite-text mb-5">
+                    <p class="mb-0">Made with <i class="lni-heart mr-1"></i>by<a class="ml-1" href="https://wrapbootstrap.com/user/DesigningWorld">Designing World</a></p>
+                  </div>
+                  <!-- Footer Social Area-->
+                  <div class="footer_social_area"><a href="#" data-toggle="tooltip" data-placement="top" title="" data-original-title="Facebook"><i class="fa fa-facebook"></i></a><a href="#" data-toggle="tooltip" data-placement="top" title="" data-original-title="Pinterest"><i class="fa fa-pinterest"></i></a><a href="#" data-toggle="tooltip" data-placement="top" title="" data-original-title="Skype"><i class="fa fa-skype"></i></a><a href="#" data-toggle="tooltip" data-placement="top" title="" data-original-title="Twitter"><i class="fa fa-twitter"></i></a></div>
+                </div>
+              </div>
+              <!-- Single Widget-->
+              <div class="col-12 col-sm-6 col-lg">
+                <div class="single-footer-widget section_padding_0_130">
+                  <!-- Widget Title-->
+                  <h5 class="widget-title">About</h5>
+                  <!-- Footer Menu-->
+                  <div class="footer_menu">
+                    <ul>
+                      <li><a href="#">About Us</a></li>
+                      <li><a href="#">Corporate Sale</a></li>
+                      <li><a href="#">Terms &amp; Policy</a></li>
+                      <li><a href="#">Community</a></li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              <!-- Single Widget-->
+              <div class="col-12 col-sm-6 col-lg">
+                <div class="single-footer-widget section_padding_0_130">
+                  <!-- Widget Title-->
+                  <h5 class="widget-title">Support</h5>
+                  <!-- Footer Menu-->
+                  <div class="footer_menu">
+                    <ul>
+                      <li><a href="#">Help</a></li>
+                      <li><a href="#">Support</a></li>
+                      <li><a href="#">Privacy Policy</a></li>
+                      <li><a href="#">Term &amp; Conditions</a></li>
+                      <li><a href="#">Help &amp; Support</a></li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              <!-- Single Widget-->
+              <div class="col-12 col-sm-6 col-lg">
+                <div class="single-footer-widget section_padding_0_130">
+                  <!-- Widget Title-->
+                  <h5 class="widget-title">Contact</h5>
+                  <!-- Footer Menu-->
+                  <div class="footer_menu">
+                    <ul>
+                      <li><a href="#">Call Centre</a></li>
+                      <li><a href="#">Email Us</a></li>
+                      <li><a href="#">Term &amp;Conditions</a></li>
+                      <li><a href="#">Help Center</a></li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </footer>
+   <!-- 버튼 클릭시 목록으로 이동-->
+   <script>
+    function goToForumList(){
+      window.location.href = "http://52.79.41.79/OkeyDokey/forumList.html";
+    }
+    </script>
+    <!-- jQuery와 bootstrap 적용-->
+    <!--jQuery는 bootstrap의 js가 사용하므로 bootstrap js 파일 로드 전 로드한다.-->
+    <script src="../jQuery/jquery-3.7.1.js"></script>
+    <!-- <body> 태그가 끝나기 전 js 파일 로드 시 웹 페이지 로딩 속도 향상된다.-->
+    <script src="../bootstrap-4.6.2-dist/js/bootstrap.js"></script>
+    <script>
+        // Prevent dropdown menu from closing when click inside the form
+        $(document).on("click", ".action-buttons .dropdown-menu", function(e){
+            e.stopPropagation();
+        });
+        </script>
+
+</body>
+</html>
