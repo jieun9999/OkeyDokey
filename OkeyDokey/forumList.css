@@ -444,22 +444,5 @@ body {
 	width: 40px;
 	height: auto
 	}
-.buttons-forums{
-	margin-bottom: 20px;
-	width: 230px;
-	display: flex;
-	justify-content: space-around;
-}
-#newThreadBtn {
-    width: 160px;
-    height: 40px;
-}
-.newThreadBtnTxt{
-	font-size: 1rem;
-}
-.buttons-forums-container{
-	display: flex;
-	justify-content: flex-end;
-}
 
  
