@@ -78,12 +78,13 @@
                     <button type="submit" class="btn btn-primary">
                         Create
                     </button>
-                    <button class="btn btn-default">
-                        Cancel
-                    </button>
                 </div>
-                
             </form>
+            <div class="Cancel-container">
+              <button class="btn btn-default" onclick="goToForumList()">
+                Cancel
+              </button>
+            </div>
         </div>
         
       </div>
@@ -160,6 +161,13 @@
             </div>
           </div>
         </footer>
+
+    <!-- 버튼 클릭시 목록으로 이동-->
+   <script>
+    function goToForumList(){
+      window.location.href = "http://52.79.41.79/OkeyDokey/forumList.html";
+    }
+    </script>
 
     <!-- jQuery와 bootstrap 적용-->
     <!--jQuery는 bootstrap의 js가 사용하므로 bootstrap js 파일 로드 전 로드한다.-->
