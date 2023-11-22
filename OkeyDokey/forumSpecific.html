@@ -51,7 +51,7 @@
 
 
     //3. 쿼리문으로 데이터 가져오기
-    $sql = "SELECT forumTitle, forumContents, forumDate, forumHits, forumVotingCounts,
+    $sql = "SELECT forums.forumId AS forumIdToDelete, forumTitle, forumContents, forumDate, forumHits, forumVotingCounts,
             users.userName, users.userImg,
             answers.answerContents, answers.answerDate, answers.answerVotingCounts,
             users2.userName AS answerUserName, users2.userImg AS answerUserImg
@@ -113,9 +113,12 @@
                   <!-- 목록으로, 수정, 삭제 버튼-->
                   <div class="buttons-forums-container">
                     <div class="buttons-forums">
-                      <button type="button" class="btn btn-light">목록으로</button>
+                      <button type="button" class="btn btn-light" onclick="goToForumList()">목록으로</button>
                       <button type="button" class="btn btn-dark">수정</button>
-                      <button type="button" class="btn btn-danger">삭제</button>
+                      <!-- post 요청을 보낼때 name="deleteForum"가 key고 <?php echo $rows['forumIdToDelete']?>가 value가 된다. -->
+                      <form action="delete_forum.php" method="post">
+                        <button type="submit" name="deleteForum" class="btn btn-danger" value="<?php echo $rows['forumIdToDelete']?>"">삭제</button>
+                      </form>
                     </div>
                   </div>
       <div class="row">
@@ -281,6 +284,11 @@
           </div>
   </footer>
 
+   <!-- 버튼 클릭시 목록으로 이동-->
+   <script>
+    function goToForumList(){
+      window.location.href = "http://52.79.41.79/OkeyDokey/forumList.html";
+    }
     </script>
     <!--script-->
     <!--jQuery는 bootstrap의 js가 사용하므로 bootstrap js 파일 로드 전 로드한다.-->

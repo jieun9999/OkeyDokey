@@ -444,5 +444,11 @@ body {
 	width: 40px;
 	height: auto
 	}
-
+	#newThreadBtn {
+		width: 160px;
+		height: 40px;
+	}
+	.newThreadBtnTxt{
+		font-size: 1rem;
+	}
  
