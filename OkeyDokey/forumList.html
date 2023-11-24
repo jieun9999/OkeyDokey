@@ -9,6 +9,7 @@
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Kalam:wght@300;400;700&family=Noto+Sans+KR:wght@300&family=Open+Sans:ital@1&display=swap" rel="stylesheet">
+        <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
     <!-- 가장기본이 되는 css 코드-->
     <link rel="stylesheet" href="../bootstrap-4.6.2-dist/css/bootstrap.css">
     <link rel="stylesheet" href="forumList.css">
@@ -22,17 +23,8 @@
   //
 
   //1. mysql과 연결하기
-  $host = '52.79.41.79';
-  $user = 'datagrip';
-  $pw = 'abc123';
-  $db_name = 'mydb';
-
-  $connect = mysqli_connect($host, $user, $pw, $db_name);
-
-  if ($connect->connect_error) {
-      die("Connection failed: " . $connect->connect_error);
-  }
-
+  include 'config.php';
+  
   //2. SELECT 쿼리 전송 
   /* join사용해서 forums 테이블과 answers 테이블의 데이터를 한번에 가져온다 */
 
@@ -175,7 +167,6 @@
       </nav>
       </div> 
     <!-- Footer-->
-    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
 
     <footer class="footer_area section_padding_130_0">
           <div class="container">

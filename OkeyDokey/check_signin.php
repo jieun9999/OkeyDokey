@@ -5,16 +5,7 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 //
 
-$host = '52.79.41.79';
-$user = 'datagrip';
-$pw = 'abc123';
-$db_name = 'mydb';
-
-$conn = mysqli_connect($host, $user, $pw, $db_name);
-
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+include 'config.php';
 
 $email = $_POST['email'];
 $pw = $_POST['password'];
@@ -26,7 +17,7 @@ if($email == "" || $pw == ""){
 }
 
 //2.입력된 사용자 정보와 일치하는지 확인하는 쿼리 작성
-$sql = "SELECT * FROM user WHERE userEmail = '$email' AND userPw = '$pw'";
+$sql = "SELECT * FROM users WHERE userEmail = '$email' AND userPw = '$pw'";
 //$sql에 저장된 쿼리문을 MySQL 데이터베이스에 전송하고, 그 결과를 $result 변수에 저장
 $result = $conn ->query($sql);
 

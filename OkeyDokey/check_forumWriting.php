@@ -5,16 +5,7 @@ ini_set('display_errors', 1);
 //
 
 //1. mysql과 연결하기
-$host = '52.79.41.79';
-$user = 'datagrip';
-$pw = 'abc123';
-$db_name = 'mydb';
-
-$connect = mysqli_connect($host, $user, $pw, $db_name);
-
-if ($connect->connect_error) {
-    die("Connection failed: " . $connect->connect_error);
-}
+include 'config.php';
 
 //2. 입력값이 비었는지 확인
 $title = $_POST['title'];

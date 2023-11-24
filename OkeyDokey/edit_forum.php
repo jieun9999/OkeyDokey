@@ -3,19 +3,9 @@
     //이렇게 하면 브라우저에 에러 메시지가 표시됩니다. 
     error_reporting(E_ALL);
     ini_set('display_errors', 1);
-    //
 
     //1. mysql과 연결하기
-    $host = '52.79.41.79';
-    $user = 'datagrip';
-    $pw = 'abc123';
-    $db_name = 'mydb';
-
-    $connect = mysqli_connect($host, $user, $pw, $db_name);
-
-    if ($connect->connect_error) {
-        die("Connection failed: " . $connect->connect_error);
-    }
+    include 'config.php';
 
     //2. post요청으로 도착한 EditingforumId의 값을 받기
     // post 요청을 보낼때 key인 name(EditingforumId)로 값이 있는지 확인한 후에 있으면 쿼리문을 실행한다
