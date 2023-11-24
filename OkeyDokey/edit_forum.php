@@ -31,7 +31,8 @@
 
     //3. 수정 쿼리문 실행
     $sql = "UPDATE forums SET forumTitle = '$finalTitle' ,
-                              forumContents = '$finalContents'
+                              forumContents = '$finalContents',
+                              forumUpdateDate = CURRENT_TIMESTAMP
                               WHERE forumId = $finalEditForumId";
 
     $result = $connect ->query($sql);

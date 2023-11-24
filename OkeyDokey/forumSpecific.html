@@ -42,7 +42,7 @@
 
 
     //3. 쿼리문으로 데이터 가져오기
-    $sql = "SELECT forums.forumId AS forumIdToDelete, forumTitle, forumContents, forumDate, forumHits, forumVotingCounts,
+    $sql = "SELECT forums.forumId AS forumIdToDelete, forumTitle, forumContents, forumDate, forumUpdateDate, forumHits, forumVotingCounts,
             users.userName, users.userImg,
             answers.answerContents, answers.answerDate, answers.answerVotingCounts,
             users2.userName AS answerUserName, users2.userImg AS answerUserImg
@@ -127,7 +127,10 @@
                             </div>
                           </div>
                           <div class="text-muted small ml-3">
-                            <div><?php echo $rows['forumDate']?></div>
+                            <!-- $rows['forumUpdateDate']가 null이면 $rows['forumDate']가 사용되고, 그렇지 않으면 $rows['forumDateUpdate']이 사용됩니다.-->
+                            <div>
+                              <?php echo $rows['forumUpdateDate'] ?? $rows['forumDate']?>
+                            </div>
                             <div class="hits"> <i class="fa fa-eye text-muted fsize-3"></i>&nbsp;<?php echo $rows['forumHits']?></div>
                           </div>
                       </div>
