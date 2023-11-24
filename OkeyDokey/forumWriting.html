@@ -20,7 +20,7 @@
     <!-- Header-->
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
          <!-- Logo -->
-    <a class="navbar-brand" href="#">
+    <a class="navbar-brand" href="http://52.79.41.79/OkeyDokey/forumList.html">
         <img src="../img/okeydokey1.png" class="h-8" alt="...">
       </a>
         <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
@@ -47,10 +47,10 @@
                 </class>
             </div>
             <div class="navbar-nav ml-auto action-buttons">
-                <div class="nav-item dropdown">
+                <div class="nav-item dropdown" onclick="goToSignin()">
                     <a href="#" data-toggle="dropdown" class="nav-link dropdown-toggle mr-4">Login</a>
                 </div>
-                <div class="nav-item dropdown">
+                <div class="nav-item dropdown" onclick="goToSignup()">
                     <a href="#" data-toggle="dropdown" class="btn btn-primary dropdown-toggle sign-up-btn">Sign up</a>
                 </div>
             </div>
@@ -174,12 +174,19 @@
     <script src="../jQuery/jquery-3.7.1.js"></script>
     <!-- <body> 태그가 끝나기 전 js 파일 로드 시 웹 페이지 로딩 속도 향상된다.-->
     <script src="../bootstrap-4.6.2-dist/js/bootstrap.js"></script>
-    <script>
-        // Prevent dropdown menu from closing when click inside the form
-        $(document).on("click", ".action-buttons .dropdown-menu", function(e){
-            e.stopPropagation();
-        });
-        </script>
+
+                         <!-- 버튼 클릭시 로그인 페이지로 이동-->
+                         <script>
+                          function goToSignin(){
+                            window.location.href = "http://52.79.41.79/OkeyDokey/signin.html";
+                          }
+                          </script>
+                          <!-- 버튼 클릭시 회원가입 페이지로 이동-->
+                        <script>
+                          function goToSignup(){
+                            window.location.href = "http://52.79.41.79/OkeyDokey/signup.html";
+                          }
+                          </script>
 
 </body>
 </html>
