@@ -42,6 +42,15 @@
         LEFT JOIN answers ON forums.forumId = answers.forumId
         LEFT JOIN users ON answers.userId = users.userId 
         JOIN users AS users2 ON forums.userId = users2.userId /* users테이블 겹치니까 별칭사용함 */
+
+        /* WHERE 절은 쿼리에서 조건을 지정하여 특정 행을 선택하는 역할을 합니다 */
+        /* 한개의 forum에 여러개의 answers 가 달리는 경우, 중복된 행이 생기는 문제가 발생 => 여러 행 중에서 WHERE문으로 하나의 행을 선택*/
+        /* 특히, WHERE 절은 주로 SELECT, UPDATE, DELETE 등의 명령문과 자주 쓰입니다*/
+        WHERE answers.answerId = (
+              SELECT MAX(answerId)
+              FROM answers
+              WHERE answers.forumId = forums.forumId
+        )
         ORDER BY forums.forumDate DESC"; /* 내림차순으로 글목록 번호 가져옴 */
 
   $result=$connect->query($sql);
