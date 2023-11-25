@@ -22,11 +22,16 @@ if($signup_pw != $signup_pw_confirm){
     echo '<script>history.back();</script>';
 }
 
-//3. MySQL에 데이터를 넣고 알림창에 메시지 출력
-$sql = "INSERT INTO users (userName, userEmail, userPw) VALUES ('$username', '$signup_email', '$signup_pw')";
 
-   mysqli_query($conn, $sql);
-   //주어진 연결 객체 ($conn)를 사용하여 주어진 SQL 쿼리 ($sql)를 실행하는 것입니다.
+//비밀번호 암호화
+$password = password_hash($signup_pw, PASSWORD_DEFAULT);
+
+
+//3. MySQL에 데이터를 넣고 알림창에 메시지 출력
+$sql = "INSERT INTO users (userName, userEmail, userPw) VALUES ('$username', '$signup_email', '$password')";
+
+   mysqli_query($connect, $sql);
+   //주어진 연결 객체 ($connect)를 사용하여 주어진 SQL 쿼리 ($sql)를 실행하는 것입니다.
    echo '<script>alert("회원 가입이 완료되었습니다.");</script>';
    echo "<script>location.replace('signin.html');</script>";
 
