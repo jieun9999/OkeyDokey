@@ -13,7 +13,7 @@ $description = $_POST['description'];
 
 //3. INSERT 쿼리 전송 (회원정보는 고정된 값을 넣어줌)
 $query = "INSERT INTO forums (forumTitle, forumContents, userId) 
-          VALUES ('$title', '$description', 3)";
+          VALUES ('$title', '$description', 11)";
 
 $result = $connect->query($query);
 if($result){
