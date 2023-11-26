@@ -482,9 +482,11 @@ nav{
 
 .vote-box{
 	justify-content: center;
+	width: 50px;
 }
 .voteNum{
 	font-size: 1.2rem;
+	width: 25px;
 }
 .answer-profile{
 	width: 180px;
