@@ -53,8 +53,7 @@
             WHERE forums.forumId = $forumId";
 
     $result=$connect->query($sql);
-    $rows=mysqli_fetch_assoc($result);
-     
+    
     ?>
 
     <!--따온 코드 넣기-->
@@ -79,74 +78,91 @@
         </div>
     </nav>
 
-                
-    <!-- Main-->
-    <div class="container-fluid mt-100 forum-container">
-                  <!-- 목록으로, 수정, 삭제 버튼-->
-                  <div class="buttons-forums-container">
-                    <div class="buttons-forums">
-                      <button type="button" class="btn btn-light" onclick="goToForumList()">목록으로</button>
-                      <!--수정: post 요청을 보낼때 name="editForum"가 key이고, key는 <?php echo $rows['forumIdToDelete']?>가 value가 된다.-->
-                      <form action="forumEdit.html" method="post">
-                        <button type="submit" name="editForum"class="btn btn-dark" value="<?php echo $rows['forumIdToDelete'] ?>">수정</button>
-                      </form>
-                      <!-- 삭제: post 요청을 보낼때 name="deleteForum"가 key고 <?php echo $rows['forumIdToDelete']?>가 value가 된다. -->
-                      <form action="delete_forum.php" method="post">
-                        <button type="submit" name="deleteForum" class="btn btn-danger" value="<?php echo $rows['forumIdToDelete'] ?>">삭제</button>
-                      </form>
-                    </div>
-                  </div>
-      <div class="row">
-          <div class="col-md-12">
-              <div class="card mb-4">
-                  <div class="card-header">
-                      <div class="media flex-wrap w-100 align-items-center"> <img src="<?php echo $rows['userImg']?>" class="d-block ui-w-40 rounded-circle fixed-size-image" alt="">
-                          <div class="media-body ml-3"> 
-                            <div class="title"><?php echo $rows['forumTitle']?></div>
-                            <div class="text-muted small">
-                              <div><?php echo $rows['userName']?></div>
-                            </div>
-                          </div>
-                          <div class="text-muted small ml-3">
-                            <!-- $rows['forumUpdateDate']가 null이면 $rows['forumDate']가 사용되고, 그렇지 않으면 $rows['forumDateUpdate']이 사용됩니다.-->
-                            <div>
-                              <?php echo $rows['forumUpdateDate'] ?? $rows['forumDate']?>
-                            </div>
-                            <div class="hits"> <i class="fa fa-eye text-muted fsize-3"></i>&nbsp;<?php echo $rows['forumHits']?></div>
+    <!--'mysqli_fetch_assoc($result)'를 사용할때, 각 행에서 forums 관련 데이터는 한번만 가져오고,
+    answers 관련 데이터는 모든 행을 다 돌게 하려면 다음과 같은 구조를 사용해야 합니다. -->
+    <!-- 'if (!$forumsData)'를 기점으로 forums 데이터는 첫번째 행에서만 처리하고,
+              answers 관련 데이터는 모든 행에서 처리합니다 -->
+
+    <!-- Main-->   
+    <?php
+    $forumsData = null;
+    <!-- 처음에는 $forumsData에 null 값을 넣어주고 -->
+
+    while ($rows=mysqli_fetch_assoc($result)){
+      if(!$forumsData){
+    <!-- forums 데이터 처리는 첫번째 행에서만 수행-->
+        ?>
+                    <div class="container-fluid mt-100 forum-container">
+                      <!-- 목록으로, 수정, 삭제 버튼-->
+                      <div class="buttons-forums-container">
+                        <div class="buttons-forums">
+                          <button type="button" class="btn btn-light" onclick="goToForumList()">목록으로</button>
+                          <!--수정: post 요청을 보낼때 name="editForum"가 key이고, key는 <?php echo $rows['forumIdToDelete']?>가 value가 된다.-->
+                          <form action="forumEdit.html" method="post">
+                            <button type="submit" name="editForum"class="btn btn-dark" value="<?php echo $rows['forumIdToDelete'] ?>">수정</button>
+                          </form>
+                          <!-- 삭제: post 요청을 보낼때 name="deleteForum"가 key고 <?php echo $rows['forumIdToDelete']?>가 value가 된다. -->
+                          <form action="delete_forum.php" method="post">
+                            <button type="submit" name="deleteForum" class="btn btn-danger" value="<?php echo $rows['forumIdToDelete'] ?>">삭제</button>
+                          </form>
+                        </div>
+                      </div>
+            <div class="row">
+              <div class="col-md-12">
+                  <div class="card mb-4">
+                      <div class="card-header">
+                          <div class="media flex-wrap w-100 align-items-center"> <img src="<?php echo $rows['userImg']?>" class="d-block ui-w-40 rounded-circle fixed-size-image" alt="">
+                              <div class="media-body ml-3"> 
+                                <div class="title"><?php echo $rows['forumTitle']?></div>
+                                <div class="text-muted small">
+                                  <div><?php echo $rows['userName']?></div>
+                                </div>
+                              </div>
+                              <div class="text-muted small ml-3">
+                                <!-- $rows['forumUpdateDate']가 null이면 $rows['forumDate']가 사용되고, 그렇지 않으면 $rows['forumDateUpdate']이 사용됩니다.-->
+                                <div>
+                                  <?php echo $rows['forumUpdateDate'] ?? $rows['forumDate']?>
+                                </div>
+                                <div class="hits"> <i class="fa fa-eye text-muted fsize-3"></i>&nbsp;<?php echo $rows['forumHits']?></div>
+                              </div>
                           </div>
                       </div>
-                  </div>
-                  <div class="card-body">
-                    <div class = "box vote-box">
-                      <div class = "up">&#9650;</div>
-                      <div class = "voteNum"><?php echo $rows['forumVotingCounts']?></div>
-                      <div class = "down">&#9660;</div>
-                    </div>
-                    <div class= "card-text">
-                        <?php echo $rows['forumContents']?>
-                    </div>
-                  </div>
-                  <div class="card-footer d-flex flex-wrap justify-content-between align-items-center px-0 pt-0 pb-3">
-                      <div class="px-4 pt-3"> <button type="button" class="btn btn-primary" onclick="toggleAnswerForm()"><i class="fa fa-reply"></i> toggle</button> </div>
+                      <div class="card-body">
+                        <div class = "box vote-box">
+                          <div class = "up">&#9650;</div>
+                          <div class = "voteNum"><?php echo $rows['forumVotingCounts']?></div>
+                          <div class = "down">&#9660;</div>
+                        </div>
+                        <div class= "card-text">
+                            <?php echo $rows['forumContents']?>
+                        </div>
+                      </div>
+                      <div class="card-footer d-flex flex-wrap justify-content-between align-items-center px-0 pt-0 pb-3">
+                          <div class="px-4 pt-3"> <button type="button" class="btn btn-primary" onclick="toggleAnswerForm()"><i class="fa fa-reply"></i> toggle</button> </div>
+                      </div>
                   </div>
               </div>
-          </div>
-      </div>
-  </div>
+            </div>
+            </div>
 
-  <!-- answer 작성폼-->
-  <div class="answer-post-form" id="answerForm">
-    <div class="post-form-border" >
-        <textarea class="textarea" placeholder="Add your replies here..."></textarea>  
-        <div class=""> <button type="button" class="btn btn-success">Submit Reply</button>
-        </div>   
-    </div>   
-</div>
-
+            <!-- answer 작성폼-->
+            <div class="answer-post-form" id="answerForm">
+            <div class="post-form-border" >
+            <textarea class="textarea" placeholder="Add your replies here..."></textarea>  
+            <div class=""> <button type="button" class="btn btn-success">Submit Reply</button>
+            </div>   
+            </div>   
+            </div>
+            <!--여기에 forums 데이터 처리 로직 추가--> 
+            <?php
+            $forumsData = $rows['forumTitle'];
+      }
+      ?>
+    
 <!-- answerContents가 있으면 답변 ui 보이고, 없으면 안보이게 -->
 <?php if($rows['answerContents'] != null): ?>
   <!--answer 부분-->
-  <div class="container answer-container">
+    <div class="container answer-container">
     <div class="card">
         <div class="card-body card-answers">
             <div class="row answer-total-box">
@@ -187,8 +203,10 @@
                 </div>
         </div>
     </div>
-    <?php else: ?>
+    <!--if($rows['answerContents'] 조건문 종료 -->
     <?php endif; ?>
+    <!-- while 반복문 종료-->
+    <?php } ?>
   </div>
 
    <!-- Footer-->
