@@ -86,11 +86,11 @@
     <!-- Main-->   
     <?php
     $forumsData = null;
-    <!-- 처음에는 $forumsData에 null 값을 넣어주고 -->
+    /* 처음에는 $forumsData에 null 값을 넣어주고 */
 
     while ($rows=mysqli_fetch_assoc($result)){
       if(!$forumsData){
-    <!-- forums 데이터 처리는 첫번째 행에서만 수행-->
+    /*forums 데이터 처리는 첫번째 행에서만 수행*/
         ?>
                     <div class="container-fluid mt-100 forum-container">
                       <!-- 목록으로, 수정, 삭제 버튼-->
@@ -203,9 +203,9 @@
                 </div>
         </div>
     </div>
-    <!--if($rows['answerContents'] 조건문 종료 -->
+    <!-- if($rows['answerContents'] != null) 조건문 종료-->
     <?php endif; ?>
-    <!-- while 반복문 종료-->
+    <!--  while 반복문 종료-->
     <?php } ?>
   </div>
 
