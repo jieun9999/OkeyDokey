@@ -185,6 +185,7 @@ ol, ul {
 	padding-left: 10%;
 	padding-right: 15%;
 	border-bottom: 1px solid #dfe3e8;
+	border-radius: 0;
 	position: relative;
     z-index: 1;
     overflow: hidden;
@@ -252,6 +253,7 @@ ol, ul {
 	background: transparent;
 	line-height: normal;
 }
+
 .navbar .navbar-form {
 	border: none;
 }
@@ -361,9 +363,6 @@ ol, ul {
 }
 
 
-
-
-
 body {
 	margin: 0;
 	font-size: .88rem;
@@ -374,7 +373,7 @@ body {
 	background-color: #eef1f3
 	}
 	body .mt-100 {
-		margin-top: 80px;
+		margin-top: 50px;
 		width: 80%;
 	}
 	.card {
@@ -447,6 +446,9 @@ body {
 	#newThreadBtn {
 		width: 160px;
 		height: 40px;
+		background-color: #39A7FF;
+		border: none;
+		margin-bottom: 10px;
 	}
 	.newThreadBtnTxt{
 		font-size: 1rem;
@@ -462,3 +464,10 @@ body {
 	.form-control{
 		margin-right: 10px;
 	}
+
+
+
+
+.btn-warning{
+	height: 2.5rem;
+}

@@ -62,7 +62,7 @@
 
   ?>
     <!--따온 코드 넣기-->
-    <!-- Header-->
+    <!-- Nav-->
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
          <!-- Logo -->
     <a class="navbar-brand" href="http://52.79.41.79/OkeyDokey/forumList.html">
@@ -71,23 +71,40 @@
         <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
             <span class="navbar-toggler-icon"></span>
         </button>
-    
-            <div class="navbar-nav ml-auto action-buttons">
+
+        
+          <div class="navbar-nav ml-auto action-buttons">
                 <div class="nav-item dropdown" onclick="goToSignin()">
-                    <a href="#" data-toggle="dropdown" class="nav-link dropdown-toggle mr-4">Login</a>
+                    <a href="#" class="nav-link dropdown-toggle mr-4">Login</a>
                 </div>
                 <div class="nav-item dropdown" onclick="goToSignup()">
-                    <a href="#" data-toggle="dropdown" class="btn btn-primary dropdown-toggle sign-up-btn">Sign up</a>
+                    <a href="#" class="btn btn-primary dropdown-toggle sign-up-btn">Sign up</a>
                 </div>
-            </div>
+          </div>
         </div>
     </nav>
+
     <!-- Main-->
     <div class="container-fluid mt-100">
-      <div class="d-flex flex-wrap justify-content-between">
-      <button type="button" class="btn btn-shadow btn-wide btn-primary" id="newThreadBtn"> 
-        <div class="newThreadBtnTxt"><i class="fa fa-plus fa-w-20"></i> New thread</div>
+      <!--new thread 버튼 -->
+        <button type="button" class="btn btn-shadow btn-wide btn-primary" id="newThreadBtn"> 
+          <div class="newThreadBtnTxt"><i class="fa fa-plus fa-w-20"></i> New thread</div>
+        </button>
+
+    <div class="d-flex flex-wrap justify-content-between">
+    <!-- Example single danger button -->
+    <div class="btn-group">
+      <button type="button" class="btn btn-warning dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+        최신순
       </button>
+      <div class="dropdown-menu">
+        <a class="dropdown-item" href="#">최신순</a>
+        <div class="dropdown-divider"></div>
+        <a class="dropdown-item" href="#">조회순</a>
+        <div class="dropdown-divider"></div>
+        <a class="dropdown-item" href="#">추천순</a>
+      </div>
+    </div>
 
       <?php
 
@@ -296,7 +313,7 @@
     <!--jQuery는 bootstrap의 js가 사용하므로 bootstrap js 파일 로드 전 로드한다.-->
     <script src="../jQuery/jquery-3.7.1.js"></script>
     <!-- <body> 태그가 끝나기 전 js 파일 로드 시 웹 페이지 로딩 속도 향상된다.-->
-    <script src="../bootstrap-4.6.2-dist/js/bootstrap.js"></script>
+    <script src="../bootstrap-4.6.2-dist//js/bootstrap.bundle.js"></script>
 <script>
   document.getElementById('newThreadBtn').addEventListener('click', function() {
       // 클릭 이벤트 발생 시 forumWriting.html로 페이지 이동
