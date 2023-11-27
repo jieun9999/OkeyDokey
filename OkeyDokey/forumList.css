@@ -452,3 +452,13 @@ body {
 		font-size: 1rem;
 	}
  
+	.search-form{
+		display:flex;
+		flex-direction: row;
+		width: 15rem;
+		margin-left: -3rem;
+	}
+
+	.form-control{
+		margin-right: 10px;
+	}
