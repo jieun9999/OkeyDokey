@@ -20,9 +20,14 @@
   error_reporting(E_ALL);
   ini_set('display_errors', 1);
 
-    
+  // 정렬순서 쿠키
+
   // 최신순 or 조회순 or 추천순 정렬 순서를 확인
   $sortOrder = isset($_GET['sort'])? $_GET['sort']: 'latest';
+
+  // 쿠키에 저장하기
+  // setcookie("쿠키명", "쿠키 값", "폐기 시간", "경로");
+  setcookie('sortOrder_history', $sortOrder, time()+ 3600);
 
   //1. mysql과 연결하기
   include 'config_mysqli.php';
@@ -58,14 +63,23 @@
         LEFT JOIN users AS users2 ON forums.userId = users2.userId"; /* users테이블 겹치니까 별칭사용함 */
 
         //PHP에서 '.' 연산자는 두 개의 문자열을 합치는 연산을 의미합니다.
-        if($sortOrder === 'views'){
+        //$_COOKIE['sortOrder_history']의 값에 따라서, 데이터를 가져옴
+
+        //쿠키에 따라서 버튼 텍스트 변경
+        $btnText ='정렬 순서';
+
+        if($_COOKIE['sortOrder_history'] === 'views'){
           $sql.= " ORDER BY forums.forumHits DESC";
+          $btnText ='조회순';
           /* 내림차순으로 글목록 번호 가져옴 */
-        }elseif($sortOrder === 'likes'){
+
+        }elseif($_COOKIE['sortOrder_history'] === 'likes'){
           $sql.= " ORDER BY forums.forumVotingCounts DESC";
+          $btnText ='추천순';
+
         }else{
-          // Default: 최신순
           $sql.= " ORDER BY forums.forumDate DESC";
+          $btnText ='최신순';
         }
        
 
@@ -106,9 +120,12 @@
     <!-- Example single danger button -->
     <div class="btn-group">
       <button type="button" class="btn btn-warning dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-        최신순
+        <!-- PHP로 쿠키 값을 읽어와서 조건에 따라 초기 버튼 텍스트를 설정하는 방법 -->
+        <!-- 초기 버튼 텍스트 -->
+        <?php echo $btnText ?>
       </button>
       <!-- href의 '?key=value' 파라미터를 사용하여서 get 요청을 보냄 -->
+      <!-- onclick 이벤트에서 버튼 텍스트를 변경-->
       <div class="dropdown-menu">
         <a class="dropdown-item" href="?sort=latest">최신순</a>
         <div class="dropdown-divider"></div>
@@ -118,6 +135,7 @@
       </div>
     </div>
 
+    <!-- 검색창 쿠키 -->
       <?php
 
       //새로운 검색어를 받아옴
@@ -343,6 +361,6 @@
                       function goToSignup(){
                         window.location.href = "http://52.79.41.79/OkeyDokey/signup.html";
                       }
-                      </script>
+                      </script>                 
 </body>
 </html>
