@@ -92,7 +92,7 @@
       if(!$forumsData){
     /*forums 데이터 처리는 첫번째 행에서만 수행*/
         ?>
-                    <div class="container-fluid mt-100 forum-container">
+            <div class="container-fluid mt-100 forum-container">
                       <!-- 목록으로, 수정, 삭제 버튼-->
                       <div class="buttons-forums-container">
                         <div class="buttons-forums">
@@ -152,11 +152,18 @@
             <!-- answer 작성폼-->
             <div class="answer-post-form" id="answerForm">
             <div class="post-form-border" >
-            <textarea class="textarea" placeholder="Add your replies here..."></textarea>  
-            <div class=""> <button type="button" class="btn btn-success">Submit Reply</button>
+
+            <form action="check_answerWriting.php" method="POST">
+              <!-- $변수는 php 언어이기 때문에 php 코드 안에서 작성-->
+              <input name="answersForumId" value="<?php echo $forumId ?>" type="hidden"/>
+              <textarea name="replyText" class="textarea" placeholder="Add your replies here..."></textarea>  
+              <button type="submit" class="btn btn-success">Submit Reply</button>
+            </form>
+            
             </div>   
             </div>   
-            </div>
+
+
             <!--여기에 forums 데이터 처리 로직 추가--> 
             <?php
             $forumsData = $rows['forumTitle'];
@@ -296,18 +303,18 @@
     <!-- <body> 태그가 끝나기 전 js 파일 로드 시 웹 페이지 로딩 속도 향상된다.-->
     <script src="../bootstrap-4.6.2-dist/js/bootstrap.js"></script>
 
-                         <!-- 버튼 클릭시 로그인 페이지로 이동-->
-                         <script>
-                          function goToSignin(){
-                            window.location.href = "http://52.79.41.79/OkeyDokey/signin.html";
-                          }
-                          </script>
-                          <!-- 버튼 클릭시 회원가입 페이지로 이동-->
-                        <script>
-                          function goToSignup(){
-                            window.location.href = "http://52.79.41.79/OkeyDokey/signup.html";
-                          }
-                          </script>
+    <!-- 버튼 클릭시 로그인 페이지로 이동-->
+    <script>
+    function goToSignin(){
+    window.location.href = "http://52.79.41.79/OkeyDokey/signin.html";
+    }
+    </script>
+    <!-- 버튼 클릭시 회원가입 페이지로 이동-->
+    <script>
+    function goToSignup(){
+    window.location.href = "http://52.79.41.79/OkeyDokey/signup.html";
+      }
+    </script>
 
     <script>
       function toggleAnswerForm(){
