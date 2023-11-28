@@ -68,12 +68,14 @@
         //쿠키에 따라서 버튼 텍스트 변경
         $btnText ='정렬 순서';
 
-        if($_COOKIE['sortOrder_history'] === 'views'){
+        //사용자의 선택($sortOrder)에 따라 정렬 순서가 즉시 결정되고 그에 따라 해당 SQL 쿼리가 구성되게 함
+
+        if($sortOrder === 'views'){
           $sql.= " ORDER BY forums.forumHits DESC";
           $btnText ='조회순';
           /* 내림차순으로 글목록 번호 가져옴 */
 
-        }elseif($_COOKIE['sortOrder_history'] === 'likes'){
+        }elseif($sortOrder === 'likes'){
           $sql.= " ORDER BY forums.forumVotingCounts DESC";
           $btnText ='추천순';
 
