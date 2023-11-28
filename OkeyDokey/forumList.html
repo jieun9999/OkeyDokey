@@ -94,19 +94,43 @@
          <!-- Logo -->
     <a class="navbar-brand" href="http://52.79.41.79/OkeyDokey/forumList.html">
         <img src="../img/okeydokey1.png" class="h-8" alt="..">
-      </a>
-        <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+    </a>
+    
+    <!-- 세션 시작 -->
+    <?php 
 
-        
+        session_name('로그인세션');
+        session_start(); //세션시작
+
+    ?>
+
+    <!-- 로그인 세션 데이터가 있다면, userName 과 logout 버튼을 보여주고,-->
+    <!-- 로그인 세션 데이터가 없다면, 기존처럼 signin 과 signup 버튼을 보여준다 -->
+
           <div class="navbar-nav ml-auto action-buttons">
-                <div class="nav-item dropdown" onclick="goToSignin()">
-                    <a href="#" class="nav-link dropdown-toggle mr-4">Login</a>
-                </div>
-                <div class="nav-item dropdown" onclick="goToSignup()">
-                    <a href="#" class="btn btn-primary dropdown-toggle sign-up-btn">Sign up</a>
-                </div>
+            <?php
+            if(isset($_SESSION['userId']) && isset($_SESSION['userName'])){
+              // 로그인 세션 데이터가 있다면
+
+              echo "id 는 ".$_SESSION['userId']."입니다.\n";
+              echo "nickname 은 ".$_SESSION['userName']."입니다.\n";
+
+              echo '<div class="nav-item dropdown" onclick="goToLogout()">';
+              echo '<a href="#" class="btn btn-primary dropdown-toggle sign-up-btn">Logout</a>';
+              echo '</div>';
+
+            }else{
+              // 로그인 세션 데이터가 없다면
+
+              echo '<div class="nav-item dropdown" onclick="goToSignin()">';
+              echo '<a href="#" class="nav-link dropdown-toggle mr-4">Login</a>';
+              echo '</div>';
+              echo '<div class="nav-item dropdown" onclick="goToSignup()">';
+              echo '<a href="#" class="btn btn-primary dropdown-toggle sign-up-btn">Sign up</a>';
+              echo '</div>';
+
+            }
+            ?> 
           </div>
         </div>
     </nav>
@@ -352,17 +376,23 @@
       window.location.href = 'forumWriting.html';
   });
 </script>
-                     <!-- 버튼 클릭시 로그인 페이지로 이동-->
-                     <script>
-                      function goToSignin(){
-                        window.location.href = "http://52.79.41.79/OkeyDokey/signin.html";
-                      }
-                      </script>
-                      <!-- 버튼 클릭시 회원가입 페이지로 이동-->
-                    <script>
-                      function goToSignup(){
-                        window.location.href = "http://52.79.41.79/OkeyDokey/signup.html";
-                      }
-                      </script>                 
+  <!-- 버튼 클릭시 로그인 페이지로 이동-->
+  <script>
+    function goToSignin(){
+      window.location.href = "http://52.79.41.79/OkeyDokey/signin.html";
+      }
+  </script>
+  <!-- 버튼 클릭시 회원가입 페이지로 이동-->
+    <script>
+    function goToSignup(){
+      window.location.href = "http://52.79.41.79/OkeyDokey/signup.html";
+      }
+    </script> 
+  <!-- 버튼 클릭시 로그아웃 페이지로 이동-->
+  <script>
+    function goToLogout(){
+      window.location.href = "http://52.79.41.79/OkeyDokey/check_logout.php";
+    }
+  </script>                
 </body>
 </html>
