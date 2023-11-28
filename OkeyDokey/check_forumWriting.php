@@ -3,6 +3,9 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
+session_name('로그인세션');
+session_start(); //세션시작
+
 // 1.PDO를 계속 사용하려면 MySQLi 관련 코드를 제거함
 include 'config_pdo.php';
 
@@ -39,9 +42,7 @@ try{
     // username 매개변수를 $username 변수에 바인딩합니다. 
     $stmt ->bindParam(':title', $title, PDO::PARAM_STR);
     $stmt ->bindParam(':description', $description, PDO::PARAM_STR);
-
-    // 추후에 세션으로 로그인 상태 유지할때, 수정계획
-    $stmt ->bindValue(':userId', 10, PDO::PARAM_INT);
+    $stmt ->bindParam(':userId', $_SESSION['userId'], PDO::PARAM_INT);
 
     // PHP 7.3 버전 이상에서는 bindParam 함수의 두 번째 인수로 변수의 참조(reference)를 전달해야 합니다. 그렇지 않으면 해당 오류가 발생합니다.
     // bindValue는 값 자체를 바인딩하므로 참조(reference)를 사용하지 않습니다.

@@ -37,7 +37,7 @@ if(!session_id()){
         if(password_verify($pw, $row['userPw']))
         // 암호화된 비번과 사용자가 입력한 비번이 동일할때,
         // 세션에 key-value 등록합니다.
-        $_SESSION['userId']= $email;
+        $_SESSION['userId']= $row['userId'];
         $_SESSION['userName'] = $row['userName'];
 
         // 로그인 성공
