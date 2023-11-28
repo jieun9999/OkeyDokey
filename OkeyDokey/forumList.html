@@ -112,8 +112,7 @@
             if(isset($_SESSION['userId']) && isset($_SESSION['userName'])){
               // 로그인 세션 데이터가 있다면
 
-              echo "id 는 ".$_SESSION['userId']."입니다.\n";
-              echo "nickname 은 ".$_SESSION['userName']."입니다.\n";
+              echo '<div class=login_name>'.$_SESSION['userName'].'님</div>';
 
               echo '<div class="nav-item dropdown" onclick="goToLogout()">';
               echo '<a href="#" class="btn btn-primary dropdown-toggle sign-up-btn">Logout</a>';

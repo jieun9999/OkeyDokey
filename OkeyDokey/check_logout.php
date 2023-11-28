@@ -14,8 +14,15 @@ setcookie('로그인세션', '', time()-3600, '/');
 
 //time()-3600은 현재 시간에서 1시간 전
 
-// 유저의 아이디, 닉네임 제거됨
-echo "id 는 ".$_SESSION['userId']."입니다.\n";
-echo "nickname 은 ".$_SESSION['userName']."입니다.\n";
+
+// 유저의 아이디, 닉네임 제거 되었는지 확인하기
+if(!isset($_SESSION['userId']) && !isset($_SESSION['userName'])){
+echo '<script>alert("로그아웃 되었습니다.");</script>';
+echo "<script>location.replace('forumList.html');</script>";
+
+}else{
+    echo '<script>alert("로그아웃에 실패하였습니다.");</script>';
+    echo '<script>history.back();</script>';
+}
 
 ?>

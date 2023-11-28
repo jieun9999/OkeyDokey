@@ -183,7 +183,7 @@ ol, ul {
 .navbar {
 	background: #fff;
 	padding-left: 10%;
-	padding-right: 15%;
+	padding-right: 10%;
 	border-bottom: 1px solid #dfe3e8;
 	border-radius: 0;
 	position: relative;
@@ -457,8 +457,7 @@ body {
 	.search-form{
 		display:flex;
 		flex-direction: row;
-		width: 15rem;
-		margin-left: -2rem;
+		justify-content: flex-end;
 	}
 
 	.form-control{
@@ -470,4 +469,15 @@ body {
 
 .btn-warning{
 	height: 2.5rem;
+}
+
+.login_name{
+	margin-right: 1rem;
+	width: 6rem;
+	display: flex; /* 부모 요소를 flex container로 설정 */
+    align-items: center; /* 수직으로 가운데 정렬 */
+    justify-content: center; /* 수평으로 가운데 정렬 */
+	font-weight: 500;
+	border: 2px solid #31bfb1;
+	border-radius: 5%;
 }
