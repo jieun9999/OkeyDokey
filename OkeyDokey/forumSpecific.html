@@ -44,7 +44,7 @@
     //3. 쿼리문으로 데이터 가져오기
     $sql = "SELECT forums.forumId AS forumIdToDelete, forumTitle, forumContents, forumDate, forumUpdateDate, forumHits, forumVotingCounts,
             users.userName, users.userImg,
-            answers.answerContents, answers.answerDate, answers.answerVotingCounts,
+            answers.answerContents, answers.answerDate, answers.answerVotingCounts, answers.answerId AS answerID,
             users2.userName AS answerUserName, users2.userImg AS answerUserImg
             FROM forums 
             LEFT JOIN answers ON forums.forumId = answers.forumId
@@ -199,6 +199,21 @@
 <?php if($rows['answerContents'] != null): ?>
   <!--answer 부분-->
     <div class="container answer-container">
+
+    <!-- 목록으로, 수정, 삭제 버튼-->
+    <div class="buttons-forums-container">
+    <div class="buttons-forums btn-answer-container">
+    <button type="button" class="btn btn-light btn-answer" onclick="goToForumList()">목록으로</button>
+    <!--수정: post 요청을 보낼때 name="editForum"가 key이고, key는 <?php echo $rows['answerID']?>가 value가 된다.-->
+    <form action="edit_answer.php" method="post">
+    <button type="submit" name="editForum"class="btn btn-dark btn-answer" value="<?php echo $rows['answerID'] ?>">수정</button>
+    </form>
+    <!-- 삭제: post 요청을 보낼때 name="deleteAnswer"가 key고 <?php echo $rows['answerID']?>가 value가 된다. -->
+    <form action="delete_answer.php" method="post">
+    <button type="submit" name="deleteAnswer" class="btn btn-danger btn-answer" value="<?php echo $rows['answerID'] ?>">삭제</button>
+    </form>
+    </div>
+    </div>
     <div class="card">
         <div class="card-body card-answers">
             <div class="row answer-total-box">
@@ -229,7 +244,7 @@
               <div class="card card-inner">
                 <div class="media">
                   <div class="media-body comment-contents">
-                    Will you do the same for me? It's time to face the music I'm no longer your muse. Heard it's beautiful, be the judge and my girls gonna take a vote. I can feel a phoenix inside of me. Heaven is jealous of our love, angels are crying from up above. Yeah, you take me to utopia.
+                    나는 답변에 대한 댓글입니다 (대댓글)
                   </div>
                 </div>
                 <div class="comment-profile">
@@ -418,7 +433,7 @@
             // 서버 응답을 받은 후에 textarea를 클리어합니다.
             $('#replyText').val("");
             alert("답변이 등록되었습니다.")
-            
+
             // 페이지 리로드
             window.location.reload();
           },
