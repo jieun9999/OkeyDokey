@@ -231,11 +231,16 @@
         <div class="card-body card-answers">
             <div class="row answer-total-box">
                 <div class=" answer-profile">
-                  <div class = "box vote-box vote-box-margin">
-                    <div class = "up">&#9650;</div>
+                  <!-- up/down 버튼에 각각 class, data-forum-id, data-vote-type 속성을 지정해줌-->
+
+                    <!-- jQuery의 data() 메서드를 통해 이 데이터를 가져오는 기법 -->
+                    <!-- HTML data attribute names: kebab-case (data-forum-id, data-vote-type) -->
+                  <div class = "box vote-box">
+                    <div class = "vote-btn-answer up" data-answer-id="<?php echo $rows['answerID'] ?>" data-vote-type="up">&#9650;</div>
                     <div class = "voteNum"><?php echo $rows['answerVotingCounts']?></div>
-                    <div class = "down">&#9660;</div>
+                    <div class = "vote-btn-answer down" data-answer-id="<?php echo $rows['answerID'] ?>" data-vote-type="down">&#9660;</div>
                   </div>
+
                   <div class="answer-date-box">
                     <img class="answer-user-img" src="<?php echo $rows['answerUserImg']?>" class="img img-rounded img-fluid"/>
                     <div class="text-secondary text-center answerDate"><?php echo $rows['answerDate']?></div></div>
@@ -379,7 +384,7 @@
       }
     </script>
 
-    <!-- 투표 버튼 클릭 이벤트-->
+    <!-- 게시글 투표 버튼 클릭 이벤트-->
     <script>
       $(document).ready(function(){
 
@@ -416,6 +421,48 @@
           }
         });
         });
+
+      });
+    </script>
+
+
+  <!-- 답변 투표 버튼 클릭 이벤트-->
+    <script>
+      $(document).ready(function(){
+
+      //클릭한 버튼의 데이터 속성에서 정보 추출
+      $(".vote-btn-answer").click(function(){
+
+      // jQuery의 data() 메서드를 통해 이 데이터를 가져오는 기법
+      // 속성 이름 앞에 data- 접두사를 사용하여 해당 속성이 데이터를 저장하는 용도임을 명시하는 것이 좋습니다.
+
+      var answerId = $(this).data("answerId");
+      var voteType = $(this).data("voteType");
+
+      // 현재 클릭한 버튼의 형제 요소에서 .voteNum을 찾아 업데이트
+      var voteNumElement = $(this).siblings(".voteNum");
+
+      //jQuery Ajax 요청
+      // Ajax를 사용하면 페이지 전체를 새로 고치지 않고도 서버와 통신하여 데이터를 가져오거나 전송할 수 있습니다.
+      $.ajax({
+        method: "POST",
+        url: "update_answer_votes_ajax.php", // 업데이트를 처리할 PHP 파일 경로
+        
+        //jQuery data method: camelCase (data('answerId'), data('voteType'))
+        data:{
+          answerId: answerId,
+          voteType: voteType
+        },
+        success: function(res){
+          // 서버에서 반환한 데이터를 가지고, 투표 수 업데이트
+          console.log("Success. Response:", res);
+          voteNumElement.text(res);
+        },
+        error:function(){
+          alert("투표 업데이트에 실패했습니다.");
+        }
+      });
+      });
 
       });
     </script>
