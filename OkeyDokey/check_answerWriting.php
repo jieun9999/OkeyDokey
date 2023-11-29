@@ -50,15 +50,17 @@ try{
    // 쿼리 실행
    $stmt -> execute();
 
-   // 성공 메시지 출력
-   echo '<script>alert("답변이 등록되었습니다.");</script>';
-   echo "<script>location.replace('forumList.html');</script>";
+   // 클라이언트에 $response를 보냄
+   // 성공
+   $response = array('status' => 'success');
+
+   // JSON 형식은 데이터를 구조적으로 전달할 수 있으며, 여러 정보를 키-값 쌍으로 표현할 수 있습니다. 
+   echo json_encode($response);
 
 }catch(PDOException $ex){
-    // 실패 메시지 출력
+    // 실패 
     die($ex->getMessage());
-    echo "<script>alert('답변 등록에 실패하였습니다.');</script>";
-    echo '<script>history.back();</script>';
+
 
 }finally{
     //PDO 연결 종료

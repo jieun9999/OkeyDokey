@@ -174,14 +174,15 @@
             </div>
 
             <!-- answer 작성폼-->
-            <div class="answer-post-form" id="answerForm">
-            <div class="post-form-border" >
+            <div class="answer-post-form" id="answerFormframe">
+            <div class="post-form-border">
 
-            <form action="check_answerWriting.php" method="POST">
+            <!-- 전통적인 form 전송이 아니라, jquery ajax를 사용할 것임, 클라이언트가 서버에서 처리된 결과를 받아오기 위해서-->
+            <form id="answerForm">
               <!-- $변수는 php 언어이기 때문에 php 코드 안에서 작성-->
               <input name="answersForumId" value="<?php echo $forumId ?>" type="hidden"/>
-              <textarea name="replyText" class="textarea" placeholder="Add your replies here..."></textarea>  
-              <button type="submit" class="btn btn-success">Submit Reply</button>
+              <textarea id="replyText" name="replyText" class="textarea" placeholder="Add your replies here..."></textarea>  
+              <button id="submitButton" type="button" class="btn btn-success">Submit Reply</button>
             </form>
             
             </div>   
@@ -342,8 +343,8 @@
 
     <script>
       function toggleAnswerForm(){
-        var answerForm = document.getElementById("answerForm");
-        answerForm.style.display = (answerForm.style.display !== "none") ? "none" : ""; 
+        var answerFormframe = document.getElementById("answerFormframe");
+        answerFormframe.style.display = (answerFormframe.style.display !== "none") ? "none" : ""; 
       }
     </script>
 
@@ -363,7 +364,7 @@
         // 현재 클릭한 버튼의 형제 요소에서 .voteNum을 찾아 업데이트
         var voteNumElement = $(this).siblings(".voteNum");
 
-        //Ajax 요청
+        //jQuery Ajax 요청
         // Ajax를 사용하면 페이지 전체를 새로 고치지 않고도 서버와 통신하여 데이터를 가져오거나 전송할 수 있습니다.
         $.ajax({
           method: "POST",
@@ -393,5 +394,39 @@
       window.location.href = "http://52.79.41.79/OkeyDokey/check_logout.php";
     }
     </script> 
+    <!-- 서버에 데이터가 저장되면, 입력창 클리어 -->
+    <script>
+      $(document).ready(function(){
+        $("#submitButton").click(function(){
+          submitAnswer();
+        })
+      });
+
+      function submitAnswer(){
+        // FormData 객체를 사용하여 form 데이터를 가져옵니다.
+        var formData = new FormData(document.getElementById("answerForm"));
+
+        // ajax jquey 요청 수행
+        $.ajax({
+          method:"POST",
+          url:"check_answerWriting.php",
+          data: formData,
+          processData: false,  // 중요: processData를 false로 설정해야 formData가 자동으로 변환되지 않습니다.
+          contentType: false,  // 중요: contentType을 false로 설정해야 파일 업로드가 올바르게 처리됩니다.
+          success:function(res){
+            if(res.status == 'success')
+            // 서버 응답을 받은 후에 textarea를 클리어합니다.
+            $('#replyText').val("");
+            alert("답변이 등록되었습니다.")
+            
+            // 페이지 리로드
+            window.location.reload();
+          },
+          error:function(){
+            alert("답변 등록에 실패했습니다.");
+          }
+        });
+      }
+    </script>
 </body>
 </html>
