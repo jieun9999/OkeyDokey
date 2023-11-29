@@ -458,3 +458,15 @@ ol, ul {
 	margin: 3px 10px;
 	font-size: 20px;
 	}
+
+	.login_name{
+		margin-right: 1rem;
+		width: 6rem;
+		display: flex; /* 부모 요소를 flex container로 설정 */
+		align-items: center; /* 수직으로 가운데 정렬 */
+		justify-content: center; /* 수평으로 가운데 정렬 */
+		font-weight: 500;
+		border: 2px solid #31bfb1;
+		border-radius: 5%;
+		font-size: 16px;
+	}
