@@ -43,7 +43,7 @@
 
     //3. 쿼리문으로 데이터 가져오기
     $sql = "SELECT forums.forumId AS forumIdToDelete, forumTitle, forumContents, forumDate, forumUpdateDate, forumHits, forumVotingCounts,
-            users.userName, users.userImg,
+            users.userName, users.userImg, users.userId AS forumUserId,
             answers.answerContents, answers.answerDate, answers.answerVotingCounts, answers.answerId AS answerID,
             users2.userId AS answerUserId, users2.userName AS answerUserName, users2.userImg AS answerUserImg
             FROM forums 
@@ -120,6 +120,8 @@
                       <!-- 목록으로, 수정, 삭제 버튼-->
                       <div class="buttons-forums-container">
                         <div class="buttons-forums">
+                           <!-- 게시글  위의 버튼들 -->
+                           <?php if(isset($_SESSION['userId']) && $_SESSION['userId'] == $rows['forumUserId']): ?>
                           <button type="button" class="btn btn-light" onclick="goToForumList()">목록으로</button>
                           <!--수정: post 요청을 보낼때 name="editForum"가 key이고, key는 <?php echo $rows['forumIdToDelete']?>가 value가 된다.-->
                           <form action="forumEdit.html" method="post">
@@ -129,6 +131,8 @@
                           <form action="delete_forum.php" method="post">
                             <button type="submit" name="deleteForum" class="btn btn-danger" value="<?php echo $rows['forumIdToDelete'] ?>">삭제</button>
                           </form>
+                            <!-- if(isset($_SESSION['userId']) && $_SESSION['forumUserId'] == $rows['answerUserId']) 조건문 종료-->
+                            <?php endif; ?>
                         </div>
                       </div>
             <div class="row">

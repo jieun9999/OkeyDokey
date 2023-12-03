@@ -361,7 +361,7 @@ ol, ul {
 }
 
 .forum-container{
-	width: 50%;
+	width: 70%;
 }
 nav{
 	margin-bottom: 100px;
@@ -431,7 +431,7 @@ nav{
     margin-left: 4rem;
 }
 .answer-container{
-	width: 80%;
+	width: 100%;
 	margin-top: 5%;
 }
 .answer-post-form{
@@ -439,7 +439,7 @@ nav{
     justify-content: center;
 }
 .post-form-border{
-	width: 50%;
+	width: 70%;
 	border: 1px solid;
 	margin-top: 50px;
 	padding: 20px;
