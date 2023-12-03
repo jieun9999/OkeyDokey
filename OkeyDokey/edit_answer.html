@@ -27,7 +27,7 @@
     //1. mysql과 연결하기
     include 'config_mysqli.php';
 
-    //2. GET 요청으로 forumId 가져오기 
+    //2. POST 요청으로 forumId 가져오기 
     //isset 함수를 사용하여 해당 매개변수가 있는지 확인하고, 있다면 $forumId 변수에 할당합니다.
     
     $forumId = isset($_POST['editAnswerForumId']) ? $_POST['editAnswerForumId'] : null;
@@ -81,7 +81,6 @@
           // 로그인 세션 데이터가 있다면
 
           echo '<div class=login_name>'.$_SESSION['userName'].'님</div>';
-
           echo '<div class="nav-item dropdown" onclick="goToLogout()">';
           echo '<a href="#" class="btn btn-primary dropdown-toggle sign-up-btn">Logout</a>';
           echo '</div>';
@@ -285,7 +284,7 @@
     <!-- 수정할 answerId 글에 대한 ui 렌더링 -->
     <?php if($rows['answerContents'] != null && $_POST['editAnswer'] == $rows['answerID']): ?>
 
-        <div class="container answer-container">
+    <div class="container answer-container">
     <div class="card">
         <div class="card-body card-answers">
             <div class="row answer-total-box">
@@ -314,13 +313,14 @@
                         <span class="float-right"><i class="text-warning fa fa-star"></i></span>
                    </p>
                    <div class="clearfix"></div>
+                   <!-- 답변 수정창 -->
+                   <form id="answerEditForm">
                     <div class="answerContents">
-                        <textarea class="answerContentsTextarea">
-                            <?php echo $rows['answerContents']?>
-                        </textarea>
+                        <input name="editAnswerId" value="<?php echo $rows['answerID'] ?>" type="hidden"/>
+                        <textarea name="answerContentsTextarea" class="answerContentsTextarea"><?php echo $rows['answerContents']?></textarea>
                     </div>
-                    <!-- edit 버튼을 누르면 php 파일로 이동-->
-                    <a  href="edit_answer.php" class="float-right btn btn-outline-primary ml-2">Edit</a>
+                    <button class="float-right btn btn-outline-primary ml-2" id="editButton" type="button">Edit</button>
+                   </form>
                 </div>
             </div>
               <div class="card card-inner">
@@ -567,6 +567,44 @@
           }
         });
       }
+    </script>
+
+    <!-- 답변창 수정 버튼 누르면, php 파일로 ajax 요청 -->
+    <script>
+        $(document).ready(function(){
+            $("#editButton").click(function(){
+            editBtn();
+        });
+        });
+
+        <!-- answerId과 textarea 값을 전송한다 -->
+        function editBtn(){
+        // FormData 객체를 사용하여 form 데이터를 가져옵니다.
+        var formDataEdit = new FormData(document.getElementById("answerEditForm"));
+
+        // ajax jquey 요청 수행
+        $.ajax({
+          method:"POST",
+          url:"edit_answer.php",
+          data: formDataEdit,
+          processData: false,  // 중요: processData를 false로 설정해야 formData가 자동으로 변환되지 않습니다.
+          contentType: false,  // 중요: contentType을 false로 설정해야 파일 업로드가 올바르게 처리됩니다.
+          success:function(res){
+            if(res.status == 'success')
+             alert("답변이 수정되었습니다.")
+             // 서버에서 반환한 데이터를 가지고, 투표 수 업데이트
+             console.log("Success. Response:", res);
+
+             //상세페이지로 이동
+             window.location.href = "http://52.79.41.79/OkeyDokey/forumSpecific.html?%EA%B8%80%EC%95%84%EC%9D%B4%EB%94%94=<?php echo $forumId ?>";
+        
+          },
+          error:function(){
+            alert("답변 수정에 실패했습니다.");
+          }
+        });
+            
+        }
     </script>
 </body>
 </html>
