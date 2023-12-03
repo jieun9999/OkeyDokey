@@ -30,7 +30,7 @@
     //2. GET 요청으로 forumId 가져오기 
     //isset 함수를 사용하여 해당 매개변수가 있는지 확인하고, 있다면 $forumId 변수에 할당합니다.
     
-    $forumId = isset($_GET['글아이디']) ? $_GET['글아이디'] : null;
+    $forumId = isset($_POST['editAnswerForumId']) ? $_POST['editAnswerForumId'] : null;
 
     
     // 조회수 업데이트 하는 쿼리 생성함
@@ -200,7 +200,8 @@
       ?>
 <!--answer 부분-->    
 <!-- answerContents가 있으면 답변 ui 보이고, 없으면 안보이게 -->
-<?php if($rows['answerContents'] != null): ?>
+<!-- + edit페이지이기 때문에 post로 온 editAnswer의 값인 answerId는 제외해야 한다-->
+<?php if($rows['answerContents'] != null && $_POST['editAnswer'] != $rows['answerID']): ?>
 
 
    <!-- 로그인 정보가 있고, 로그인 세션의 userId와 해당 답변의 userId가 동일한 경우에만 버튼 ui를 보여줌 -->
@@ -217,10 +218,9 @@
 
     <button type="button" class="btn btn-light btn-answer" onclick="goToForumList()">목록으로</button>
     <!--수정: post 요청을 보낼때 name="editAnswer"가 key이고, key는 <?php echo $rows['answerID']?>가 value가 된다.-->
-    <form action="edit_answer.html" method="post">
+    <form action="edit_answer.php" method="post">
     <button type="submit" name="editAnswer"class="btn btn-dark btn-answer" value="<?php echo $rows['answerID'] ?>">수정</button>
-    <input type="hidden"  name="editAnswerForumId" value="<?php echo $rows['forumIdToDelete'] ?>"/>
-   </form>
+    </form>
     <!-- 삭제: post 요청을 보낼때 name="deleteAnswer"가 key고 <?php echo $rows['answerID']?>가 value가 된다. -->
     <form action="delete_answer.php" method="post">
     <button type="submit" name="deleteAnswer" class="btn btn-danger btn-answer" value="<?php echo $rows['answerID'] ?>">삭제</button>
@@ -275,15 +275,72 @@
                   <div class="author">author</div>
                 </div>
                 </div>
-        </div>
+    </div>
     </div>
 
-    
 
-    <!-- if($rows['answerContents'] != null) 조건문 종료-->
+    <!-- if(isset($_SESSION['userId']) && $_SESSION['userId'] == $rows['answerUserId']): 조건문 종료-->
     <?php endif; ?>
-    <!--  while 반복문 종료-->
+
+    <!-- 수정할 answerId 글에 대한 ui 렌더링 -->
+    <?php if($rows['answerContents'] != null && $_POST['editAnswer'] == $rows['answerID']): ?>
+
+        <div class="container answer-container">
+    <div class="card">
+        <div class="card-body card-answers">
+            <div class="row answer-total-box">
+                <div class=" answer-profile">
+                  <!-- up/down 버튼에 각각 class, data-forum-id, data-vote-type 속성을 지정해줌-->
+
+                    <!-- jQuery의 data() 메서드를 통해 이 데이터를 가져오는 기법 -->
+                    <!-- HTML data attribute names: kebab-case (data-forum-id, data-vote-type) -->
+                  <div class = "box vote-box">
+                    <div class = "vote-btn-answer up" data-answer-id="<?php echo $rows['answerID'] ?>" data-vote-type="up">&#9650;</div>
+                    <div class = "voteNum"><?php echo $rows['answerVotingCounts']?></div>
+                    <div class = "vote-btn-answer down" data-answer-id="<?php echo $rows['answerID'] ?>" data-vote-type="down">&#9660;</div>
+                  </div>
+
+                  <div class="answer-date-box">
+                    <img class="answer-user-img" src="<?php echo $rows['answerUserImg']?>" class="img img-rounded img-fluid"/>
+                    <div class="text-secondary text-center answerDate"><?php echo $rows['answerDate']?></div></div>
+                  </div>
+                </div>
+                <div class="answer-content-box">
+                    <p>
+                        <a class="float-left" href="https://maniruzzaman-akash.blogspot.com/p/contact.html"><strong><?php echo $rows['answerUserName']?></strong></a>
+                        <span class="float-right"><i class="text-warning fa fa-star"></i></span>
+                          <span class="float-right"><i class="text-warning fa fa-star"></i></span>
+                        <span class="float-right"><i class="text-warning fa fa-star"></i></span>
+                        <span class="float-right"><i class="text-warning fa fa-star"></i></span>
+                   </p>
+                   <div class="clearfix"></div>
+                    <div class="answerContents">
+                        <textarea class="answerContentsTextarea">
+                            <?php echo $rows['answerContents']?>
+                        </textarea>
+                    </div>
+                    <!-- edit 버튼을 누르면 php 파일로 이동-->
+                    <a  href="edit_answer.php" class="float-right btn btn-outline-primary ml-2">Edit</a>
+                </div>
+            </div>
+              <div class="card card-inner">
+                <div class="media">
+                  <div class="media-body comment-contents">
+                    나는 답변에 대한 댓글입니다 (대댓글)
+                  </div>
+                </div>
+                <div class="comment-profile">
+                  <div class="comment-date">2022</div>
+                  <div class="author">author</div>
+                </div>
+                </div>
+    </div>
+    <!-- if($rows['answerContents'] != null && $_POST['editAnswer'] == $rows['answerID']): 조건문 종료-->
+    <?php endif; ?>
+
+    <!--  전체 while 반복문 종료-->
     <?php } ?>
+
   </div>
 
    <!-- Footer-->

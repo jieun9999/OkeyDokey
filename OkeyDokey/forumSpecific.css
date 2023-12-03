@@ -489,7 +489,8 @@ nav{
 	width: 25px;
 }
 .answer-profile{
-	width: 180px;
+	width: 200px;
+	height: 150px;
 	display: flex;
 	flex-direction: row;
 }
@@ -585,3 +586,10 @@ footer{
 .btn-answer-container{
 	width: 11rem;
 }
+
+
+.answerContentsTextarea{
+	width: 50vw;
+	height: 25vh;
+}
+
