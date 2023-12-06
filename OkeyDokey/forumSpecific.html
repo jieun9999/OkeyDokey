@@ -282,16 +282,21 @@
                           <span class="float-right"><i class="text-warning fa fa-star"></i></span>
                           <span class="float-right"><i class="text-warning fa fa-star"></i></span>
                     </p>
+
                     <div class="clearfix"></div>
                       <div class="answerContents"><?php echo $rows['answerContents']?></div>
-                          <a class="float-right btn btn-outline-primary ml-2"> <i class="fa fa-reply"></i> Reply</a>
+                      <!-- 주의 :  여러 댓글 입력 컨테이너에 동일한 ID(commentFormframe)를 사용하면 버그가 생긴다-->
+                      <!-- toggleCommentForm() 함수가 두번째 렌더링된 card에서 실행될때, 첫번째 card의 comment input 부분이 생겼다 사라졌다함-->
+                      <!-- data-answer-id 사용해서 각각의 card를 구분할 수 있음-->
+                      <a class="float-right btn btn-outline-primary ml-2" onclick="toggleCommentForm(this)" data-answer-id="<?php echo $rows['answerID'] ?>"> <i class="fa fa-reply"></i> Reply</a>
                   </div>
               </div>
               <!-- comments 부분 -->
 
               <!-- comment 입력창-->
               <div class="comment-border">
-              <div class="comment-input-container" id="commentFormframe">
+              <!-- Use Unique IDs for Each Comment Container:-->
+              <div class="comment-input-container" id="commentFormframe_<?php echo $rows['answerID']?>">
               <textarea class="comment-input" placeholder="코멘트를 작성해보세요."></textarea>
               <button type="button" class="btn btn-dark">submit</button>
               </div>
@@ -321,7 +326,7 @@
                   </div>
                 </div>
               <?php endwhile; ?>
-            </div>
+              </div>
             </div>
         </div>
       </div>
@@ -436,8 +441,10 @@
         answerFormframe.style.display = (answerFormframe.style.display !== "none") ? "none" : ""; 
       }
 
-      function toggleCommentForm(){
-        var commentFormframe = document.getElementById("commentFormframe");
+      function toggleCommentForm(button){
+        var answerID = button.dataset.answerId;
+        //  함수 () 안에 직접 php 코드를 넣지 못하니까. id값으로 php 코드의 answerID를 가져와서 사용함
+        var commentFormframe = document.getElementById("commentFormframe_"+answerID);
         commentFormframe.style.display = (commentFormframe.style.display !== "none") ? "none" : ""; 
       }
     </script>

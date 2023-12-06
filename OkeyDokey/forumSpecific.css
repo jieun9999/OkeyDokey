@@ -608,7 +608,6 @@ footer{
 .comment-input-container{
 	display: flex;
 	height: 20vh;
-	border:1px solid;
 	flex-direction: column;
 	justify-content: center;
     align-items: center;
