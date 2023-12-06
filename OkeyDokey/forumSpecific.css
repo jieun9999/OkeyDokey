@@ -526,8 +526,9 @@ nav{
 	min-width: 500px;
 	min-height: 80px;
 }
-.comment-contents{
+.media-body comment-contents{
 	font-size: 0.9rem;
+	width:60vw;
 }
 .card-text{
 	font-size: 1rem;
@@ -593,3 +594,36 @@ footer{
 	height: 25vh;
 }
 
+.comment-input{
+	width: 90%;
+	height: 5rem;
+	margin-top: 30px;
+}
+
+.comment-border{
+	margin-top: 30px;
+	border-top: 1px solid #bbbbbb;
+}
+
+.comment-input-container{
+	display: flex;
+	height: 20vh;
+	border:1px solid;
+	flex-direction: column;
+	justify-content: center;
+    align-items: center;
+}
+
+.comments-list-container{
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-end;
+}
+
+.btn-dark{
+ width: 4rem;
+ height: 2rem;
+ font-size: 0.8rem;
+ margin: 1.5rem;
+ margin-left: auto;
+}

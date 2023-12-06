@@ -289,6 +289,12 @@
               </div>
               <!-- comments 부분 -->
 
+              <!-- comment 입력창-->
+              <div class="comment-border">
+              <div class="comment-input-container" id="commentFormframe">
+              <textarea class="comment-input" placeholder="코멘트를 작성해보세요."></textarea>
+              <button type="button" class="btn btn-dark">submit</button>
+              </div>
               <!-- 3-3. 쿼리문으로 코멘트 데이터 가져오기 -->
               <!-- 주의 : 문자열 안에서 배열 값을 사용하려면 중괄호 {}로 감싸야 합니다-->
               <?php
@@ -300,6 +306,7 @@
               ?>
     
               <!-- comment 데이터들을 렌더링하기 -->
+              <div class="comments-list-container">
               <?php while($comment = mysqli_fetch_assoc($commentResult)): ?>
                 <div class="card card-inner">
                   <div class="media">
@@ -314,6 +321,8 @@
                   </div>
                 </div>
               <?php endwhile; ?>
+            </div>
+            </div>
         </div>
       </div>
     <!--if (!in_array($answerKey, $renderedAnswers)) { 조건문 종료 -->
@@ -420,10 +429,16 @@
       }
     </script>
 
+    <!-- 토글 -->
     <script>
       function toggleAnswerForm(){
         var answerFormframe = document.getElementById("answerFormframe");
         answerFormframe.style.display = (answerFormframe.style.display !== "none") ? "none" : ""; 
+      }
+
+      function toggleCommentForm(){
+        var commentFormframe = document.getElementById("commentFormframe");
+        commentFormframe.style.display = (commentFormframe.style.display !== "none") ? "none" : ""; 
       }
     </script>
 
@@ -535,13 +550,17 @@
           processData: false,  // 중요: processData를 false로 설정해야 formData가 자동으로 변환되지 않습니다.
           contentType: false,  // 중요: contentType을 false로 설정해야 파일 업로드가 올바르게 처리됩니다.
           success:function(res){
-            if(res.status == 'success')
+            if(res.status == 'success'){
             // 서버 응답을 받은 후에 textarea를 클리어합니다.
             $('#replyText').val("");
             alert("답변이 등록되었습니다.")
-
             // 페이지 리로드
             window.location.reload();
+            }
+             else {
+                // 다른 상황에 따른 처리
+                alert("비어있는 항목이 있습니다.")
+            }
           },
           error:function(){
             alert("답변 등록에 실패했습니다.");

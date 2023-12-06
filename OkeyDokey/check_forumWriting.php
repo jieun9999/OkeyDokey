@@ -17,6 +17,13 @@ $description = $_POST['description'];
 // 원리: $username이라는 사용자 입력값을 받아서 안전하게 처리한다음, 매개변수인 :username에 넣는다는 소리 
 //      (매개변수 바인딩)
 
+// 비어있는 항목이 없는지 검사
+if (empty($title) || empty($description)) {
+    echo '<script>alert("비어있는 항목이 있습니다.");</script>';
+    echo '<script>history.back();</script>';
+    exit; // 등록되기 전에 여기서 탈출
+}
+
 try{
     // PDO 객체를 생성
     // 데이터베이스에 연결하는 데 사용됩니다.

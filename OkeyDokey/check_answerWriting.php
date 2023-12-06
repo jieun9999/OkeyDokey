@@ -15,6 +15,12 @@ include 'config_pdo.php';
 $answerContents = $_POST['replyText'];
 $forumId = $_POST['answersForumId'];
 
+// 비어있는 항목이 없는지 검사
+if (empty($answerContents)) {
+    echo '<script>alert("비어있는 항목이 있습니다.");</script>';
+    echo '<script>history.back();</script>';
+    exit; // 등록되기 전에 여기서 탈출
+}
 
 // 3.mysql pdo로 mysql injection을 방어
 // 원리: $username이라는 사용자 입력값을 받아서 안전하게 처리한다음, 매개변수인 :username에 넣는다는 소리 
