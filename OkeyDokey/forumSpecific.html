@@ -17,6 +17,7 @@
     <link rel="stylesheet" href="forumSpecific.css">
 </head>
 <body>
+  
     <?php
     // PHP 코드를 여기에 작성합니다.
     //이렇게 하면 브라우저에 에러 메시지가 표시됩니다. 
@@ -33,26 +34,30 @@
     $forumId = isset($_GET['글아이디']) ? $_GET['글아이디'] : null;
 
     
-    // 조회수 업데이트 하는 쿼리 생성함
+    //3-1. 조회수 업데이트 하는 쿼리 생성함
     // forums 테이블의 forumHits 칼럼이 +1 씩 증가함
     $updateForumHitsSql = "UPDATE forums SET forumHits = forumHits + 1
                           WHERE forumId =  $forumId";
 
-    $connect->query($updateForumHitsSql);                      
+    $connect->query($updateForumHitsSql);    
 
 
-    //3. 쿼리문으로 데이터 가져오기
+    //3-2. 쿼리문으로 메인 데이터 가져오기
     $sql = "SELECT forums.forumId AS forumIdToDelete, forumTitle, forumContents, forumDate, forumUpdateDate, forumHits, forumVotingCounts,
             users.userName, users.userImg, users.userId AS forumUserId,
             answers.answerContents, answers.answerDate, answers.answerVotingCounts, answers.answerId AS answerID,
-            users2.userId AS answerUserId, users2.userName AS answerUserName, users2.userImg AS answerUserImg
+            users2.userId AS answerUserId, users2.userName AS answerUserName, users2.userImg AS answerUserImg,
+            comments.commentContents, comments.commentDate, comments.answerId AS commentAnswerId
             FROM forums 
             LEFT JOIN answers ON forums.forumId = answers.forumId
             LEFT JOIN users ON forums.userId = users.userId
             LEFT JOIN users AS users2 ON answers.userId = users2.userId /* users테이블 겹치니까 별칭사용함 */
+            LEFT JOIN comments ON forums.forumId = comments.forumId
             WHERE forums.forumId = $forumId";
 
     $result=$connect->query($sql);
+    
+
     
     ?>
 
@@ -110,6 +115,11 @@
     <!-- Main-->   
     <?php
     $forumsData = null;
+
+    // 이미 렌더링된 answers를 기록하는 배열
+    // while 문 안에 작성하면 지속적으로 초기화 될 수 있으니 while문 시작 전에 써준다
+    $renderedAnswers = [];
+
     /* 처음에는 $forumsData에 null 값을 넣어주고 */
 
     while ($rows=mysqli_fetch_assoc($result)){
@@ -200,91 +210,116 @@
       ?>
 <!--answer 부분-->    
 <!-- answerContents가 있으면 답변 ui 보이고, 없으면 안보이게 -->
-<?php if($rows['answerContents'] != null): ?>
 
+<!-- answers가 comments 갯수만큼 중복 렌더링 되는 문제가 생김 => 이미 렌더링된 answers를 기록하고 중복 방지-->
+<?php 
+
+ // 중복을 확인하기 위한 키 생성
+ $answerKey = $rows['answerID'];
+
+ // $answerKey가 배열 $renderedAnswers에 이미 존재하는지 확인합니다.
+ if(!in_array($answerKey, $renderedAnswers)){
+
+  // 중복이 아니라면 해당 answer를 렌더링하고 기록에 추가
+  $renderedAnswers[] = $answerKey; //이 부분은 배열 $renderedAnswers에  $answerKey값을 추가하는 문법입니다.
+
+?>
+
+<?php if($rows['answerContents'] != null): ?>
 
    <!-- 로그인 정보가 있고, 로그인 세션의 userId와 해당 답변의 userId가 동일한 경우에만 버튼 ui를 보여줌 -->
    <!-- 그렇지 않은 경우에는 버튼 ui를 안보여줌-->
    <!-- <참고> phps는 조건문과 반복문 등을 사용할 때 콜론(:)을 사용하여 코드 블록을 시작-->
 
-    <div class="container answer-container">
-    <!-- 목록으로, 수정, 삭제 버튼-->
-    <div class="buttons-forums-container">
-    <div class="buttons-forums btn-answer-container">
+      <div class="container answer-container">
+      <!-- 목록으로, 수정, 삭제 버튼-->
+        <div class="buttons-forums-container">
+         <div class="buttons-forums btn-answer-container">
 
-      <?php if(isset($_SESSION['userId']) && $_SESSION['userId'] == $rows['answerUserId']): ?>
-      <!-- 답변 위의 버튼들 -->
+        <?php if(isset($_SESSION['userId']) && $_SESSION['userId'] == $rows['answerUserId']): ?>
+        <!-- 답변 위의 버튼들 -->
 
-    <button type="button" class="btn btn-light btn-answer" onclick="goToForumList()">목록으로</button>
-    <!--수정: post 요청을 보낼때 name="editAnswer"가 key이고, key는 <?php echo $rows['answerID']?>가 value가 된다.-->
-    <form action="edit_answer.html" method="post">
-    <button type="submit" name="editAnswer"class="btn btn-dark btn-answer" value="<?php echo $rows['answerID'] ?>">수정</button>
-    <input type="hidden"  name="editAnswerForumId" value="<?php echo $rows['forumIdToDelete'] ?>"/>
-   </form>
-    <!-- 삭제: post 요청을 보낼때 name="deleteAnswer"가 key고 <?php echo $rows['answerID']?>가 value가 된다. -->
-    <form action="delete_answer.php" method="post">
-    <button type="submit" name="deleteAnswer" class="btn btn-danger btn-answer" value="<?php echo $rows['answerID'] ?>">삭제</button>
-    </form>
+      <button type="button" class="btn btn-light btn-answer" onclick="goToForumList()">목록으로</button>
+      <!--수정: post 요청을 보낼때 name="editAnswer"가 key이고, key는 <?php echo $rows['answerID']?>가 value가 된다.-->
+      <form action="edit_answer.html" method="post">
+      <button type="submit" name="editAnswer"class="btn btn-dark btn-answer" value="<?php echo $rows['answerID'] ?>">수정</button>
+      <input type="hidden"  name="editAnswerForumId" value="<?php echo $rows['forumIdToDelete'] ?>"/>
+      </form>
+      <!-- 삭제: post 요청을 보낼때 name="deleteAnswer"가 key고 <?php echo $rows['answerID']?>가 value가 된다. -->
+      <form action="delete_answer.php" method="post">
+      <button type="submit" name="deleteAnswer" class="btn btn-danger btn-answer" value="<?php echo $rows['answerID'] ?>">삭제</button>
+      </form>
 
-     <!-- if(isset($_SESSION['userId']) && $_SESSION['userId'] == $rows['answerUserId']) 조건문 종료-->
-     <?php endif; ?>
-  </div>
-        
-    </div>
-
-    <div class="card">
-        <div class="card-body card-answers">
-            <div class="row answer-total-box">
-                <div class=" answer-profile">
-                  <!-- up/down 버튼에 각각 class, data-forum-id, data-vote-type 속성을 지정해줌-->
-
-                    <!-- jQuery의 data() 메서드를 통해 이 데이터를 가져오는 기법 -->
-                    <!-- HTML data attribute names: kebab-case (data-forum-id, data-vote-type) -->
-                  <div class = "box vote-box">
-                    <div class = "vote-btn-answer up" data-answer-id="<?php echo $rows['answerID'] ?>" data-vote-type="up">&#9650;</div>
-                    <div class = "voteNum"><?php echo $rows['answerVotingCounts']?></div>
-                    <div class = "vote-btn-answer down" data-answer-id="<?php echo $rows['answerID'] ?>" data-vote-type="down">&#9660;</div>
-                  </div>
-
-                  <div class="answer-date-box">
-                    <img class="answer-user-img" src="<?php echo $rows['answerUserImg']?>" class="img img-rounded img-fluid"/>
-                    <div class="text-secondary text-center answerDate"><?php echo $rows['answerDate']?></div></div>
-                  </div>
-                </div>
-                <div class="answer-content-box">
-                    <p>
-                        <a class="float-left" href="https://maniruzzaman-akash.blogspot.com/p/contact.html"><strong><?php echo $rows['answerUserName']?></strong></a>
-                        <span class="float-right"><i class="text-warning fa fa-star"></i></span>
-                          <span class="float-right"><i class="text-warning fa fa-star"></i></span>
-                        <span class="float-right"><i class="text-warning fa fa-star"></i></span>
-                        <span class="float-right"><i class="text-warning fa fa-star"></i></span>
-                   </p>
-                   <div class="clearfix"></div>
-                    <div class="answerContents"><?php echo $rows['answerContents']?></div>
-                        <a class="float-right btn btn-outline-primary ml-2"> <i class="fa fa-reply"></i> Reply</a>
-                </div>
-            </div>
-              <div class="card card-inner">
-                <div class="media">
-                  <div class="media-body comment-contents">
-                    나는 답변에 대한 댓글입니다 (대댓글)
-                  </div>
-                </div>
-                <div class="comment-profile">
-                  <div class="comment-date">2022</div>
-                  <div class="author">author</div>
-                </div>
-                </div>
+      <!-- if(isset($_SESSION['userId']) && $_SESSION['userId'] == $rows['answerUserId']) 조건문 종료-->
+      <?php endif; ?>
+         </div> 
         </div>
-    </div>
 
+        <div class="card">
+          <div class="card-body card-answers">
+              <div class="row answer-total-box">
+                  <div class=" answer-profile">
+                    <!-- up/down 버튼에 각각 class, data-forum-id, data-vote-type 속성을 지정해줌-->
+
+                      <!-- jQuery의 data() 메서드를 통해 이 데이터를 가져오는 기법 -->
+                      <!-- HTML data attribute names: kebab-case (data-forum-id, data-vote-type) -->
+                    <div class = "box vote-box">
+                      <div class = "vote-btn-answer up" data-answer-id="<?php echo $rows['answerID'] ?>" data-vote-type="up">&#9650;</div>
+                      <div class = "voteNum"><?php echo $rows['answerVotingCounts']?></div>
+                      <div class = "vote-btn-answer down" data-answer-id="<?php echo $rows['answerID'] ?>" data-vote-type="down">&#9660;</div>
+                    </div>
+
+                    <div class="answer-date-box">
+                      <img class="answer-user-img" src="<?php echo $rows['answerUserImg']?>" class="img img-rounded img-fluid"/>
+                      <div class="text-secondary text-center answerDate"><?php echo $rows['answerDate']?></div></div>
+                    </div>
+                  </div>
+                  <div class="answer-content-box">
+                      <p>
+                          <a class="float-left" href="https://maniruzzaman-akash.blogspot.com/p/contact.html"><strong><?php echo $rows['answerUserName']?></strong></a>
+                          <span class="float-right"><i class="text-warning fa fa-star"></i></span>
+                            <span class="float-right"><i class="text-warning fa fa-star"></i></span>
+                          <span class="float-right"><i class="text-warning fa fa-star"></i></span>
+                          <span class="float-right"><i class="text-warning fa fa-star"></i></span>
+                    </p>
+                    <div class="clearfix"></div>
+                      <div class="answerContents"><?php echo $rows['answerContents']?></div>
+                          <a class="float-right btn btn-outline-primary ml-2"> <i class="fa fa-reply"></i> Reply</a>
+                  </div>
+              </div>
+              <!-- comments 부분 -->
+
+              <!-- 3-3. 쿼리문으로 코멘트 데이터 가져오기 -->
+              <!-- 주의 : 문자열 안에서 배열 값을 사용하려면 중괄호 {}로 감싸야 합니다-->
+              <?php
+              $commentQuery = "SELECT * FROM comments WHERE answerId = {$rows['answerID']}";
+              $commentResult = $connect ->query($commentQuery);
+              ?>
     
-
-    <!-- if($rows['answerContents'] != null) 조건문 종료-->
+              <!-- comment 데이터들을 렌더링하기 -->
+              <?php while($comment = mysqli_fetch_assoc($commentResult)): ?>
+                <div class="card card-inner">
+                  <div class="media">
+                    <div class="media-body comment-contents">
+                      <?php echo $comment['commentContents']?>
+                    </div>
+                  </div>
+                  <div class="comment-profile">
+                    <div class="comment-date"><?php echo $comment['commentDate']?></div>
+                    <!-- 나중에 수정하면 update된 date가 렌더링 되도록 해야함-->
+                    <div class="author">author</div>
+                  </div>
+                </div>
+              <?php endwhile; ?>
+        </div>
+      </div>
+    <!--if (!in_array($answerKey, $renderedAnswers)) { 조건문 종료 -->
     <?php endif; ?>
-    <!--  while 반복문 종료-->
-    <?php } ?>
-  </div>
+    <?php
+       }
+      }
+    ?>
+
 
    <!-- Footer-->
   <footer class="footer_area section_padding_130_0">
