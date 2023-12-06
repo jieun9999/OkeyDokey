@@ -296,10 +296,17 @@
               <!-- comment 입력창-->
               <div class="comment-border">
               <!-- Use Unique IDs for Each Comment Container:-->
+
+              <!-- 전통적인 form 전송이 아니라, jquery ajax를 사용할 것임, 클라이언트가 서버에서 처리된 결과를 받아오기 위해서-->
+              <!-- commentForm이 여러개 라는 문제 발생 -->
+              <form id="commentForm">
               <div class="comment-input-container" id="commentFormframe_<?php echo $rows['answerID']?>">
-              <textarea class="comment-input" placeholder="코멘트를 작성해보세요."></textarea>
-              <button type="button" class="btn btn-dark">submit</button>
+              <input name="commentsForumId" value="<?php echo $forumId ?>" type="hidden"/>
+              <input name="commentsAnswerId" value="<?php echo $answerID ?>" type="hidden"/>
+              <textarea id="commentText" name="commentText" class="comment-input" placeholder="코멘트를 작성해보세요."></textarea>
+              <button type="button" class="btn btn-dark btn-dark-submit" id="submitButton_comment">submit</button>
               </div>
+              </form>
               <!-- 3-3. 쿼리문으로 코멘트 데이터 가져오기 -->
               <!-- 주의 : 문자열 안에서 배열 값을 사용하려면 중괄호 {}로 감싸야 합니다-->
               <?php
@@ -409,33 +416,36 @@
           </div>
   </footer>
 
-   <!-- 버튼 클릭시 목록으로 이동-->
-   <script>
-    function goToForumList(){
-      window.location.href = "http://52.79.41.79/OkeyDokey/forumList.html";
-    }
-    </script>
     <!--script-->
     <!--jQuery는 bootstrap의 js가 사용하므로 bootstrap js 파일 로드 전 로드한다.-->
     <script src="../jQuery/jquery-3.7.1.js"></script>
     <!-- <body> 태그가 끝나기 전 js 파일 로드 시 웹 페이지 로딩 속도 향상된다.-->
     <script src="../bootstrap-4.6.2-dist/js/bootstrap.js"></script>
 
-    <!-- 버튼 클릭시 로그인 페이지로 이동-->
-    <script>
+
+   
+   <script>
+
+    // 버튼 클릭시 목록으로 이동
+    function goToForumList(){
+      window.location.href = "http://52.79.41.79/OkeyDokey/forumList.html";
+    }
+    
+    
+    // 버튼 클릭시 로그인 페이지로 이동
+
     function goToSignin(){
     window.location.href = "http://52.79.41.79/OkeyDokey/signin.html";
     }
-    </script>
-    <!-- 버튼 클릭시 회원가입 페이지로 이동-->
-    <script>
+
+    // 버튼 클릭시 회원가입 페이지로 이동
+ 
     function goToSignup(){
     window.location.href = "http://52.79.41.79/OkeyDokey/signup.html";
       }
-    </script>
 
-    <!-- 토글 -->
-    <script>
+
+      // 토글
       function toggleAnswerForm(){
         var answerFormframe = document.getElementById("answerFormframe");
         answerFormframe.style.display = (answerFormframe.style.display !== "none") ? "none" : ""; 
@@ -447,10 +457,10 @@
         var commentFormframe = document.getElementById("commentFormframe_"+answerID);
         commentFormframe.style.display = (commentFormframe.style.display !== "none") ? "none" : ""; 
       }
-    </script>
 
-    <!-- 게시글 투표 버튼 클릭 이벤트-->
-    <script>
+
+  // 게시글 투표 버튼 클릭 이벤트
+
       $(document).ready(function(){
 
         //클릭한 버튼의 데이터 속성에서 정보 추출
@@ -488,11 +498,11 @@
         });
 
       });
-    </script>
 
 
-  <!-- 답변 투표 버튼 클릭 이벤트-->
-    <script>
+
+  // 답변 투표 버튼 클릭 이벤트
+
       $(document).ready(function(){
 
       //클릭한 버튼의 데이터 속성에서 정보 추출
@@ -530,14 +540,15 @@
       });
 
       });
-    </script>
-      <!-- 버튼 클릭시 로그아웃 페이지로 이동-->
-    <script>
+
+  // 버튼 클릭시 로그아웃 페이지로 이동
+
     function goToLogout(){
       window.location.href = "http://52.79.41.79/OkeyDokey/check_logout.php";
     }
-    </script> 
-    <!-- 서버에 데이터가 저장되면, 입력창 클리어 -->
+   </script>
+    // 서버에 데이터가 저장되면, 답변 입력창 클리어
+
     <script>
       $(document).ready(function(){
         $("#submitButton").click(function(){
@@ -557,23 +568,76 @@
           processData: false,  // 중요: processData를 false로 설정해야 formData가 자동으로 변환되지 않습니다.
           contentType: false,  // 중요: contentType을 false로 설정해야 파일 업로드가 올바르게 처리됩니다.
           success:function(res){
-            if(res.status == 'success'){
+
+            //json 형식의 데이터를 파싱함
+            var jsonRes = JSON.parse(res);
+            //왜 파싱?
+            //1. JSON은 서버와 클라이언트 간에 데이터를 교환하는 표준 형식 
+            //2. JSON.parse()를 사용하는 것은 이 형식의 데이터를 JavaScript에서 사용하기 위한 자연스러운 방법
+         
+            if(jsonRes.status == 'success'){
             // 서버 응답을 받은 후에 textarea를 클리어합니다.
+            console.log(jsonRes);
+
             $('#replyText').val("");
             alert("답변이 등록되었습니다.")
+
             // 페이지 리로드
             window.location.reload();
+
+            }else{
+              //에러 메세지 보여주기
+              alert(jsonRes.message);
             }
-             else {
-                // 다른 상황에 따른 처리
-                alert("비어있는 항목이 있습니다.")
-            }
+            
           },
           error:function(){
             alert("답변 등록에 실패했습니다.");
           }
         });
       }
+
+
+    </script>
+
+
+    <script>
+  // 서버에 데이터가 저장되면, 코멘트 입력창 클리어
+
+      $(document).ready(function(){
+        $("#submitButton_comment").click(function(){
+          submitComment();
+        })
+      });
+
+    function submitComment(){
+
+      var formDataComment = new FormData(document.getElementById("commentForm"));
+
+
+      // ajax jquery 요청 수행
+      $.ajax({
+        method:"POST",
+        url:"check_commentWriting.php",
+        data: formDataComment,
+        processData: false,  // 중요: processData를 false로 설정해야 formData가 자동으로 변환되지 않습니다.
+        contentType: false,  // 중요: contentType을 false로 설정해야 파일 업로드가 올바르게 처리됩니다.
+
+        success:function(res){
+            // 서버 응답을 받은 후에 textarea를 클리어합니다.
+            console.log(formDataComment);
+            $('#commentText').val("");
+            alert("코멘트가 등록되었습니다.")
+
+            // 페이지 리로드
+            window.location.reload();
+          },
+        error:function(){
+            alert("코멘트 등록에 실패했습니다.");
+          }
+      });
+    }  
+
     </script>
 </body>
 </html>

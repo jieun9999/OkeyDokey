@@ -11,21 +11,25 @@ session_start(); //세션시작
 // 1.PDO를 계속 사용하려면 MySQLi 관련 코드를 제거함
 include 'config_pdo.php';
 
+// 받아와야 하는 값들 3가지
+// commentContents, answerId, forumId
+
 //2. 입력값 확인
-$answerContents = isset($_POST['replyText']) ? $_POST['replyText']: null;
-$forumId = isset($_POST['answersForumId'])? $_POST['answersForumId'] : null;
+$commentContents = $_POST['commentText'];
+$answerId = $_POST['commentsAnswerId'];
+$forumId = $_POST['commentsForumId'];
 
 //서버가 오류 메시지(예: "입력창이 비어있습니다.")로 응답하더라도 JavaScript 코드는 여전히 텍스트 영역을 지우고 성공 알림을 표시합니다.
 //따라서 res에 대한 status가 필요함
 
-// 입력값이 비어있는지 확인
-if (empty($answerContents)) {
-
+// 비어있는 항목이 없는지 검사
+if (empty($commentContents)) {
     //실패 상태와 메세지 출력
+
     $response = array('status' => 'fail', 'message' => '비어있는 항목이 있습니다.');
     echo json_encode($response);
 
-    exit; // db에 등록되기 전에 여기서 탈출
+    exit; // 등록되기 전에 여기서 탈출
 }
 
 // 3.mysql pdo로 mysql injection을 방어
@@ -45,8 +49,7 @@ try{
     //4. MySQL에 데이터를 넣고 알림창에 메시지 출력
 
     //쿼리 작성
-    // ':answerContents', ':userId', ':forumId' 는 바인딩할 매개변수립니다
-    $sql= "INSERT INTO answers (answerContents, userId, forumId) VALUES (:answerContents, :userId, :forumId)";
+    $sql= "INSERT INTO comments (commentContents, userId, forumId, answerId) VALUES (:commentContents, :userId, :forumId, :answerId)";
 
     // PDO Statement 객체 생성
     // PDOStatement 객체를 생성하고, 위에서 작성한 SQL 쿼리를 준비합니다.
@@ -55,9 +58,10 @@ try{
     // 매개변수 바인딩
     // PDO::PARAM_STR은 문자열 데이터 타입임을 나타냅니다.
     // :userId 매개변수에  $_SESSION['userId']를 바인딩합니다. 
-   $stmt ->bindParam(':answerContents', $answerContents, PDO::PARAM_STR);
+   $stmt ->bindParam(':commentContents', $commentContents, PDO::PARAM_STR);
    $stmt ->bindParam(':userId', $_SESSION['userId'], PDO::PARAM_INT);
    $stmt ->bindParam(':forumId', $forumId, PDO::PARAM_INT);
+   $stmt ->bindParam(':answerId', $answerId, PDO::PARAM_INT);
 
    // 쿼리 실행
    $stmt -> execute();
@@ -65,7 +69,6 @@ try{
    // JSON 형식은 데이터를 구조적으로 전달할 수 있으며, 여러 정보를 키-값 쌍으로 표현할 수 있습니다. 
    $response = array('status'=> 'success');
    echo json_encode($response);
-
 
 }catch(PDOException $ex){
     // 실패 
