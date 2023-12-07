@@ -15,9 +15,9 @@ include 'config_pdo.php';
 // commentContents, answerId, forumId
 
 //2. 입력값 확인
-$commentContents = $_POST['commentText'];
-$answerId = $_POST['commentsAnswerId'];
-$forumId = $_POST['commentsForumId'];
+$commentContents = isset($_POST['commentText']) ? $_POST['commentText']: null;
+$answerId = isset($_POST['commentsAnswerId'])? $_POST['commentsAnswerId']: null ;
+$forumId = isset($_POST['commentsForumId'])? $_POST['commentsForumId']: null;
 
 //서버가 오류 메시지(예: "입력창이 비어있습니다.")로 응답하더라도 JavaScript 코드는 여전히 텍스트 영역을 지우고 성공 알림을 표시합니다.
 //따라서 res에 대한 status가 필요함

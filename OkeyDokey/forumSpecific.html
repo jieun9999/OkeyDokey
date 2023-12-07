@@ -299,12 +299,12 @@
 
               <!-- 전통적인 form 전송이 아니라, jquery ajax를 사용할 것임, 클라이언트가 서버에서 처리된 결과를 받아오기 위해서-->
               <!-- commentForm이 여러개 라는 문제 발생 -->
-              <form id="commentForm">
+              <form id="commentForm_<?php echo $rows['answerID']?>" data-answer-id="<?php echo $rows['answerID'] ?>" >
               <div class="comment-input-container" id="commentFormframe_<?php echo $rows['answerID']?>">
               <input name="commentsForumId" value="<?php echo $forumId ?>" type="hidden"/>
-              <input name="commentsAnswerId" value="<?php echo $answerID ?>" type="hidden"/>
+              <input name="commentsAnswerId" value="<?php echo $rows['answerID']?>" type="hidden"/>
               <textarea id="commentText" name="commentText" class="comment-input" placeholder="코멘트를 작성해보세요."></textarea>
-              <button type="button" class="btn btn-dark btn-dark-submit" id="submitButton_comment">submit</button>
+              <button type="button" class="btn btn-dark btn-dark-submit" id="submitButton_comment_<?php echo $rows['answerID']?>">submit</button>
               </div>
               </form>
               <!-- 3-3. 쿼리문으로 코멘트 데이터 가져오기 -->
@@ -550,6 +550,7 @@
     // 서버에 데이터가 저장되면, 답변 입력창 클리어
 
     <script>
+  
       $(document).ready(function(){
         $("#submitButton").click(function(){
           submitAnswer();
@@ -604,15 +605,30 @@
     <script>
   // 서버에 데이터가 저장되면, 코멘트 입력창 클리어
 
+  // 모든 submit 검정 버튼들에 해당되게 
       $(document).ready(function(){
-        $("#submitButton_comment").click(function(){
-          submitComment();
+        $(".btn-dark-submit").click(function(){
+          submitComment(this);
         })
       });
 
-    function submitComment(){
+    function submitComment(button){
+      console.log(button);
 
-      var formDataComment = new FormData(document.getElementById("commentForm"));
+      // 각각의 form과 button에 대한 id 값을 가져오기 
+      // Access the form element from the button's parent
+      var formElement = button.closest('form');
+
+      if(formElement){
+        var answerID = formElement.dataset.answerId;
+        console.log("Answer ID:", answerID);
+
+        var formDataComment = new FormData(formElement);
+        console.log(formDataComment);
+
+      }else {
+        console.error("Form element not found");
+      }
 
 
       // ajax jquery 요청 수행
@@ -624,13 +640,27 @@
         contentType: false,  // 중요: contentType을 false로 설정해야 파일 업로드가 올바르게 처리됩니다.
 
         success:function(res){
+          console.log("Server Response:", res);
+          //json 형식의 데이터를 파싱함
+          var jsonRes = JSON.parse(res);
+          //왜 파싱?
+          //1. JSON은 서버와 클라이언트 간에 데이터를 교환하는 표준 형식 
+          //2. JSON.parse()를 사용하는 것은 이 형식의 데이터를 JavaScript에서 사용하기 위한 자연스러운 방법
+
+          if(jsonRes.status == 'success'){
             // 서버 응답을 받은 후에 textarea를 클리어합니다.
-            console.log(formDataComment);
+            console.log(jsonRes);
+
             $('#commentText').val("");
             alert("코멘트가 등록되었습니다.")
 
             // 페이지 리로드
             window.location.reload();
+
+            }else{
+              //에러 메세지 보여주기
+              alert(jsonRes.message);
+            }
           },
         error:function(){
             alert("코멘트 등록에 실패했습니다.");
