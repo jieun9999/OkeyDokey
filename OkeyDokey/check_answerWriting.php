@@ -28,6 +28,15 @@ if (empty($answerContents)) {
     exit; // db에 등록되기 전에 여기서 탈출
 }
 
+// 로그인한 사용자가 아니라면
+if(empty($_SESSION['userId'])){
+
+    //실패 상태와 메세지 출력
+    $response = array('status' => 'fail', 'message' => '먼저 로그인 하세요.');
+    echo json_encode($response);
+    exit; // 등록되기 전에 여기서 탈출
+}
+
 // 3.mysql pdo로 mysql injection을 방어
 // 원리: $username이라는 사용자 입력값을 받아서 안전하게 처리한다음, 매개변수인 :username에 넣는다는 소리 
 //      (매개변수 바인딩)

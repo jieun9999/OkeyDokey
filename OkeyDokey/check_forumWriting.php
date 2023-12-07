@@ -24,6 +24,13 @@ if (empty($title) || empty($description)) {
     exit; // 등록되기 전에 여기서 탈출
 }
 
+// 로그인한 사용자가 아니라면
+if(empty($_SESSION['userId'])){
+    echo '<script>alert("먼저 로그인 하세요")</script>';
+    echo '<script>history.back();</script>';
+    exit; // 등록되기 전에 여기서 탈출
+}
+
 try{
     // PDO 객체를 생성
     // 데이터베이스에 연결하는 데 사용됩니다.
