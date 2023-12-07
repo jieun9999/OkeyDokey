@@ -421,10 +421,19 @@
     <script src="../jQuery/jquery-3.7.1.js"></script>
     <!-- <body> 태그가 끝나기 전 js 파일 로드 시 웹 페이지 로딩 속도 향상된다.-->
     <script src="../bootstrap-4.6.2-dist/js/bootstrap.js"></script>
-
-
    
    <script>
+
+    // 페이지가 로드되었을 때 실행되는 코드
+    document.addEventListener('DOMContentLoaded', function() {
+      // 모든 commentFormframe 요소를 가져오기
+      var commentFormFrames = document.querySelectorAll('[id^="commentFormframe_"]');
+
+      // 각 commentFormframe을 숨기기
+      commentFormFrames.forEach(function(commentFormFrame) {
+        commentFormFrame.style.display = 'none';
+      });
+    });
 
     // 버튼 클릭시 목록으로 이동
     function goToForumList(){
