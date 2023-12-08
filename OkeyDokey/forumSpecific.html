@@ -310,7 +310,7 @@
               <!-- 3-3. 쿼리문으로 코멘트 데이터 가져오기 -->
               <!-- 주의 : 문자열 안에서 배열 값을 사용하려면 중괄호 {}로 감싸야 합니다-->
               <?php
-              $commentQuery = "SELECT *, users.userName FROM comments 
+              $commentQuery = "SELECT *, users.userName, users.userId AS commentUserId FROM comments 
               LEFT JOIN users ON comments.userId = users.userId
               WHERE answerId = {$rows['answerID']}";
 
@@ -331,6 +331,25 @@
                     <!-- 나중에 수정하면 update된 date가 렌더링 되도록 해야함-->
                     <div class="author"><?php echo $comment['userName']?></div>
                   </div>
+
+                  <!-- 코멘트용 수정, 삭제 버튼-->
+                  <div class="buttons-forums btn-comment-container">
+
+                    <?php if(isset($_SESSION['userId']) && $_SESSION['userId'] == $comment['commentUserId']): ?>
+            
+                  <form action="edit_comment.html" method="post">
+                  <button type="submit" name="editCommentId" class="btn btn-dark btn-comment" value="<?php echo $comment['commentId'] ?>">수정</button>
+                  <input type="hidden" name="editCommentContents" class="btn btn-dark btn-comment" value="<?php echo $comment['commentContents'] ?>"/>
+                  </form>
+
+                  <form id="comment_deleteForm" action="delete_comment.php" method="post">
+                  <button type="submit" name="deleteCommentId" class="btn btn-danger btn-comment btn-delete" value="<?php echo $comment['commentId'] ?>" onclick="confirmDelete()">삭제</button>
+                  <!-- type를 submit으로 해줘야 form이 자동으로 제출됨! -->
+                  </form>
+            
+                  <!-- if(isset($_SESSION['userId']) && $_SESSION['userId'] == $rows['answerUserId']) 조건문 종료-->
+                  <?php endif; ?>
+                  </div> 
                 </div>
               <?php endwhile; ?>
               </div>
@@ -556,7 +575,7 @@
       window.location.href = "http://52.79.41.79/OkeyDokey/check_logout.php";
     }
    </script>
-    // 서버에 데이터가 저장되면, 답변 입력창 클리어
+    <!-- 서버에 데이터가 저장되면, 답변 입력창 클리어 -->
 
     <script>
   
@@ -677,6 +696,21 @@
       });
     }  
 
+
+    // 삭제버튼 클릭시 알림창
+    function confirmDelete(){
+      var result = confirm("정말 삭제하시겠습니까?");
+
+      if(result){
+        // 사용자가 확인을 눌렀을때
+        var deleteForm = document.getElementById("comment_deleteForm");
+        // console.log(deleteForm);
+        // console.log(deleteForm.deleteCommentId.value); // deleteCommentId 값이 설정되었는지 확인
+        deleteForm.submit();
+      }else{
+        // 사용자가 취소를 눌렀을 때
+      }
+    }
     </script>
 </body>
 </html>

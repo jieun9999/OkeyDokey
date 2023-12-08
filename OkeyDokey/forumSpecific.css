@@ -626,3 +626,23 @@ footer{
  margin: 1.5rem;
  margin-left: auto;
 }
+
+.btn-comment{
+	font-size: 12px;
+    height: 1.5em;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.btn-comment-container{
+	width: 100%;
+	display: flex; 
+	justify-content: flex-end;
+	margin-top: 1rem;
+	margin-bottom: 1rem;
+}
+
+.btn-delete{
+	margin-left: 1rem;
+}
