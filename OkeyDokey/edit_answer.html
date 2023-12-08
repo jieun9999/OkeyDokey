@@ -199,7 +199,7 @@
       ?>
 <!--answer 부분-->    
 <!-- answerContents가 있으면 답변 ui 보이고, 없으면 안보이게 -->
-<!-- + edit페이지이기 때문에 post로 온 editAnswer의 값인 answerId는 제외해야 한다-->
+<!-- + step1. edit페이지이기 때문에 post로 온 editAnswer의 값인 answerId는 제외해야 한다-->
 <?php if($rows['answerContents'] != null && $_POST['editAnswer'] != $rows['answerID']): ?>
 
 
@@ -281,7 +281,7 @@
     <!-- if(isset($_SESSION['userId']) && $_SESSION['userId'] == $rows['answerUserId']): 조건문 종료-->
     <?php endif; ?>
 
-    <!-- 수정할 answerId 글에 대한 ui 렌더링 -->
+    <!-- step2.수정할 answerId 글에 대한 ui 렌더링 -->
     <?php if($rows['answerContents'] != null && $_POST['editAnswer'] == $rows['answerID']): ?>
 
     <div class="container answer-container">
@@ -313,7 +313,7 @@
                         <span class="float-right"><i class="text-warning fa fa-star"></i></span>
                    </p>
                    <div class="clearfix"></div>
-                   <!-- 답변 수정창 -->
+                   <!-- step3. 답변 수정창 -->
                    <form id="answerEditForm">
                     <div class="answerContents">
                         <input name="editAnswerId" value="<?php echo $rows['answerID'] ?>" type="hidden"/>
