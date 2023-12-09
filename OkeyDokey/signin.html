@@ -36,7 +36,7 @@
             if(isset($_SESSION['userId']) && isset($_SESSION['userName'])){
               // 로그인 세션 데이터가 있다면
 
-              echo '<div class=login_name>'.$_SESSION['userName'].'님</div>';
+              echo '<div class="login_name" onclick="goToProfile()">'.$_SESSION['userName'].'님</div>';
 
               echo '<div class="nav-item dropdown" onclick="goToLogout()">';
               echo '<a href="#" class="btn btn-primary dropdown-toggle sign-up-btn">Logout</a>';
@@ -179,6 +179,11 @@
       function goToLogout(){
         window.location.href = "http://52.79.41.79/OkeyDokey/check_logout.php";
       }
+
+    // 00님을 누르면,  프로필 수정 페이지로 이동
+    function goToProfile(){
+      window.location.href = "profileEdit.html";
+    } 
     </script> 
 </body>
 </html>

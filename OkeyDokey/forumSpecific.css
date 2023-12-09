@@ -575,6 +575,7 @@ footer{
 	border: 2px solid #31bfb1;
 	border-radius: 5%;
 	font-size: 16px;
+	cursor: pointer;
 }
 
 .btn-answer{
