@@ -6,28 +6,61 @@
     <title>editProfile</title>
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../bootstrap-4.6.2-dist/css/bootstrap.css">
+    <link rel="stylesheet" href="profileEdit.css">
+    <!--폰트 적용-->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Varela+Round">
 </head>
 <style>
-    body{
-    margin-top:20px;
-    background:#f8f8f8
-}
 </style>
 <body>
-    
-<div class="container">
+    <!-- Nav-->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <!-- Logo -->
+    <a class="navbar-brand" href="http://52.79.41.79/OkeyDokey/forumList.html">
+    <img src="../img/okeydokey1.png" class="h-8" alt="..">
+    </a>
+
+    <!-- 세션 시작 -->
+    <?php 
+
+    session_name('로그인세션');
+    session_start(); //세션시작
+
+    ?>
+
+<!-- 로그인 세션 데이터가 있다면, userName 과 logout 버튼을 보여주고,-->
+<!-- 로그인 세션 데이터가 없다면, 기존처럼 signin 과 signup 버튼을 보여준다 -->
+
+   <div class="navbar-nav ml-auto action-buttons">
+     <?php
+     if(isset($_SESSION['userId']) && isset($_SESSION['userName'])){
+       // 로그인 세션 데이터가 있다면
+
+       echo '<div class="login_name" onclick="goToProfile()">'.$_SESSION['userName'].'님</div>';
+
+       echo '<div class="nav-item dropdown" onclick="goToLogout()">';
+       echo '<a href="#" class="btn btn-primary dropdown-toggle sign-up-btn">Logout</a>';
+       echo '</div>';
+
+     }else{
+       // 로그인 세션 데이터가 없다면
+
+       echo '<div class="nav-item dropdown" onclick="goToSignin()">';
+       echo '<a href="#" class="nav-link dropdown-toggle mr-4">Login</a>';
+       echo '</div>';
+       echo '<div class="nav-item dropdown" onclick="goToSignup()">';
+       echo '<a href="#" class="btn btn-primary dropdown-toggle sign-up-btn">Sign up</a>';
+       echo '</div>';
+
+     }
+     ?> 
+   </div>
+ </div>
+</nav>
+
+
+<div class="container profile-container">
 <div class="row flex-lg-nowrap">
-  <div class="col-12 col-lg-auto mb-3" style="width: 200px;">
-    <div class="card p-3">
-      <div class="e-navlist e-navlist--active-bg">
-        <ul class="nav">
-          <li class="nav-item"><a class="nav-link px-2 active" href="#"><i class="fa fa-fw fa-bar-chart mr-1"></i><span>Overview</span></a></li>
-          <li class="nav-item"><a class="nav-link px-2" href="https://www.bootdey.com/snippets/view/bs4-crud-users" target="__blank"><i class="fa fa-fw fa-th mr-1"></i><span>CRUD</span></a></li>
-          <li class="nav-item"><a class="nav-link px-2" href="https://www.bootdey.com/snippets/view/bs4-edit-profile-page" target="__blank"><i class="fa fa-fw fa-cog mr-1"></i><span>Settings</span></a></li>
-        </ul>
-      </div>
-    </div>
-  </div>
 
   <div class="col">
     <div class="row">
@@ -56,7 +89,7 @@
                     </div>
                   </div>
                   <div class="text-center text-sm-right">
-                    <span class="badge badge-secondary">administrator</span>
+                    <span class="badge badge-secondary">member</span>
                     <div class="text-muted"><small>Joined 09 Dec 2017</small></div>
                   </div>
                 </div>
@@ -72,38 +105,17 @@
                         <div class="row">
                           <div class="col">
                             <div class="form-group">
-                              <label>Full Name</label>
-                              <input class="form-control" type="text" name="name" placeholder="John Smith" value="John Smith">
-                            </div>
-                          </div>
-                          <div class="col">
-                            <div class="form-group">
                               <label>Username</label>
                               <input class="form-control" type="text" name="username" placeholder="johnny.s" value="johnny.s">
                             </div>
                           </div>
                         </div>
-                        <div class="row">
-                          <div class="col">
-                            <div class="form-group">
-                              <label>Email</label>
-                              <input class="form-control" type="text" placeholder="user@example.com">
-                            </div>
-                          </div>
-                        </div>
-                        <div class="row">
-                          <div class="col mb-3">
-                            <div class="form-group">
-                              <label>About</label>
-                              <textarea class="form-control" rows="5" placeholder="My Bio"></textarea>
-                            </div>
-                          </div>
-                        </div>
+
                       </div>
                     </div>
-                    <div class="row">
+                    <div class="row changePassword">
                       <div class="col-12 col-sm-6 mb-3">
-                        <div class="mb-2"><b>Change Password</b></div>
+                        <div class="mb-2 title">Change Password</div>
                         <div class="row">
                           <div class="col">
                             <div class="form-group">
@@ -128,28 +140,7 @@
                           </div>
                         </div>
                       </div>
-                      <div class="col-12 col-sm-5 offset-sm-1 mb-3">
-                        <div class="mb-2"><b>Keeping in Touch</b></div>
-                        <div class="row">
-                          <div class="col">
-                            <label>Email Notifications</label>
-                            <div class="custom-controls-stacked px-2">
-                              <div class="custom-control custom-checkbox">
-                                <input type="checkbox" class="custom-control-input" id="notifications-blog" checked="">
-                                <label class="custom-control-label" for="notifications-blog">Blog posts</label>
-                              </div>
-                              <div class="custom-control custom-checkbox">
-                                <input type="checkbox" class="custom-control-input" id="notifications-news" checked="">
-                                <label class="custom-control-label" for="notifications-news">Newsletter</label>
-                              </div>
-                              <div class="custom-control custom-checkbox">
-                                <input type="checkbox" class="custom-control-input" id="notifications-offers" checked="">
-                                <label class="custom-control-label" for="notifications-offers">Personal Offers</label>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
+
                     </div>
                     <div class="row">
                       <div class="col d-flex justify-content-end">
@@ -160,35 +151,108 @@
 
                 </div>
               </div>
+
+
             </div>
           </div>
         </div>
-      </div>
 
-      <div class="col-12 col-md-3 mb-3">
+      <!-- 회원 탈퇴 -->
+      <div class="col-12 col-md-3 mb-3 sign-out-button">
         <div class="card mb-3">
           <div class="card-body">
             <div class="px-xl-3">
               <button class="btn btn-block btn-secondary">
                 <i class="fa fa-sign-out"></i>
-                <span>Logout</span>
+                <span>탈퇴하기</span>
               </button>
             </div>
           </div>
         </div>
-        <div class="card">
-          <div class="card-body">
-            <h6 class="card-title font-weight-bold">Support</h6>
-            <p class="card-text">Get fast, free help from our friendly assistants.</p>
-            <button type="button" class="btn btn-primary">Contact Us</button>
-          </div>
-        </div>
       </div>
+
+      </div>
+
     </div>
 
   </div>
 </div>
 </div>
+
+
+ <!-- Footer-->
+
+ <footer class="footer_area section_padding_130_0">
+  <div class="container">
+    <div class="row">
+      <!-- Single Widget-->
+      <div class="col-12 col-sm-6 col-lg-4">
+        <div class="single-footer-widget section_padding_0_130">
+          <!-- Footer Logo-->
+          <div class="footer-logo mb-3"></div>
+          <p>Appland is completely creative, lightweight, clean app landing page.</p>
+          <!-- Copywrite Text-->
+          <div class="copywrite-text mb-5">
+            <p class="mb-0">Made with <i class="lni-heart mr-1"></i>by<a class="ml-1" href="https://wrapbootstrap.com/user/DesigningWorld">Designing World</a></p>
+          </div>
+          <!-- Footer Social Area-->
+          <div class="footer_social_area"><a href="#" data-toggle="tooltip" data-placement="top" title="" data-original-title="Facebook"><i class="fa fa-facebook"></i></a><a href="#" data-toggle="tooltip" data-placement="top" title="" data-original-title="Pinterest"><i class="fa fa-pinterest"></i></a><a href="#" data-toggle="tooltip" data-placement="top" title="" data-original-title="Skype"><i class="fa fa-skype"></i></a><a href="#" data-toggle="tooltip" data-placement="top" title="" data-original-title="Twitter"><i class="fa fa-twitter"></i></a></div>
+        </div>
+      </div>
+      <!-- Single Widget-->
+      <div class="col-12 col-sm-6 col-lg">
+        <div class="single-footer-widget section_padding_0_130">
+          <!-- Widget Title-->
+          <h5 class="widget-title">About</h5>
+          <!-- Footer Menu-->
+          <div class="footer_menu">
+            <ul>
+              <li><a href="#">About Us</a></li>
+              <li><a href="#">Corporate Sale</a></li>
+              <li><a href="#">Terms &amp; Policy</a></li>
+              <li><a href="#">Community</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <!-- Single Widget-->
+      <div class="col-12 col-sm-6 col-lg">
+        <div class="single-footer-widget section_padding_0_130">
+          <!-- Widget Title-->
+          <h5 class="widget-title">Support</h5>
+          <!-- Footer Menu-->
+          <div class="footer_menu">
+            <ul>
+              <li><a href="#">Help</a></li>
+              <li><a href="#">Support</a></li>
+              <li><a href="#">Privacy Policy</a></li>
+              <li><a href="#">Term &amp; Conditions</a></li>
+              <li><a href="#">Help &amp; Support</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <!-- Single Widget-->
+      <div class="col-12 col-sm-6 col-lg">
+        <div class="single-footer-widget section_padding_0_130">
+          <!-- Widget Title-->
+          <h5 class="widget-title">Contact</h5>
+          <!-- Footer Menu-->
+          <div class="footer_menu">
+            <ul>
+              <li><a href="#">Call Centre</a></li>
+              <li><a href="#">Email Us</a></li>
+              <li><a href="#">Term &amp; Conditions</a></li>
+              <li><a href="#">Help Center</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
 </body>
     <!--script-->
     <!--jQuery는 bootstrap의 js가 사용하므로 bootstrap js 파일 로드 전 로드한다.-->
