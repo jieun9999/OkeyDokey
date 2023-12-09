@@ -340,7 +340,7 @@
 
                     <?php if(isset($_SESSION['userId']) && $_SESSION['userId'] == $comment['commentUserId']): ?>
             
-                  <form action="edit_comment.html" method="post"> 
+                  <form action="edit_comment.php" method="post"> 
                   <input type="hidden" name="editCommentContents" class="btn btn-dark btn-comment" value="<?php echo $comment['commentContents'] ?>"/>
                   <input type="hidden" name="editCommentForumId" value="<?php echo $comment['forumId'] ?>" />
                   <button type="submit" name="editCommentId" class="btn btn-dark btn-comment" value="<?php echo $comment['commentId'] ?>">수정</button>
@@ -361,9 +361,10 @@
               <?php if($comment['commentContents'] != null && $_POST['editCommentId'] == $comment['commentId']): ?> 
               <div class="card card-inner">
                 <!-- 코멘트 수정창-->
-                <form action="edit_comment.php" method="post">
-                <textarea class="comment_input"><?php echo $comment['commentContents']?></textarea>
-                <button type="button" class="btn btn-success btn-comment-edit-submit">완료</button>
+                <form id="commentEditForm">
+                <textarea name="commentContentsTextarea" class="comment_input"><?php echo $comment['commentContents']?></textarea>
+                <input name ="editCommentId" value="<?php echo $comment['commentId'] ?>"  type="hidden" />
+                <button id="editButton" type="button" class="btn btn-success btn-comment-edit-submit">완료</button>
                 </form>
               </div>
               <?php endif; ?> 
@@ -728,6 +729,53 @@
         // 사용자가 취소를 눌렀을 때
       }
     }
+    </script>
+
+    <!-- 코멘트창 수정 버튼 누르면, php 파일로 ajax 요청 -->
+    <script>
+        $(document).ready(function(){
+            $("#editButton").click(function(){
+            editBtn();
+        });
+        });
+
+        <!-- answerId과 textarea 값을 전송한다 -->
+        function editBtn(){
+        // FormData 객체를 사용하여 form 데이터를 가져옵니다.
+
+        var formDataEdit = new FormData(document.getElementById("commentEditForm"));
+        console.log(document.getElementById("commentEditForm").commentContentsTextarea.value);
+
+        // ajax jquey 요청 수행
+        $.ajax({
+          method:"POST",
+          url:"edit_comment.php",
+          data: formDataEdit,
+          processData: false,  // 중요: processData를 false로 설정해야 formData가 자동으로 변환되지 않습니다.
+          contentType: false,  // 중요: contentType을 false로 설정해야 파일 업로드가 올바르게 처리됩니다.
+          success:function(res){
+            var jsonRes = JSON.parse(res);
+          //왜 파싱?
+          //1. JSON은 서버와 클라이언트 간에 데이터를 교환하는 표준 형식 
+          //2. JSON.parse()를 사용하는 것은 이 형식의 데이터를 JavaScript에서 사용하기 위한 자연스러운 방법
+
+            if(jsonRes.status == 'success'){
+                alert("답변이 수정되었습니다.")
+
+             //상세페이지로 이동
+             window.location.href = "http://52.79.41.79/OkeyDokey/forumSpecific.html?%EA%B8%80%EC%95%84%EC%9D%B4%EB%94%94=<?php echo $forumId ?>";
+            }else{
+              //에러 메세지 보여주기
+              alert(jsonRes.message);
+            }
+
+          },
+          error:function(){
+            alert("답변 수정에 실패했습니다.");
+          }
+        });
+            
+        }
     </script>
 </body>
 </html>
