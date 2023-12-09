@@ -591,8 +591,8 @@ footer{
 
 
 .answerContentsTextarea{
-	width: 50vw;
-	height: 25vh;
+	width: 100%;
+	height: 15vh;
 }
 
 .comment-input{
