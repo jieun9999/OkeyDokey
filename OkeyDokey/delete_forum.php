@@ -18,7 +18,23 @@
         exit; // Exit to avoid further execution
     }
 
-    //3. 삭제 쿼리문 실행
+    //3. 만약, 답변이 존재하는 게시글이라면 삭제가 거부된다
+    // 답변이 존재하는 지 확인하는 쿼리
+    $checkAnswerQuery = "SELECT COUNT(*) AS answerCount FROM answers WHERE forumId = $deleteForumId";
+    $answerResult = $connect->query($checkAnswerQuery);
+    $answerCount = $answerResult->fetch_assoc()['answerCount'];
+    //fetch_assoc() 함수를 사용하여 결과 집합에서 한 행을 연관 배열, 가져온 연관 배열에서 'answerCount' 키를 사용하여 해당 게시글에 대한 답변의 개수를 얻는다
+
+
+    if($answerCount > 0){
+        // 답변이 있으면 삭제 거부
+        echo '<script>alert("답변이 있는 게시글은 삭제할 수 없습니다.");</script>';
+        echo '<script>history.back();</script>';
+
+    }else{
+       // 답변이 없으면 삭제 진행
+
+    //4. 삭제 쿼리문 실행
     $sql = "DELETE FROM forums WHERE forumId = '$deleteForumId'";
     $result = $connect ->query($sql);
 
@@ -29,6 +45,8 @@
     }else{
         echo '<script>alert("글삭제에 실패하였습니다");</script>';
         echo '<script>history.back();</script>';
+
+    }
 
     }
 
