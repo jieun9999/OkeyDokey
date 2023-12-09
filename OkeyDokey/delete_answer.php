@@ -42,10 +42,10 @@
 
     // 삭제 성공 여부에 따른 처리
     if($stmt -> rowCount() > 0){
-        echo '<script>alert("글이 삭제되었습니다.");</script>';
+        echo '<script>alert("답변이 삭제되었습니다.");</script>';
         echo '<script>history.back();</script>';
     }else{
-        echo '<script>alert("글삭제에 실패하였습니다");</script>';
+        echo '<script>alert("답변삭제에 실패하였습니다");</script>';
         echo '<script>history.back();</script>';
 
     }

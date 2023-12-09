@@ -138,8 +138,8 @@
                             <button type="submit" name="editForum"class="btn btn-dark" value="<?php echo $rows['forumIdToDelete'] ?>">수정</button>
                           </form>
                           <!-- 삭제: post 요청을 보낼때 name="deleteForum"가 key고 <?php echo $rows['forumIdToDelete']?>가 value가 된다. -->
-                          <form action="delete_forum.php" method="post">
-                            <button type="submit" name="deleteForum" class="btn btn-danger" value="<?php echo $rows['forumIdToDelete'] ?>">삭제</button>
+                          <form id="forum_deleteForm" action="delete_forum.php" method="post">
+                            <button onclick="confirmDeleteForum()" type="submit" name="deleteForum" class="btn btn-danger" value="<?php echo $rows['forumIdToDelete'] ?>">삭제</button>
                           </form>
                             <!-- if(isset($_SESSION['userId']) && $_SESSION['forumUserId'] == $rows['answerUserId']) 조건문 종료-->
                             <?php endif; ?>
@@ -246,8 +246,8 @@
       <input type="hidden"  name="editAnswerForumId" value="<?php echo $rows['forumIdToDelete'] ?>"/>
       </form>
       <!-- 삭제: post 요청을 보낼때 name="deleteAnswer"가 key고 <?php echo $rows['answerID']?>가 value가 된다. -->
-      <form action="delete_answer.php" method="post">
-      <button type="submit" name="deleteAnswer" class="btn btn-danger btn-answer" value="<?php echo $rows['answerID'] ?>">삭제</button>
+      <form id="answer_deleteForm" action="delete_answer.php" method="post">
+      <button onclick="confirmDeleteAnswer()" type="submit" name="deleteAnswer" class="btn btn-danger btn-answer" value="<?php echo $rows['answerID'] ?>">삭제</button>
       </form>
 
       <!-- if(isset($_SESSION['userId']) && $_SESSION['userId'] == $rows['answerUserId']) 조건문 종료-->
@@ -344,7 +344,7 @@
                   </form>
 
                   <form id="comment_deleteForm" action="delete_comment.php" method="post">
-                  <button type="submit" name="deleteCommentId" class="btn btn-danger btn-comment btn-delete" value="<?php echo $comment['commentId'] ?>" onclick="confirmDelete()">삭제</button>
+                  <button type="submit" name="deleteCommentId" class="btn btn-danger btn-comment btn-delete" value="<?php echo $comment['commentId'] ?>" onclick="confirmDeleteComment()">삭제</button>
                   <!-- type를 submit으로 해줘야 form이 자동으로 제출됨! -->
                   </form>
             
@@ -702,10 +702,35 @@
           }
       });
     }  
+    // 게시글 삭제 클릭시 알림창
+    function confirmDeleteForum(){
+      var result = confirm("정말 삭제하시겠습니까?");
 
+      if(result){
+        // 사용자가 확인을 눌렀을때
+        var deleteForm = document.getElementById("forum_deleteForm");
+        deleteForm.submit();
+      }else{
+        // 사용자가 취소를 눌렀을 때
+      }
+    }
 
-    // 삭제버튼 클릭시 알림창
-    function confirmDelete(){
+    // 답변 삭제 클릭시 알림창
+    function confirmDeleteAnswer(){
+      var result = confirm("정말 삭제하시겠습니까?");
+
+      if(result){
+        // 사용자가 확인을 눌렀을때
+        var deleteForm = document.getElementById("answer_deleteForm");
+        deleteForm.submit();
+      }else{
+        // 사용자가 취소를 눌렀을 때
+      }
+
+    }
+
+    // 코멘트 삭제버튼 클릭시 알림창
+    function confirmDeleteComment(){
       var result = confirm("정말 삭제하시겠습니까?");
 
       if(result){
