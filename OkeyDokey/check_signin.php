@@ -34,7 +34,8 @@ if(!session_id()){
     if($result -> num_rows == 1 ){
         //SQL 쿼리에 의해 반환된 레코드의 수가 1이면, 즉 데이터베이스에서 사용자가 딱 하나 있다면, 로그인이 성공했다고 판단하는 조건입니다.
         
-        if(password_verify($pw, $row['userPw']))
+        if(password_verify($pw, $row['userPw'])){
+
         // 암호화된 비번과 사용자가 입력한 비번이 동일할때,
         // 세션에 key-value 등록합니다.
         $_SESSION['userId']= $row['userId'];
@@ -43,6 +44,11 @@ if(!session_id()){
         // 로그인 성공
         echo "<script>alert('로그인에 성공했습니다!');</script>";
         echo "<script>location.replace('forumList.html');</script>";
+
+        }else{
+            echo "<script>alert('비번이 다릅니다');</script>";
+        }
+ 
     }else {
         // 로그인 실패
         echo "<script>alert('잘못 입력하셨거나 존재하지 않는 유저입니다.');</script>";

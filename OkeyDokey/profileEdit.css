@@ -387,7 +387,7 @@ ol, ul {
     margin-top:5rem;
 }
 
-.sign-out-button{
+.sign-out-button-container{
 	margin-top: 3rem;
 
 	button{
@@ -403,4 +403,7 @@ ol, ul {
 	.title{
 		font-size: 1.5rem;
 	}
+}
+.btn-change-img{
+	margin-top: 2rem;
 }

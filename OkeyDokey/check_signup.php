@@ -43,7 +43,7 @@ try{
 
     // 쿼리 작성
     // ':username', ':email', ':password'는 바인딩할 매개변수 입니다.
-    $sql = "INSERT INTO users (userName, userEmail, userPw) VALUES (:username, :email, :password)";
+    $sql = "INSERT INTO users (userName, userEmail, userPw, userImg) VALUES (:username, :email, :password, :userImg)";
 
     // PDO Statement 객체 생성
     // PDOStatement 객체를 생성하고, 위에서 작성한 SQL 쿼리를 준비합니다.
@@ -55,6 +55,7 @@ try{
     $stmt ->bindParam(':username', $username, PDO::PARAM_STR);
     $stmt ->bindParam(':email', $signup_email, PDO::PARAM_STR);
     $stmt ->bindParam(':password', $password, PDO::PARAM_STR);
+    $stmt ->bindValue(':userImg', "https://cdn-icons-png.flaticon.com/512/1177/1177568.png", PDO::PARAM_STR);
 
     //쿼리 실행
     $stmt ->execute();

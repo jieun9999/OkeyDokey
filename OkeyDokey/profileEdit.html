@@ -13,6 +13,37 @@
 <style>
 </style>
 <body>
+  <!-- 세션 시작 -->
+  <?php 
+
+  session_name('로그인세션');
+  session_start(); //세션시작
+  
+  ?>
+
+  <?php
+    // PHP 코드를 여기에 작성합니다.
+    //이렇게 하면 브라우저에 에러 메시지가 표시됩니다. 
+    error_reporting(E_ALL);
+    ini_set('display_errors', 1);
+    
+
+    //1. mysql과 연결하기
+    include 'config_mysqli.php';
+
+    //2. 세션으로 userId 가져오기
+    $userId = $_SESSION['userId'];
+
+    //3. 현재 로그인 된 프로필 데이터 가져오기
+    $sql = "SELECT * FROM users
+            WHERE users.userId = $userId";
+
+    $result=$connect->query($sql); 
+
+    $row= mysqli_fetch_assoc($result);
+
+    ?>
+
     <!-- Nav-->
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
       <!-- Logo -->
@@ -20,13 +51,7 @@
     <img src="../img/okeydokey1.png" class="h-8" alt="..">
     </a>
 
-    <!-- 세션 시작 -->
-    <?php 
 
-    session_name('로그인세션');
-    session_start(); //세션시작
-
-    ?>
 
 <!-- 로그인 세션 데이터가 있다면, userName 과 logout 버튼을 보여주고,-->
 <!-- 로그인 세션 데이터가 없다면, 기존처럼 signin 과 signup 버튼을 보여준다 -->
@@ -71,18 +96,16 @@
               <div class="row">
                 <div class="col-12 col-sm-auto mb-3">
                   <div class="mx-auto" style="width: 140px;">
-                    <div class="d-flex justify-content-center align-items-center rounded" style="height: 140px; background-color: rgb(233, 236, 239);">
-                      <span style="color: rgb(166, 168, 170); font: bold 8pt Arial;">140x140</span>
-                    </div>
+                    <img src="<?php echo $row['userImg'] ?>" class="d-flex justify-content-center align-items-center rounded" style="height: 140px;">
+                    </img>
                   </div>
                 </div>
                 <div class="col d-flex flex-column flex-sm-row justify-content-between mb-3">
                   <div class="text-center text-sm-left mb-2 mb-sm-0">
-                    <h4 class="pt-sm-2 pb-1 mb-0 text-nowrap">John Smith</h4>
-                    <p class="mb-0">@johnny.s</p>
-                    <div class="text-muted"><small>Last seen 2 hours ago</small></div>
+                    <h4 class="pt-sm-2 pb-1 mb-0 text-nowrap"><?php echo $row['userName'] ?></h4>
+                    <p class="mb-0"><?php echo $row['userEmail'] ?></p>
                     <div class="mt-2">
-                      <button class="btn btn-primary" type="button">
+                      <button class="btn btn-primary btn-change-img" type="button">
                         <i class="fa fa-fw fa-camera"></i>
                         <span>Change Photo</span>
                       </button>
@@ -90,7 +113,7 @@
                   </div>
                   <div class="text-center text-sm-right">
                     <span class="badge badge-secondary">member</span>
-                    <div class="text-muted"><small>Joined 09 Dec 2017</small></div>
+                    <div class="text-muted"><small>Joined <?php echo $row['userDate'] ?></small></div>
                   </div>
                 </div>
               </div>
@@ -106,7 +129,7 @@
                           <div class="col">
                             <div class="form-group">
                               <label>Username</label>
-                              <input class="form-control" type="text" name="username" placeholder="johnny.s" value="johnny.s">
+                              <input class="form-control" type="text" name="username" value="<?php echo $row['userName'] ?>">
                             </div>
                           </div>
                         </div>
@@ -120,7 +143,7 @@
                           <div class="col">
                             <div class="form-group">
                               <label>Current Password</label>
-                              <input class="form-control" type="password" placeholder="••••••">
+                              <input class="form-control" type="password">
                             </div>
                           </div>
                         </div>
@@ -128,7 +151,7 @@
                           <div class="col">
                             <div class="form-group">
                               <label>New Password</label>
-                              <input class="form-control" type="password" placeholder="••••••">
+                              <input class="form-control" type="password">
                             </div>
                           </div>
                         </div>
@@ -136,7 +159,7 @@
                           <div class="col">
                             <div class="form-group">
                               <label>Confirm <span class="d-none d-xl-inline">Password</span></label>
-                              <input class="form-control" type="password" placeholder="••••••"></div>
+                              <input class="form-control" type="password"></div>
                           </div>
                         </div>
                       </div>
@@ -158,14 +181,16 @@
         </div>
 
       <!-- 회원 탈퇴 -->
-      <div class="col-12 col-md-3 mb-3 sign-out-button">
+      <div class="col-12 col-md-3 mb-3 sign-out-button-container">
         <div class="card mb-3">
           <div class="card-body">
             <div class="px-xl-3">
-              <button class="btn btn-block btn-secondary">
-                <i class="fa fa-sign-out"></i>
-                <span>탈퇴하기</span>
-              </button>
+              <form id="account_deleteForm" action="delete_account.php" method="post">
+                <button type="submit" onclick="deleteAccount()" name="deleteUserId" value="<?php echo $row['userId'] ?>" class="btn btn-block btn-secondary sign-out-button">
+                  <i class="fa fa-sign-out"></i>
+                  <span>탈퇴하기</span>
+                </button>
+              </form>
             </div>
           </div>
         </div>
@@ -259,4 +284,34 @@
     <script src="../jQuery/jquery-3.7.1.js"></script>
     <!-- <body> 태그가 끝나기 전 js 파일 로드 시 웹 페이지 로딩 속도 향상된다.-->
     <script src="../bootstrap-4.6.2-dist/js/bootstrap.js"></script>
+
+    <script>
+
+    function goToLogout(){
+      window.location.href = "http://52.79.41.79/OkeyDokey/check_logout.php";
+    }
+
+      // 00님을 누르면,  프로필 수정 페이지로 이동
+      function goToProfile(){
+      window.location.href = "profileEdit.html";
+    } 
+
+
+    // 탈퇴버튼 클릭시 알림창
+    function deleteAccount(){
+      var result = confirm("정말 탈퇴하시겠습니까? 다시 복구할 수 없습니다");
+
+      if(result){
+        // 사용자가 확인을 눌렀을때
+        var deleteForm = document.getElementById("account_deleteForm");
+        // console.log(deleteForm);
+        // console.log(deleteForm.deleteCommentId.value); // deleteCommentId 값이 설정되었는지 확인
+        deleteForm.submit();
+      }else{
+        // 사용자가 취소를 눌렀을 때
+      }
+    }
+    </script>
+    
+
 </html>
