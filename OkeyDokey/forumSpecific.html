@@ -337,9 +337,10 @@
 
                     <?php if(isset($_SESSION['userId']) && $_SESSION['userId'] == $comment['commentUserId']): ?>
             
-                  <form action="edit_comment.html" method="post">
-                  <button type="submit" name="editCommentId" class="btn btn-dark btn-comment" value="<?php echo $comment['commentId'] ?>">수정</button>
+                  <form action="edit_comment.html" method="post"> 
                   <input type="hidden" name="editCommentContents" class="btn btn-dark btn-comment" value="<?php echo $comment['commentContents'] ?>"/>
+                  <input type="hidden" name="editCommentForumId" value="<?php echo $comment['forumId'] ?>" />
+                                    <button type="submit" name="editCommentId" class="btn btn-dark btn-comment" value="<?php echo $comment['commentId'] ?>">수정</button>
                   </form>
 
                   <form id="comment_deleteForm" action="delete_comment.php" method="post">

@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>forumSpecific</title>
+    <!--폰트 적용-->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Varela+Round">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kalam:wght@300;400;700&family=Noto+Sans+KR:wght@300&family=Open+Sans:ital@1&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <!-- 가장기본이 되는 css 코드-->
+    <link rel="stylesheet" href="../bootstrap-4.6.2-dist/css/bootstrap.css">
+    <link rel="stylesheet" href="forumSpecific.css">
+</head>
+<body>
+  
+    <?php
+    // PHP 코드를 여기에 작성합니다.
+    //이렇게 하면 브라우저에 에러 메시지가 표시됩니다. 
+    error_reporting(E_ALL);
+    ini_set('display_errors', 1);
+    //
+
+    //1. mysql과 연결하기
+    include 'config_mysqli.php';
+
+    //2. GET 요청으로 forumId 가져오기 
+    //isset 함수를 사용하여 해당 매개변수가 있는지 확인하고, 있다면 $forumId 변수에 할당합니다.
+    
+    $forumId = isset($_POST['editCommentForumId']) ? $_POST['editCommentForumId'] : null;
+
+    
+    //3-1. 조회수 업데이트 하는 쿼리 생성함
+    // forums 테이블의 forumHits 칼럼이 +1 씩 증가함
+    $updateForumHitsSql = "UPDATE forums SET forumHits = forumHits + 1
+                          WHERE forumId =  $forumId";
+
+    $connect->query($updateForumHitsSql);    
+
+
+    //3-2. 쿼리문으로 메인 데이터 가져오기
+    $sql = "SELECT forums.forumId AS forumIdToDelete, forumTitle, forumContents, forumDate, forumUpdateDate, forumHits, forumVotingCounts,
+            users.userName, users.userImg, users.userId AS forumUserId,
+            answers.answerContents, answers.answerDate, answers.answerVotingCounts, answers.answerId AS answerID,
+            users2.userId AS answerUserId, users2.userName AS answerUserName, users2.userImg AS answerUserImg,
+            comments.commentContents, comments.commentDate, comments.answerId AS commentAnswerId
+            FROM forums 
+            LEFT JOIN answers ON forums.forumId = answers.forumId
+            LEFT JOIN users ON forums.userId = users.userId
+            LEFT JOIN users AS users2 ON answers.userId = users2.userId /* users테이블 겹치니까 별칭사용함 */
+            LEFT JOIN comments ON forums.forumId = comments.forumId
+            WHERE forums.forumId = $forumId";
+
+    $result=$connect->query($sql);
+    
+
+    
+    ?>
+
+    <!--따온 코드 넣기-->
+    <!-- Header-->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+         <!-- Logo -->
+    <a class="navbar-brand" href="http://52.79.41.79/OkeyDokey/forumList.html">
+        <img src="../img/okeydokey1.png" class="h-8" alt="...">
+      </a>
+
+        <!-- 세션 시작 -->
+    <?php 
+
+    session_name('로그인세션');
+    session_start(); //세션시작
+
+    ?>
+
+<!-- 로그인 세션 데이터가 있다면, userName 과 logout 버튼을 보여주고,-->
+<!-- 로그인 세션 데이터가 없다면, 기존처럼 signin 과 signup 버튼을 보여준다 -->
+
+      <div class="navbar-nav ml-auto action-buttons">
+        <?php
+        if(isset($_SESSION['userId']) && isset($_SESSION['userName'])){
+          // 로그인 세션 데이터가 있다면
+
+          echo '<div class=login_name>'.$_SESSION['userName'].'님</div>';
+
+          echo '<div class="nav-item dropdown" onclick="goToLogout()">';
+          echo '<a href="#" class="btn btn-primary dropdown-toggle sign-up-btn">Logout</a>';
+          echo '</div>';
+
+        }else{
+          // 로그인 세션 데이터가 없다면
+
+          echo '<div class="nav-item dropdown" onclick="goToSignin()">';
+          echo '<a href="#" class="nav-link dropdown-toggle mr-4">Login</a>';
+          echo '</div>';
+          echo '<div class="nav-item dropdown" onclick="goToSignup()">';
+          echo '<a href="#" class="btn btn-primary dropdown-toggle sign-up-btn">Sign up</a>';
+          echo '</div>';
+
+        }
+        ?> 
+       </div>
+      </div>
+    </nav>
+
+    <!--'mysqli_fetch_assoc($result)'를 사용할때, 각 행에서 forums 관련 데이터는 한번만 가져오고,
+    answers 관련 데이터는 모든 행을 다 돌게 하려면 다음과 같은 구조를 사용해야 합니다. -->
+    <!-- 'if (!$forumsData)'를 기점으로 forums 데이터는 첫번째 행에서만 처리하고,
+              answers 관련 데이터는 모든 행에서 처리합니다 -->
+
+    <!-- Main-->   
+    <?php
+    $forumsData = null;
+
+    // 이미 렌더링된 answers를 기록하는 배열
+    // while 문 안에 작성하면 지속적으로 초기화 될 수 있으니 while문 시작 전에 써준다
+    $renderedAnswers = [];
+
+    /* 처음에는 $forumsData에 null 값을 넣어주고 */
+
+    while ($rows=mysqli_fetch_assoc($result)){
+      if(!$forumsData){
+    /*forums 데이터 처리는 첫번째 행에서만 수행*/
+        ?>
+            <div class="container-fluid mt-100 forum-container">
+                      <!-- 목록으로, 수정, 삭제 버튼-->
+                      <div class="buttons-forums-container">
+                        <div class="buttons-forums">
+                           <!-- 게시글  위의 버튼들 -->
+                           <?php if(isset($_SESSION['userId']) && $_SESSION['userId'] == $rows['forumUserId']): ?>
+                          <button type="button" class="btn btn-light" onclick="goToForumList()">목록으로</button>
+                          <!--수정: post 요청을 보낼때 name="editForum"가 key이고, key는 <?php echo $rows['forumIdToDelete']?>가 value가 된다.-->
+                          <form action="forumEdit.html" method="post">
+                            <button type="submit" name="editForum"class="btn btn-dark" value="<?php echo $rows['forumIdToDelete'] ?>">수정</button>
+                          </form>
+                          <!-- 삭제: post 요청을 보낼때 name="deleteForum"가 key고 <?php echo $rows['forumIdToDelete']?>가 value가 된다. -->
+                          <form action="delete_forum.php" method="post">
+                            <button type="submit" name="deleteForum" class="btn btn-danger" value="<?php echo $rows['forumIdToDelete'] ?>">삭제</button>
+                          </form>
+                            <!-- if(isset($_SESSION['userId']) && $_SESSION['forumUserId'] == $rows['answerUserId']) 조건문 종료-->
+                            <?php endif; ?>
+                        </div>
+                      </div>
+            <div class="row">
+              <div class="col-md-12">
+                  <div class="card mb-4">
+                      <div class="card-header">
+                          <div class="media flex-wrap w-100 align-items-center"> <img src="<?php echo $rows['userImg']?>" class="d-block ui-w-40 rounded-circle fixed-size-image" alt="">
+                              <div class="media-body ml-3"> 
+                                <div class="title"><?php echo $rows['forumTitle']?></div>
+                                <div class="text-muted small">
+                                  <div><?php echo $rows['userName']?></div>
+                                </div>
+                              </div>
+                              <div class="text-muted small ml-3">
+                                <!-- $rows['forumUpdateDate']가 null이면 $rows['forumDate']가 사용되고, 그렇지 않으면 $rows['forumDateUpdate']이 사용됩니다.-->
+                                <div>
+                                  <?php echo $rows['forumUpdateDate'] ?? $rows['forumDate']?>
+                                </div>
+                                <div class="hits"> <i class="fa fa-eye text-muted fsize-3"></i>&nbsp;<?php echo $rows['forumHits']?></div>
+                              </div>
+                          </div>
+                      </div>
+                      <div class="card-body">
+                        <div class = "box vote-box">
+                          <!-- up/down 버튼에 각각 class, data-forum-id, data-vote-type 속성을 지정해줌-->
+
+                          <!-- jQuery의 data() 메서드를 통해 이 데이터를 가져오는 기법 -->
+                          <!-- HTML data attribute names: kebab-case (data-forum-id, data-vote-type) -->
+                          <div class="vote-btn up" data-forum-id="<?php echo $rows['forumIdToDelete'] ?>" data-vote-type="up">&#9650;</div>
+                          <div class = "voteNum"><?php echo $rows['forumVotingCounts']?></div>
+                          <div class="vote-btn down" data-forum-id="<?php echo $rows['forumIdToDelete'] ?>" data-vote-type="down">&#9660;</div>
+                        </div>
+                        <div class= "card-text">
+                            <?php echo $rows['forumContents']?>
+                        </div>
+                      </div>
+                      <div class="card-footer d-flex flex-wrap justify-content-between align-items-center px-0 pt-0 pb-3">
+                          <div class="px-4 pt-3"> <button type="button" class="btn btn-primary" onclick="toggleAnswerForm()"><i class="fa fa-reply"></i> toggle</button> </div>
+                      </div>
+                  </div>
+              </div>
+            </div>
+            </div>
+
+            <!-- answer 작성폼-->
+            <div class="answer-post-form" id="answerFormframe">
+            <div class="post-form-border">
+
+            <!-- 전통적인 form 전송이 아니라, jquery ajax를 사용할 것임, 클라이언트가 서버에서 처리된 결과를 받아오기 위해서-->
+            <form id="answerForm">
+              <!-- $변수는 php 언어이기 때문에 php 코드 안에서 작성-->
+              <input name="answersForumId" value="<?php echo $forumId ?>" type="hidden"/>
+              <textarea id="replyText" name="replyText" class="textarea" placeholder="Add your replies here..."></textarea>  
+              <button id="submitButton" type="button" class="btn btn-success">Submit Reply</button>
+            </form>
+            
+            </div>   
+            </div>   
+
+
+            <!--여기에 forums 데이터 처리 로직 추가--> 
+            <?php
+            $forumsData = $rows['forumTitle'];
+      }
+      ?>
+<!--answer 부분-->    
+<!-- answerContents가 있으면 답변 ui 보이고, 없으면 안보이게 -->
+
+<!-- answers가 comments 갯수만큼 중복 렌더링 되는 문제가 생김 => 이미 렌더링된 answers를 기록하고 중복 방지-->
+<?php 
+
+ // 중복을 확인하기 위한 키 생성
+ $answerKey = $rows['answerID'];
+
+ // $answerKey가 배열 $renderedAnswers에 이미 존재하는지 확인합니다.
+ if(!in_array($answerKey, $renderedAnswers)){
+
+  // 중복이 아니라면 해당 answer를 렌더링하고 기록에 추가
+  $renderedAnswers[] = $answerKey; //이 부분은 배열 $renderedAnswers에  $answerKey값을 추가하는 문법입니다.
+
+?>
+
+<?php if($rows['answerContents'] != null): ?>
+
+   <!-- 로그인 정보가 있고, 로그인 세션의 userId와 해당 답변의 userId가 동일한 경우에만 버튼 ui를 보여줌 -->
+   <!-- 그렇지 않은 경우에는 버튼 ui를 안보여줌-->
+   <!-- <참고> phps는 조건문과 반복문 등을 사용할 때 콜론(:)을 사용하여 코드 블록을 시작-->
+
+      <div class="container answer-container">
+      <!-- 목록으로, 수정, 삭제 버튼-->
+        <div class="buttons-forums-container">
+         <div class="buttons-forums btn-answer-container">
+
+        <?php if(isset($_SESSION['userId']) && $_SESSION['userId'] == $rows['answerUserId']): ?>
+        <!-- 답변 위의 버튼들 -->
+
+      <button type="button" class="btn btn-light btn-answer" onclick="goToForumList()">목록으로</button>
+      <!--수정: post 요청을 보낼때 name="editAnswer"가 key이고, key는 <?php echo $rows['answerID']?>가 value가 된다.-->
+      <form action="edit_answer.html" method="post">
+      <button type="submit" name="editAnswer"class="btn btn-dark btn-answer" value="<?php echo $rows['answerID'] ?>">수정</button>
+      <input type="hidden"  name="editAnswerForumId" value="<?php echo $rows['forumIdToDelete'] ?>"/>
+      </form>
+      <!-- 삭제: post 요청을 보낼때 name="deleteAnswer"가 key고 <?php echo $rows['answerID']?>가 value가 된다. -->
+      <form action="delete_answer.php" method="post">
+      <button type="submit" name="deleteAnswer" class="btn btn-danger btn-answer" value="<?php echo $rows['answerID'] ?>">삭제</button>
+      </form>
+
+      <!-- if(isset($_SESSION['userId']) && $_SESSION['userId'] == $rows['answerUserId']) 조건문 종료-->
+      <?php endif; ?>
+         </div> 
+        </div>
+
+        <div class="card">
+          <div class="card-body card-answers">
+              <div class="row answer-total-box">
+                  <div class=" answer-profile">
+                    <!-- up/down 버튼에 각각 class, data-forum-id, data-vote-type 속성을 지정해줌-->
+
+                      <!-- jQuery의 data() 메서드를 통해 이 데이터를 가져오는 기법 -->
+                      <!-- HTML data attribute names: kebab-case (data-forum-id, data-vote-type) -->
+                    <div class = "box vote-box">
+                      <div class = "vote-btn-answer up" data-answer-id="<?php echo $rows['answerID'] ?>" data-vote-type="up">&#9650;</div>
+                      <div class = "voteNum"><?php echo $rows['answerVotingCounts']?></div>
+                      <div class = "vote-btn-answer down" data-answer-id="<?php echo $rows['answerID'] ?>" data-vote-type="down">&#9660;</div>
+                    </div>
+
+                    <div class="answer-date-box">
+                      <img class="answer-user-img" src="<?php echo $rows['answerUserImg']?>" class="img img-rounded img-fluid"/>
+                      <div class="text-secondary text-center answerDate"><?php echo $rows['answerDate']?></div></div>
+                    </div>
+                  </div>
+                  <div class="answer-content-box">
+                      <p>
+                          <a class="float-left" href="https://maniruzzaman-akash.blogspot.com/p/contact.html"><strong><?php echo $rows['answerUserName']?></strong></a>
+                          <span class="float-right"><i class="text-warning fa fa-star"></i></span>
+                            <span class="float-right"><i class="text-warning fa fa-star"></i></span>
+                          <span class="float-right"><i class="text-warning fa fa-star"></i></span>
+                          <span class="float-right"><i class="text-warning fa fa-star"></i></span>
+                    </p>
+
+                    <div class="clearfix"></div>
+                      <div class="answerContents"><?php echo $rows['answerContents']?></div>
+                      <!-- 주의 :  여러 댓글 입력 컨테이너에 동일한 ID(commentFormframe)를 사용하면 버그가 생긴다-->
+                      <!-- toggleCommentForm() 함수가 두번째 렌더링된 card에서 실행될때, 첫번째 card의 comment input 부분이 생겼다 사라졌다함-->
+                      <!-- data-answer-id 사용해서 각각의 card를 구분할 수 있음-->
+                      <a class="float-right btn btn-outline-primary ml-2" onclick="toggleCommentForm(this)" data-answer-id="<?php echo $rows['answerID'] ?>"> <i class="fa fa-reply"></i> Reply</a>
+                  </div>
+              </div>
+              <!-- comments 부분 -->
+
+              <!-- comment 입력창-->
+              <div class="comment-border">
+              <!-- Use Unique IDs for Each Comment Container:-->
+
+              <!-- 전통적인 form 전송이 아니라, jquery ajax를 사용할 것임, 클라이언트가 서버에서 처리된 결과를 받아오기 위해서-->
+              <!-- commentForm이 여러개 라는 문제 발생 -->
+              <form id="commentForm_<?php echo $rows['answerID']?>" data-answer-id="<?php echo $rows['answerID'] ?>" >
+              <div class="comment-input-container" id="commentFormframe_<?php echo $rows['answerID']?>">
+              <input name="commentsForumId" value="<?php echo $forumId ?>" type="hidden"/>
+              <input name="commentsAnswerId" value="<?php echo $rows['answerID']?>" type="hidden"/>
+              <textarea id="commentText" name="commentText" class="comment-input" placeholder="코멘트를 작성해보세요."></textarea>
+              <button type="button" class="btn btn-dark btn-dark-submit" id="submitButton_comment_<?php echo $rows['answerID']?>">submit</button>
+              </div>
+              </form>
+              <!-- 3-3. 쿼리문으로 코멘트 데이터 가져오기 -->
+              <!-- 주의 : 문자열 안에서 배열 값을 사용하려면 중괄호 {}로 감싸야 합니다-->
+              <?php
+              $commentQuery = "SELECT *, users.userName, users.userId AS commentUserId FROM comments 
+              LEFT JOIN users ON comments.userId = users.userId
+              WHERE answerId = {$rows['answerID']}";
+
+              $commentResult = $connect ->query($commentQuery);
+              ?>
+    
+              <!-- comment 데이터들을 렌더링하기 -->
+              <div class="comments-list-container">
+              <?php while($comment = mysqli_fetch_assoc($commentResult)): ?>
+
+              <!-- 수정버튼 누른 코멘트는 사라지도록-->
+              <?php if($comment['commentContents'] != null && $_POST['editCommentId'] != $comment['commentId']): ?>
+                <div class="card card-inner">
+                  <div class="media">
+                    <div class="media-body comment-contents">
+                      <?php echo $comment['commentContents']?>
+                    </div>
+                  </div>
+                  <div class="comment-profile">
+                    <div class="comment-date"><?php echo $comment['commentDate']?></div>
+                    <!-- 나중에 수정하면 update된 date가 렌더링 되도록 해야함-->
+                    <div class="author"><?php echo $comment['userName']?></div>
+                  </div>
+
+                  <!-- 코멘트용 수정, 삭제 버튼-->
+                  <div class="buttons-forums btn-comment-container">
+
+                    <?php if(isset($_SESSION['userId']) && $_SESSION['userId'] == $comment['commentUserId']): ?>
+            
+                  <form action="edit_comment.html" method="post"> 
+                  <input type="hidden" name="editCommentContents" class="btn btn-dark btn-comment" value="<?php echo $comment['commentContents'] ?>"/>
+                  <input type="hidden" name="editCommentForumId" value="<?php echo $comment['forumId'] ?>" />
+                  <button type="submit" name="editCommentId" class="btn btn-dark btn-comment" value="<?php echo $comment['commentId'] ?>">수정</button>
+                  </form>
+
+                  <form id="comment_deleteForm" action="delete_comment.php" method="post">
+                  <button type="submit" name="deleteCommentId" class="btn btn-danger btn-comment btn-delete" value="<?php echo $comment['commentId'] ?>" onclick="confirmDelete()">삭제</button>
+                  <!-- type를 submit으로 해줘야 form이 자동으로 제출됨! -->
+                  </form>
+            
+                  <!-- if(isset($_SESSION['userId']) && $_SESSION['userId'] == $rows['answerUserId']) 조건문 종료-->
+                  <?php endif; ?>
+                  </div> 
+                </div>
+                <?php endif; ?> 
+
+              <!-- 수정버튼 누른 코멘트의 입력창이 생기도록 -->
+              <?php if($comment['commentContents'] != null && $_POST['editCommentId'] == $comment['commentId']): ?> 
+              <div class="card card-inner">
+                <!-- 코멘트 수정창-->
+                <form action="edit_comment.php" method="post">
+                <textarea class="comment_input"><?php echo $comment['commentContents']?></textarea>
+                <button type="button" class="btn btn-success btn-comment-edit-submit">완료</button>
+                </form>
+              </div>
+              <?php endif; ?> 
+
+              <?php endwhile; ?>
+              </div>
+            </div>
+        </div>
+      </div>
+    <!--if (!in_array($answerKey, $renderedAnswers)) { 조건문 종료 -->
+    <?php endif; ?>
+    <?php
+       }
+      }
+    ?>
+
+
+   <!-- Footer-->
+  <footer class="footer_area section_padding_130_0">
+          <div class="container">
+            <div class="row">
+              <!-- Single Widget-->
+              <div class="col-12 col-sm-6 col-lg-4">
+                <div class="single-footer-widget section_padding_0_130">
+                  <!-- Footer Logo-->
+                  <div class="footer-logo mb-3"></div>
+                  <p>Appland is completely creative, lightweight, clean app landing page.</p>
+                  <!-- Copywrite Text-->
+                  <div class="copywrite-text mb-5">
+                    <p class="mb-0">Made with <i class="lni-heart mr-1"></i>by<a class="ml-1" href="https://wrapbootstrap.com/user/DesigningWorld">Designing World</a></p>
+                  </div>
+                  <!-- Footer Social Area-->
+                  <div class="footer_social_area"><a href="#" data-toggle="tooltip" data-placement="top" title="" data-original-title="Facebook"><i class="fa fa-facebook"></i></a><a href="#" data-toggle="tooltip" data-placement="top" title="" data-original-title="Pinterest"><i class="fa fa-pinterest"></i></a><a href="#" data-toggle="tooltip" data-placement="top" title="" data-original-title="Skype"><i class="fa fa-skype"></i></a><a href="#" data-toggle="tooltip" data-placement="top" title="" data-original-title="Twitter"><i class="fa fa-twitter"></i></a></div>
+                </div>
+              </div>
+              <!-- Single Widget-->
+              <div class="col-12 col-sm-6 col-lg">
+                <div class="single-footer-widget section_padding_0_130">
+                  <!-- Widget Title-->
+                  <h5 class="widget-title">About</h5>
+                  <!-- Footer Menu-->
+                  <div class="footer_menu">
+                    <ul>
+                      <li><a href="#">About Us</a></li>
+                      <li><a href="#">Corporate Sale</a></li>
+                      <li><a href="#">Terms &amp; Policy</a></li>
+                      <li><a href="#">Community</a></li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              <!-- Single Widget-->
+              <div class="col-12 col-sm-6 col-lg">
+                <div class="single-footer-widget section_padding_0_130">
+                  <!-- Widget Title-->
+                  <h5 class="widget-title">Support</h5>
+                  <!-- Footer Menu-->
+                  <div class="footer_menu">
+                    <ul>
+                      <li><a href="#">Help</a></li>
+                      <li><a href="#">Support</a></li>
+                      <li><a href="#">Privacy Policy</a></li>
+                      <li><a href="#">Term &amp; Conditions</a></li>
+                      <li><a href="#">Help &amp; Support</a></li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              <!-- Single Widget-->
+              <div class="col-12 col-sm-6 col-lg">
+                <div class="single-footer-widget section_padding_0_130">
+                  <!-- Widget Title-->
+                  <h5 class="widget-title">Contact</h5>
+                  <!-- Footer Menu-->
+                  <div class="footer_menu">
+                    <ul>
+                      <li><a href="#">Call Centre</a></li>
+                      <li><a href="#">Email Us</a></li>
+                      <li><a href="#">Term &amp;Conditions</a></li>
+                      <li><a href="#">Help Center</a></li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+  </footer>
+
+    <!--script-->
+    <!--jQuery는 bootstrap의 js가 사용하므로 bootstrap js 파일 로드 전 로드한다.-->
+    <script src="../jQuery/jquery-3.7.1.js"></script>
+    <!-- <body> 태그가 끝나기 전 js 파일 로드 시 웹 페이지 로딩 속도 향상된다.-->
+    <script src="../bootstrap-4.6.2-dist/js/bootstrap.js"></script>
+   
+   <script>
+
+    // 페이지가 로드되었을 때 실행되는 코드
+    document.addEventListener('DOMContentLoaded', function() {
+      // 모든 commentFormframe 요소를 가져오기
+      var commentFormFrames = document.querySelectorAll('[id^="commentFormframe_"]');
+
+      // 각 commentFormframe을 숨기기
+      commentFormFrames.forEach(function(commentFormFrame) {
+        commentFormFrame.style.display = 'none';
+      });
+    });
+
+    // 버튼 클릭시 목록으로 이동
+    function goToForumList(){
+      window.location.href = "http://52.79.41.79/OkeyDokey/forumList.html";
+    }
+    
+    
+    // 버튼 클릭시 로그인 페이지로 이동
+
+    function goToSignin(){
+    window.location.href = "http://52.79.41.79/OkeyDokey/signin.html";
+    }
+
+    // 버튼 클릭시 회원가입 페이지로 이동
+ 
+    function goToSignup(){
+    window.location.href = "http://52.79.41.79/OkeyDokey/signup.html";
+      }
+
+
+      // 토글
+      function toggleAnswerForm(){
+        var answerFormframe = document.getElementById("answerFormframe");
+        answerFormframe.style.display = (answerFormframe.style.display !== "none") ? "none" : ""; 
+      }
+
+      function toggleCommentForm(button){
+        var answerID = button.dataset.answerId;
+        //  함수 () 안에 직접 php 코드를 넣지 못하니까. id값으로 php 코드의 answerID를 가져와서 사용함
+        var commentFormframe = document.getElementById("commentFormframe_"+answerID);
+        commentFormframe.style.display = (commentFormframe.style.display !== "none") ? "none" : ""; 
+      }
+
+
+  // 게시글 투표 버튼 클릭 이벤트
+
+      $(document).ready(function(){
+
+        //클릭한 버튼의 데이터 속성에서 정보 추출
+        $(".vote-btn").click(function(){
+
+        // jQuery의 data() 메서드를 통해 이 데이터를 가져오는 기법
+        // 속성 이름 앞에 data- 접두사를 사용하여 해당 속성이 데이터를 저장하는 용도임을 명시하는 것이 좋습니다.
+
+        var forumId = $(this).data("forumId");
+        var voteType = $(this).data("voteType");
+
+        // 현재 클릭한 버튼의 형제 요소에서 .voteNum을 찾아 업데이트
+        var voteNumElement = $(this).siblings(".voteNum");
+
+        //jQuery Ajax 요청
+        // Ajax를 사용하면 페이지 전체를 새로 고치지 않고도 서버와 통신하여 데이터를 가져오거나 전송할 수 있습니다.
+        $.ajax({
+          method: "POST",
+          url: "update_votes_ajax.php", // 업데이트를 처리할 PHP 파일 경로
+          
+          //jQuery data method: camelCase (data('forumId'), data('voteType'))
+          data:{
+            forumId: forumId,
+            voteType: voteType
+          },
+          success: function(res){
+            // 서버에서 반환한 데이터를 가지고, 투표 수 업데이트
+            console.log("Success. Response:", res);
+            voteNumElement.text(res);
+          },
+          error:function(){
+            alert("투표 업데이트에 실패했습니다.");
+          }
+        });
+        });
+
+      });
+
+
+
+  // 답변 투표 버튼 클릭 이벤트
+
+      $(document).ready(function(){
+
+      //클릭한 버튼의 데이터 속성에서 정보 추출
+      $(".vote-btn-answer").click(function(){
+
+      // jQuery의 data() 메서드를 통해 이 데이터를 가져오는 기법
+      // 속성 이름 앞에 data- 접두사를 사용하여 해당 속성이 데이터를 저장하는 용도임을 명시하는 것이 좋습니다.
+
+      var answerId = $(this).data("answerId");
+      var voteType = $(this).data("voteType");
+
+      // 현재 클릭한 버튼의 형제 요소에서 .voteNum을 찾아 업데이트
+      var voteNumElement = $(this).siblings(".voteNum");
+
+      //jQuery Ajax 요청
+      // Ajax를 사용하면 페이지 전체를 새로 고치지 않고도 서버와 통신하여 데이터를 가져오거나 전송할 수 있습니다.
+      $.ajax({
+        method: "POST",
+        url: "update_answer_votes_ajax.php", // 업데이트를 처리할 PHP 파일 경로
+        
+        //jQuery data method: camelCase (data('answerId'), data('voteType'))
+        data:{
+          answerId: answerId,
+          voteType: voteType
+        },
+        success: function(res){
+          // 서버에서 반환한 데이터를 가지고, 투표 수 업데이트
+          console.log("Success. Response:", res);
+          voteNumElement.text(res);
+        },
+        error:function(){
+          alert("투표 업데이트에 실패했습니다.");
+        }
+      });
+      });
+
+      });
+
+  // 버튼 클릭시 로그아웃 페이지로 이동
+
+    function goToLogout(){
+      window.location.href = "http://52.79.41.79/OkeyDokey/check_logout.php";
+    }
+   </script>
+    <!-- 서버에 데이터가 저장되면, 답변 입력창 클리어 -->
+
+    <script>
+  
+      $(document).ready(function(){
+        $("#submitButton").click(function(){
+          submitAnswer();
+        })
+      });
+
+      function submitAnswer(){
+        // FormData 객체를 사용하여 form 데이터를 가져옵니다.
+        var formData = new FormData(document.getElementById("answerForm"));
+
+        // ajax jquey 요청 수행
+        $.ajax({
+          method:"POST",
+          url:"check_answerWriting.php",
+          data: formData,
+          processData: false,  // 중요: processData를 false로 설정해야 formData가 자동으로 변환되지 않습니다.
+          contentType: false,  // 중요: contentType을 false로 설정해야 파일 업로드가 올바르게 처리됩니다.
+          success:function(res){
+
+            //json 형식의 데이터를 파싱함
+            var jsonRes = JSON.parse(res);
+            //왜 파싱?
+            //1. JSON은 서버와 클라이언트 간에 데이터를 교환하는 표준 형식 
+            //2. JSON.parse()를 사용하는 것은 이 형식의 데이터를 JavaScript에서 사용하기 위한 자연스러운 방법
+         
+            if(jsonRes.status == 'success'){
+            // 서버 응답을 받은 후에 textarea를 클리어합니다.
+            console.log(jsonRes);
+
+            $('#replyText').val("");
+            alert("답변이 등록되었습니다.")
+
+            // 페이지 리로드
+            window.location.reload();
+
+            }else{
+              //에러 메세지 보여주기
+              alert(jsonRes.message);
+            }
+            
+          },
+          error:function(){
+            alert("답변 등록에 실패했습니다.");
+          }
+        });
+      }
+
+
+    </script>
+
+
+    <script>
+  // 서버에 데이터가 저장되면, 코멘트 입력창 클리어
+
+  // 모든 submit 검정 버튼들에 해당되게 
+      $(document).ready(function(){
+        $(".btn-dark-submit").click(function(){
+          submitComment(this);
+        })
+      });
+
+    function submitComment(button){
+      console.log(button);
+
+      // 각각의 form과 button에 대한 id 값을 가져오기 
+      // Access the form element from the button's parent
+      var formElement = button.closest('form');
+
+      if(formElement){
+        var answerID = formElement.dataset.answerId;
+        console.log("Answer ID:", answerID);
+
+        var formDataComment = new FormData(formElement);
+        console.log(formDataComment);
+
+      }else {
+        console.error("Form element not found");
+      }
+
+
+      // ajax jquery 요청 수행
+      $.ajax({
+        method:"POST",
+        url:"check_commentWriting.php",
+        data: formDataComment,
+        processData: false,  // 중요: processData를 false로 설정해야 formData가 자동으로 변환되지 않습니다.
+        contentType: false,  // 중요: contentType을 false로 설정해야 파일 업로드가 올바르게 처리됩니다.
+
+        success:function(res){
+          console.log("Server Response:", res);
+          //json 형식의 데이터를 파싱함
+          var jsonRes = JSON.parse(res);
+          //왜 파싱?
+          //1. JSON은 서버와 클라이언트 간에 데이터를 교환하는 표준 형식 
+          //2. JSON.parse()를 사용하는 것은 이 형식의 데이터를 JavaScript에서 사용하기 위한 자연스러운 방법
+
+          if(jsonRes.status == 'success'){
+            // 서버 응답을 받은 후에 textarea를 클리어합니다.
+            console.log(jsonRes);
+
+            $('#commentText').val("");
+            alert("코멘트가 등록되었습니다.")
+
+            // 페이지 리로드
+            window.location.reload();
+
+            }else{
+              //에러 메세지 보여주기
+              alert(jsonRes.message);
+            }
+          },
+        error:function(){
+            alert("코멘트 등록에 실패했습니다.");
+          }
+      });
+    }  
+
+
+    // 삭제버튼 클릭시 알림창
+    function confirmDelete(){
+      var result = confirm("정말 삭제하시겠습니까?");
+
+      if(result){
+        // 사용자가 확인을 눌렀을때
+        var deleteForm = document.getElementById("comment_deleteForm");
+        // console.log(deleteForm);
+        // console.log(deleteForm.deleteCommentId.value); // deleteCommentId 값이 설정되었는지 확인
+        deleteForm.submit();
+      }else{
+        // 사용자가 취소를 눌렀을 때
+      }
+    }
+    </script>
+</body>
+</html>

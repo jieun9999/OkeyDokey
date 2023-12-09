@@ -578,14 +578,14 @@ footer{
 }
 
 .btn-answer{
-	font-size: 10px;
-    height: 1.5rem;
+	font-size: 15px;
+    height: 2rem;
 	display: flex;
 	justify-content: center;
 	align-items: center;
 }
 .btn-answer-container{
-	width: 11rem;
+	width: 14rem;
 }
 
 
@@ -645,4 +645,19 @@ footer{
 
 .btn-delete{
 	margin-left: 1rem;
+}
+
+.btn-comment-edit-submit{
+	width: 5rem;
+	height: 2rem;
+	font-size: 1rem;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin-left: auto;
+	margin-top: 1rem;
+}
+
+.comment_input{
+	width: 100%;
 }

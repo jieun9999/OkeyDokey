@@ -260,20 +260,89 @@
                    </p>
                    <div class="clearfix"></div>
                     <div class="answerContents"><?php echo $rows['answerContents']?></div>
-                        <a class="float-right btn btn-outline-primary ml-2"> <i class="fa fa-reply"></i> Reply</a>
+                    <a class="float-right btn btn-outline-primary ml-2" onclick="toggleCommentForm(this)" data-answer-id="<?php echo $rows['answerID'] ?>"> <i class="fa fa-reply"></i> Reply</a>
                 </div>
             </div>
-              <div class="card card-inner">
-                <div class="media">
-                  <div class="media-body comment-contents">
-                    나는 답변에 대한 댓글입니다 (대댓글)
+              <!-- comments 부분 -->
+
+              <!-- comment 입력창-->
+              <div class="comment-border">
+                <!-- Use Unique IDs for Each Comment Container:-->
+  
+                <!-- 전통적인 form 전송이 아니라, jquery ajax를 사용할 것임, 클라이언트가 서버에서 처리된 결과를 받아오기 위해서-->
+                <!-- commentForm이 여러개 라는 문제 발생 -->
+                <form id="commentForm_<?php echo $rows['answerID']?>" data-answer-id="<?php echo $rows['answerID'] ?>" >
+                <div class="comment-input-container" id="commentFormframe_<?php echo $rows['answerID']?>">
+                <input name="commentsForumId" value="<?php echo $forumId ?>" type="hidden"/>
+                <input name="commentsAnswerId" value="<?php echo $rows['answerID']?>" type="hidden"/>
+                <textarea id="commentText" name="commentText" class="comment-input" placeholder="코멘트를 작성해보세요."></textarea>
+                <button type="button" class="btn btn-dark btn-dark-submit" id="submitButton_comment_<?php echo $rows['answerID']?>">submit</button>
+                </div>
+                </form>
+                <!-- 3-3. 쿼리문으로 코멘트 데이터 가져오기 -->
+                <!-- 주의 : 문자열 안에서 배열 값을 사용하려면 중괄호 {}로 감싸야 합니다-->
+                <?php
+                $commentQuery = "SELECT *, users.userName, users.userId AS commentUserId FROM comments 
+                LEFT JOIN users ON comments.userId = users.userId
+                WHERE answerId = {$rows['answerID']}";
+  
+                $commentResult = $connect ->query($commentQuery);
+                ?>
+      
+                <!-- comment 데이터들을 렌더링하기 -->
+                <div class="comments-list-container">
+                <?php while($comment = mysqli_fetch_assoc($commentResult)): ?>
+  
+                <!-- 수정버튼 누른 코멘트는 사라지도록-->
+                <?php if($comment['commentContents'] != null): ?>
+                  <div class="card card-inner">
+                    <div class="media">
+                      <div class="media-body comment-contents">
+                        <?php echo $comment['commentContents']?>
+                      </div>
+                    </div>
+                    <div class="comment-profile">
+                      <div class="comment-date"><?php echo $comment['commentDate']?></div>
+                      <!-- 나중에 수정하면 update된 date가 렌더링 되도록 해야함-->
+                      <div class="author"><?php echo $comment['userName']?></div>
+                    </div>
+  
+                    <!-- 코멘트용 수정, 삭제 버튼-->
+                    <div class="buttons-forums btn-comment-container">
+  
+                      <?php if(isset($_SESSION['userId']) && $_SESSION['userId'] == $comment['commentUserId']): ?>
+              
+                    <form action="edit_comment.html" method="post"> 
+                    <input type="hidden" name="editCommentContents" class="btn btn-dark btn-comment" value="<?php echo $comment['commentContents'] ?>"/>
+                    <input type="hidden" name="editCommentForumId" value="<?php echo $comment['forumId'] ?>" />
+                    <button type="submit" name="editCommentId" class="btn btn-dark btn-comment" value="<?php echo $comment['commentId'] ?>">수정</button>
+                    </form>
+  
+                    <form id="comment_deleteForm" action="delete_comment.php" method="post">
+                    <button type="submit" name="deleteCommentId" class="btn btn-danger btn-comment btn-delete" value="<?php echo $comment['commentId'] ?>" onclick="confirmDelete()">삭제</button>
+                    <!-- type를 submit으로 해줘야 form이 자동으로 제출됨! -->
+                    </form>
+              
+                    <!-- if(isset($_SESSION['userId']) && $_SESSION['userId'] == $rows['answerUserId']) 조건문 종료-->
+                    <?php endif; ?>
+                    </div> 
                   </div>
+                  <?php endif; ?> 
+  
+                <!-- 수정버튼 누른 코멘트의 입력창이 생기도록 -->
+                <?php if($comment['commentContents'] != null && $_POST['editCommentId'] == $comment['commentId']): ?> 
+                <div class="card card-inner">
+                  <!-- 코멘트 수정창-->
+                  <form action="edit_comment.php" method="post">
+                  <textarea placeholder="<?php echo $comment['commentContents']?>"></textarea>
+                  <button type="button" class="btn btn-success btn-comment-edit-submit">완료</button>
+                  </form>
                 </div>
-                <div class="comment-profile">
-                  <div class="comment-date">2022</div>
-                  <div class="author">author</div>
+                <?php endif; ?> 
+  
+                <?php endwhile; ?>
                 </div>
-                </div>
+              </div>
     </div>
     </div>
 
@@ -323,16 +392,57 @@
                    </form>
                 </div>
             </div>
-              <div class="card card-inner">
-                <div class="media">
-                  <div class="media-body comment-contents">
-                    나는 답변에 대한 댓글입니다 (대댓글)
+              <!-- 쿼리문으로 코멘트 데이터 가져오기 -->
+              <!-- 주의 : 문자열 안에서 배열 값을 사용하려면 중괄호 {}로 감싸야 합니다-->
+              <?php
+              $commentQuery = "SELECT *, users.userName, users.userId AS commentUserId FROM comments 
+              LEFT JOIN users ON comments.userId = users.userId
+              WHERE answerId = {$rows['answerID']}";
+
+              $commentResult = $connect ->query($commentQuery);
+              ?>
+
+              <!-- comment 데이터들을 렌더링하기 -->
+              <div class="comments-list-container">
+                <?php while($comment = mysqli_fetch_assoc($commentResult)): ?>
+  
+                <!-- 수정버튼 누른 코멘트는 사라지도록-->
+                <?php if($comment['commentContents'] != null): ?>
+                  <div class="card card-inner">
+                    <div class="media">
+                      <div class="media-body comment-contents">
+                        <?php echo $comment['commentContents']?>
+                      </div>
+                    </div>
+                    <div class="comment-profile">
+                      <div class="comment-date"><?php echo $comment['commentDate']?></div>
+                      <!-- 나중에 수정하면 update된 date가 렌더링 되도록 해야함-->
+                      <div class="author"><?php echo $comment['userName']?></div>
+                    </div>
+  
+                    <!-- 코멘트용 수정, 삭제 버튼-->
+                    <div class="buttons-forums btn-comment-container">
+  
+                      <?php if(isset($_SESSION['userId']) && $_SESSION['userId'] == $comment['commentUserId']): ?>
+              
+                    <form action="edit_comment.html" method="post"> 
+                    <input type="hidden" name="editCommentContents" class="btn btn-dark btn-comment" value="<?php echo $comment['commentContents'] ?>"/>
+                    <input type="hidden" name="editCommentForumId" value="<?php echo $comment['forumId'] ?>" />
+                    <button type="submit" name="editCommentId" class="btn btn-dark btn-comment" value="<?php echo $comment['commentId'] ?>">수정</button>
+                    </form>
+  
+                    <form id="comment_deleteForm" action="delete_comment.php" method="post">
+                    <button type="submit" name="deleteCommentId" class="btn btn-danger btn-comment btn-delete" value="<?php echo $comment['commentId'] ?>" onclick="confirmDelete()">삭제</button>
+                    <!-- type를 submit으로 해줘야 form이 자동으로 제출됨! -->
+                    </form>
+              
+                    <!-- if(isset($_SESSION['userId']) && $_SESSION['userId'] == $rows['answerUserId']) 조건문 종료-->
+                    <?php endif; ?>
+                    </div> 
                   </div>
-                </div>
-                <div class="comment-profile">
-                  <div class="comment-date">2022</div>
-                  <div class="author">author</div>
-                </div>
+                  <?php endif; ?> 
+  
+                <?php endwhile; ?>
                 </div>
     </div>
     <!-- if($rows['answerContents'] != null && $_POST['editAnswer'] == $rows['answerID']): 조건문 종료-->
@@ -416,6 +526,19 @@
 
    <!-- 버튼 클릭시 목록으로 이동-->
    <script>
+
+      // 페이지가 로드되었을 때 실행되는 코드
+        document.addEventListener('DOMContentLoaded', function() {
+      // 모든 commentFormframe 요소를 가져오기
+      var commentFormFrames = document.querySelectorAll('[id^="commentFormframe_"]');
+
+      // 각 commentFormframe을 숨기기
+      commentFormFrames.forEach(function(commentFormFrame) {
+        commentFormFrame.style.display = 'none';
+      });
+    });
+
+
     function goToForumList(){
       window.location.href = "http://52.79.41.79/OkeyDokey/forumList.html";
     }
@@ -443,6 +566,13 @@
       function toggleAnswerForm(){
         var answerFormframe = document.getElementById("answerFormframe");
         answerFormframe.style.display = (answerFormframe.style.display !== "none") ? "none" : ""; 
+      }
+
+      function toggleCommentForm(button){
+        var answerID = button.dataset.answerId;
+        //  함수 () 안에 직접 php 코드를 넣지 못하니까. id값으로 php 코드의 answerID를 가져와서 사용함
+        var commentFormframe = document.getElementById("commentFormframe_"+answerID);
+        commentFormframe.style.display = (commentFormframe.style.display !== "none") ? "none" : ""; 
       }
     </script>
 
