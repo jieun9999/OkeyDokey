@@ -16,7 +16,7 @@ $image = isset($_POST['["image"]'])? $_POST['["image"]'] :null;
 // 서버로 들어오는 모든 데이터 : id, image, username
 
 if(isset($_FILES["image"]["name"])){
-  //이미지파일이 폼으로 제출되었는지 확인합니다.
+  //양식 제출 시 "image"라는 이름의 파일이 포함되어 있는지 확인하는 중입니다.
 
   $imageName = $_FILES["image"]["name"]; 
   //업로드된 파일의 원래 이름을 가져와 변수 $imageName에 할당합니다.
@@ -112,8 +112,11 @@ if(isset($_FILES["image"]["name"])){
      echo '<script>history.back();</script>';
     }
   
-  }else{
-    echo '<script>alert("서버제출에 문제가 생겼습니다")</script>';
+  }
+  
+else{
+    echo '<script>alert("양식 제출 시 "image"라는 이름의 파일이 포함되어 있지 않습니다")</script>';
+
 }
 
 ?>
