@@ -9,11 +9,9 @@ if(isset($_FILES["image"]["name"])){
   //이미지파일이 폼으로 제출되었는지 확인합니다.
 
   $id = $_POST["id"];
-  $name = $_POST["name"];
-
   $imageName = $_FILES["image"]["name"]; 
   //업로드된 파일의 원래 이름을 가져와 변수 $imageName에 할당합니다.
-
+  
   $imageSize = $_FILES["image"]["size"];
   //업로드된 파일의 크기를 가져와 변수 $imageSize에 할당합니다.
 

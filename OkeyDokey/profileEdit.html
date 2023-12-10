@@ -101,12 +101,12 @@
           <div class="card-body">
             <div class="e-profile">
 
-              <!-- 사진 바꾸기 폼-->
+              <!-- 프로필 변경폼-->
               <!-- enctype="multipart/form-data"는 HTML <form> 태그에서 데이터를 서버로 전송할 때 사용되는 인코딩 유형을 나타내는 속성입니다. -->
               <!-- 폼 데이터가 텍스트가 아닌 이진 데이터로 구성되어 있음을 나타냄-->
               <!-- $_FILES['file']을 통해 업로드된 파일에 접근 -->
-              <form class="form" id="form" action="process_image_upload.php" enctype="multipart/form-data" method="post">
-                <div class ="upload">
+            <form class="form" id="profileForm" action="process_image_upload.php" enctype="multipart/form-data" method="post">
+              <div class ="upload">
                 <?php
 
                 $sessionId = $_SESSION['userId'];
@@ -117,15 +117,13 @@
                 $userImg = $userData['userImg'];
 
                 ?>
-                <img src="<?php echo $userImg ?>" width= 125 height =125/>
+                <img id="userImage"src="<?php echo $userImg ?>" width= 125 height =125/>
                 <div class="round">
                 <input type="hidden" name="id" value="<?php echo $userId ?>"/>
-                <input type="hidden" name="name" value="<?php echo $userName ?>"/>
-                <input type="file" id = "image" name="image" id="userImage" accept=".jpg, .jpeg, .png"/>
+                <input type="file" id = "image" name="image" accept=".jpg, .jpeg, .png"/>
                 <i class="fa fa-camera" style="color: #fff"></i>
                 </div>
-                </div>
-              </form>
+              </div>     
 
               <ul class="nav nav-tabs">
                 <li class="nav-item"><a href="" class="active nav-link">Settings</a></li>
@@ -177,7 +175,7 @@
                     </div>
                     <div class="row">
                       <div class="col d-flex justify-content-end">
-                        <button class="btn btn-primary" type="submit">Save Changes</button>
+                        <button class="btn btn-primary" type="button" onclick="saveChanges()">Save Changes</button>
                       </div>
                     </div>
                   </form>
@@ -185,6 +183,7 @@
                 </div>
               </div>
 
+            </form>
 
             </div>
           </div>
@@ -320,11 +319,29 @@
       }
     }
 
-    //이미지가 바뀌면 폼 제출됨
-    document.getElementById("image").onchange = function(){
-        document.getElementById('form').submit();
+    //이미지가 바뀌면 바뀐 이미지를 렌더링 해줌
+    document.getElementById("image").onchange = function(event){
+      
+      var input = event.target;
+      var reader = new FileReader();
+
+      //선택한 파일이 있다면 FileReader를 이용하여 이미지를 읽어옴
+      if(input.files && input.files[0]){
+        reader.readAsDataURL(input.files[0]);
+      }
+
+      // reader 객체가 완전히 로드되었을때 실행됨
+      reader.onload = function(){
+        var img = document.getElementById("userImage");
+        img.src = reader.result;
+      }
     }
 
+    // 서버에 변경된 프로필 데이터 보내기
+    function saveChanges(){
+      // 여기서는 간단히 form을 submit합니다.
+      document.getElementById('profileForm').submit();
+    }
     </script>
     
 
