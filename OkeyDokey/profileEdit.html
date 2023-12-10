@@ -26,7 +26,14 @@
     //이렇게 하면 브라우저에 에러 메시지가 표시됩니다. 
     error_reporting(E_ALL);
     ini_set('display_errors', 1);
-    
+
+
+   // 로그인한 사용자가 아니라면
+   if(empty($_SESSION['userId'])){
+      echo '<script>alert("먼저 로그인 하세요")</script>';
+      echo "<script>location.replace('signin.html');</script>";
+      exit; // 등록되기 전에 여기서 탈출
+   }
 
     //1. mysql과 연결하기
     include 'config_mysqli.php';
@@ -93,30 +100,33 @@
         <div class="card">
           <div class="card-body">
             <div class="e-profile">
-              <div class="row">
-                <div class="col-12 col-sm-auto mb-3">
-                  <div class="mx-auto" style="width: 140px;">
-                    <img src="<?php echo $row['userImg'] ?>" class="d-flex justify-content-center align-items-center rounded" style="height: 140px;">
-                    </img>
-                  </div>
+
+              <!-- 사진 바꾸기 폼-->
+              <!-- enctype="multipart/form-data"는 HTML <form> 태그에서 데이터를 서버로 전송할 때 사용되는 인코딩 유형을 나타내는 속성입니다. -->
+              <!-- 폼 데이터가 텍스트가 아닌 이진 데이터로 구성되어 있음을 나타냄-->
+              <!-- $_FILES['file']을 통해 업로드된 파일에 접근 -->
+              <form class="form" id="form" action="process_image_upload.php" enctype="multipart/form-data" method="post">
+                <div class ="upload">
+                <?php
+
+                $sessionId = $_SESSION['userId'];
+                $userData = mysqli_fetch_assoc(mysqli_query($connect, "SELECT * FROM users WHERE userId = $sessionId "));
+
+                $userId = $userData['userId'];
+                $userName = $userData['userName'];
+                $userImg = $userData['userImg'];
+
+                ?>
+                <img src="<?php echo $userImg ?>" width= 125 height =125/>
+                <div class="round">
+                <input type="hidden" name="id" value="<?php echo $userId ?>"/>
+                <input type="hidden" name="name" value="<?php echo $userName ?>"/>
+                <input type="file" id = "image" name="image" id="userImage" accept=".jpg, .jpeg, .png"/>
+                <i class="fa fa-camera" style="color: #fff"></i>
                 </div>
-                <div class="col d-flex flex-column flex-sm-row justify-content-between mb-3">
-                  <div class="text-center text-sm-left mb-2 mb-sm-0">
-                    <h4 class="pt-sm-2 pb-1 mb-0 text-nowrap"><?php echo $row['userName'] ?></h4>
-                    <p class="mb-0"><?php echo $row['userEmail'] ?></p>
-                    <div class="mt-2">
-                      <button id="change-profile-pic" class="btn btn-primary btn-change-img" type="button">
-                        <i class="fa fa-fw fa-camera"></i>
-                        <span>Change Photo</span>
-                      </button>
-                    </div>
-                  </div>
-                  <div class="text-center text-sm-right">
-                    <span class="badge badge-secondary">member</span>
-                    <div class="text-muted"><small>Joined <?php echo $row['userDate'] ?></small></div>
-                  </div>
                 </div>
-              </div>
+              </form>
+
               <ul class="nav nav-tabs">
                 <li class="nav-item"><a href="" class="active nav-link">Settings</a></li>
               </ul>
@@ -195,7 +205,6 @@
           </div>
         </div>
       </div>
-
       </div>
 
     </div>
@@ -203,9 +212,6 @@
   </div>
 </div>
 </div>
-
-<!-- 프로필 모달창-->
-
 
  <!-- Footer-->
 
@@ -314,6 +320,10 @@
       }
     }
 
+    //이미지가 바뀌면 폼 제출됨
+    document.getElementById("image").onchange = function(){
+        document.getElementById('form').submit();
+    }
 
     </script>
     
