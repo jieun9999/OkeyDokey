@@ -105,7 +105,9 @@
               <!-- enctype="multipart/form-data"는 HTML <form> 태그에서 데이터를 서버로 전송할 때 사용되는 인코딩 유형을 나타내는 속성입니다. -->
               <!-- 폼 데이터가 텍스트가 아닌 이진 데이터로 구성되어 있음을 나타냄-->
               <!-- $_FILES['file']을 통해 업로드된 파일에 접근 -->
+
             <form class="form" id="profileForm" action="process_image_upload.php" enctype="multipart/form-data" method="post">
+              <!-- 사진 변경-->
               <div class ="upload">
                 <?php
 
@@ -131,19 +133,22 @@
               <div class="tab-content pt-3">
                 <div class="tab-pane active">
                   <form class="form" novalidate="">
+                    <!-- 이름 변경-->
                     <div class="row">
                       <div class="col">
                         <div class="row">
                           <div class="col">
                             <div class="form-group">
                               <label>Username</label>
-                              <input class="form-control" type="text" name="username" value="<?php echo $row['userName'] ?>">
+                              <input class="form-control" type="text" name="userName" value="<?php echo $row['userName'] ?>">
                             </div>
                           </div>
                         </div>
 
                       </div>
                     </div>
+
+                    <!-- 비번 변경-->
                     <div class="row changePassword">
                       <div class="col-12 col-sm-6 mb-3">
                         <div class="mb-2 title">Change Password</div>
