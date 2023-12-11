@@ -30,8 +30,8 @@
 
   // 검색 기능  
   // 새로운 검색어를 받아옴
-  $searchTerm = isset($_GET['search']) ? $_GET['search'] : null;
-
+  // url 표기때문에 ""로 기본값 할당
+  $searchTerm = isset($_GET['search']) ? $_GET['search'] : "";
 
   // 정렬순서 쿠키
   // 최신순 or 조회순 or 추천순 정렬 순서를 확인
@@ -88,10 +88,13 @@
         LEFT JOIN users ON answers.userId = users.userId 
         LEFT JOIN users AS users2 ON forums.userId = users2.userId"; /* users테이블 겹치니까 별칭사용함 */
 
-       // 검색어가 비어있지 않다면 쿼리에 추가합니다.
+       // 검색어가 비어있지 않다면(""가 아니라면) 쿼리에 추가합니다.
        // WHERE 절 문자열을 더해서, 검색단어가 포함된 글 제목들만 보여줌
-       if (!empty($searchTerm)) {
-       $sql .= " WHERE forums.forumTitle LIKE '%$searchTerm%'";
+       if ($searchTerm !== "") {
+        //mysqli_num_rows() 함수를 사용해 게시글의 총 개수를 다시 설정해준다
+        $sqlNum = "SELECT * FROM forums WHERE forums.forumTitle LIKE '%$searchTerm%'";
+        $res = mysqli_query($connect, $sqlNum);
+        $sql .= " WHERE forums.forumTitle LIKE '%$searchTerm%'";
        }
        // '%$searchTerm%'는 검색어가 포함된 부분 문자열을 찾습니다.
 
@@ -101,7 +104,7 @@
 
         //사용자의 선택($sortOrder)에 따라 정렬 순서가 즉시 결정되고 그에 따라 해당 SQL 쿼리가 구성되게 함
         // $sortOrder 에 유저 버튼클릭에 따라 값을 그때 그때 할당하기 때문에, 쿠키가 불필요하다
-        
+
         if($sortOrder === 'views'){
           $sql.= " ORDER BY forums.forumHits DESC";
           $btnText ='조회순';
@@ -186,20 +189,18 @@
       </button>
       <!-- href의 '?key=value' 파라미터를 사용하여서 get 요청을 보냄 -->
       <!-- onclick 이벤트에서 버튼 텍스트를 변경-->
+      <!-- $searchTerm 은 php 코드라 감싸주기 -->
       <div class="dropdown-menu">
-        <a class="dropdown-item" href="?page=1&sort=latest">최신순</a>
+        <a class="dropdown-item" href="?page=1&sort=latest&search=<?php echo $searchTerm; ?>">최신순</a>
         <div class="dropdown-divider"></div>
-        <a class="dropdown-item" href="?page=1&sort=views">조회순</a>
+        <a class="dropdown-item" href="?page=1&sort=views&search=<?php echo $searchTerm; ?>">조회순</a>
         <div class="dropdown-divider"></div>
-        <a class="dropdown-item" href="?page=1&sort=likes">추천순</a>
+        <a class="dropdown-item" href="?page=1&sort=likes&search=<?php echo $searchTerm; ?>">추천순</a>
       </div>
     </div>
 
     <!-- 검색창 쿠키 -->
       <?php
-
-      //새로운 검색어를 받아옴
-      $searchTerm = isset($_GET['search'])? $_GET['search']: '';
 
       //검색어가 비어있지 않다면 쿠키에 저장
       if(!empty($searchTerm)){
@@ -234,7 +235,8 @@
       <form class="search-form" method="GET" action="/OkeyDokey/forumList.html" autocomplete="off">
 
         <!-- datalist 요소를 사용하여 검색 기록을 드롭다운으로 보여줌-->
-          <input list="searchHistoryList" name="search" type="text" class="form-control" placeholder="Search by title..."/> 
+        <!-- 만약  $searchTerm이 ""가 아니라면, placeholder 대신에 input 위에 값으로 띄워주고 싶어 -->
+          <input list="searchHistoryList" name="search" type="text" class="form-control" placeholder="<?php echo $searchTerm !== "" ? $searchTerm : 'Search by title'; ?>"></input> 
           <input type="submit" value="click!"/>
             <datalist id="searchHistoryList">
               
@@ -321,44 +323,51 @@
       <ul class="pagination mb-5">
 
         <?php
-        // 1. 페이지 번호 중 처음/이전버튼 출력
-        // 여기서 \"는 큰따옴표(")를 문자열 내에서 사용하기 위한 이스케이프입니
-        if($page >1 ){
-          echo "<li class='page-item'><a class='page-link' href=\"forumList.html?page=1&sort=$sortOrder\" data-abc='true'>[처음]</a></li>";
-        }
 
-        if($page >1 ){
-          $pre = $page -1;
-          echo "<li class='page-item'><a class='page-link' href=\"forumList.html?page=$pre&sort=$sortOrder\" data-abc='true'>«</a></li>";
-        }
+        // 검색어가 있을 경우 렌더링과 전체페이지 렌더링 구분하기
         
+        // => mysqli_num_rows() 함수를 사용해 게시글의 총 개수를 다시 설정해준다
+        $sqlNum = "SELECT * FROM forums WHERE forums.forumTitle LIKE '%$searchTerm%'";
 
-        // 2. 페이지 번호 중 1/2/3 등 숫자버튼 출력, + 현재 버튼 active 
-        $total_post = mysqli_num_rows($res);
-        $total_page = ceil($total_post/ $per);
-        // 총 페이지 개수는 ceil() 을 사용해 (총 게시글 개수 / 페이지 당 게시글 개수) 를 올림해준 값 으로 정한다.
+          // 1. 페이지 번호 중 처음/이전버튼 출력
+          // 여기서 \"는 큰따옴표(")를 문자열 내에서 사용하기 위한 이스케이프입니다
+          if($page >1 ){
+            echo "<li class='page-item'><a class='page-link' href=\"forumList.html?page=1&sort=$sortOrder&search=$searchTerm\" data-abc='true'>[처음]</a></li>";
+          }
+  
+          if($page >1 ){
+            $pre = $page -1;
+            echo "<li class='page-item'><a class='page-link' href=\"forumList.html?page=$pre&sort=$sortOrder&search=$searchTerm\" data-abc='true'>«</a></li>";
+          }
+          
+  
+          // 2. 페이지 번호 중 1/2/3 등 숫자버튼 출력, + 현재 버튼 active 
+          $total_post = mysqli_num_rows($res);
+          $total_page = ceil($total_post/ $per);
+          // 총 페이지 개수는 ceil() 을 사용해 (총 게시글 개수 / 페이지 당 게시글 개수) 를 올림해준 값 으로 정한다.
+  
+          $page_num = 1;
+          while($page_num <= $total_page){
+              if($page == $page_num){
+                  echo "<li class='page-item active'><a class='page-link' href=\"forumList.html?page=$page_num&sort=$sortOrder&search=$searchTerm\" data-abc='true'>$page_num</a></li>";
+              }
+              else {
+                echo "<li class='page-item'><a class='page-link' href=\"forumList.html?page=$page_num&sort=$sortOrder&search=$searchTerm\" data-abc='true'>$page_num</a></li>";
+              }
+                  $page_num++;
+          }
+  
+          // 3. 페이지 번호 중 끝/다음버튼 출력
+          if($page < $total_page){
+            $next = $page + 1;
+            echo "<li class='page-item'><a class='page-link' href=\"forumList.html?page=$next&sort=$sortOrder&search=$searchTerm\" data-abc='true'>»</a></li>";
+          }
+          if($page < $total_page){
+            echo "<li class='page-item'><a class='page-link' href=\"forumList.html?page=$total_page&sort=$sortOrder&search=$searchTerm\" data-abc='true'>[끝]</a></li>";
+          }
 
-        $page_num = 1;
-        while($page_num <= $total_page){
-            if($page == $page_num){
-                echo "<li class='page-item active'><a class='page-link' href=\"forumList.html?page=$page_num&sort=$sortOrder\" data-abc='true'>$page_num</a></li>";
-            }
-            else {
-              echo "<li class='page-item'><a class='page-link' href=\"forumList.html?page=$page_num&sort=$sortOrder\" data-abc='true'>$page_num</a></li>";
-            }
-                $page_num++;
-        }
 
-        // 3. 페이지 번호 중 끝/다음버튼 출력
-        if($page < $total_page){
-          $next = $page + 1;
-          echo "<li class='page-item'><a class='page-link' href=\"forumList.html?page=$next&sort=$sortOrder\" data-abc='true'>»</a></li>";
-        }
-        if($page < $total_page){
-          echo "<li class='page-item'><a class='page-link' href=\"forumList.html?page=$total_page&sort=$sortOrder\" data-abc='true'>[끝]</a></li>";
-        }
-      
-      ?>
+        ?>
 
       </ul>
       </nav>
