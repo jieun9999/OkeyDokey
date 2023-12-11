@@ -37,10 +37,6 @@
   // 최신순 or 조회순 or 추천순 정렬 순서를 확인
   $sortOrder = isset($_GET['sort'])? $_GET['sort']: 'latest';
 
-  // 쿠키에 저장하기
-  // setcookie("쿠키명", "쿠키 값", "폐기 시간", "경로");
-  setcookie('sortOrder_history', $sortOrder, time()+ 3600);
-
   //1. mysql과 연결하기
   include 'config_mysqli.php';
 
@@ -99,14 +95,13 @@
        }
        // '%$searchTerm%'는 검색어가 포함된 부분 문자열을 찾습니다.
 
-        //PHP에서 '.' 연산자는 두 개의 문자열을 합치는 연산을 의미합니다.
-        //$_COOKIE['sortOrder_history']의 값에 따라서, 데이터를 가져옴
 
         //쿠키에 따라서 버튼 텍스트 변경
         $btnText ='정렬 순서';
 
         //사용자의 선택($sortOrder)에 따라 정렬 순서가 즉시 결정되고 그에 따라 해당 SQL 쿼리가 구성되게 함
-
+        // $sortOrder 에 유저 버튼클릭에 따라 값을 그때 그때 할당하기 때문에, 쿠키가 불필요하다
+        
         if($sortOrder === 'views'){
           $sql.= " ORDER BY forums.forumHits DESC";
           $btnText ='조회순';
@@ -192,11 +187,11 @@
       <!-- href의 '?key=value' 파라미터를 사용하여서 get 요청을 보냄 -->
       <!-- onclick 이벤트에서 버튼 텍스트를 변경-->
       <div class="dropdown-menu">
-        <a class="dropdown-item" href="?sort=latest">최신순</a>
+        <a class="dropdown-item" href="?page=1&sort=latest">최신순</a>
         <div class="dropdown-divider"></div>
-        <a class="dropdown-item" href="?sort=views">조회순</a>
+        <a class="dropdown-item" href="?page=1&sort=views">조회순</a>
         <div class="dropdown-divider"></div>
-        <a class="dropdown-item" href="?sort=likes">추천순</a>
+        <a class="dropdown-item" href="?page=1&sort=likes">추천순</a>
       </div>
     </div>
 
@@ -329,12 +324,12 @@
         // 1. 페이지 번호 중 처음/이전버튼 출력
         // 여기서 \"는 큰따옴표(")를 문자열 내에서 사용하기 위한 이스케이프입니
         if($page >1 ){
-          echo "<li class='page-item'><a class='page-link' href=\"forumList.html?page=1\" data-abc='true'>[처음]</a></li>";
+          echo "<li class='page-item'><a class='page-link' href=\"forumList.html?page=1&sort=$sortOrder\" data-abc='true'>[처음]</a></li>";
         }
 
         if($page >1 ){
           $pre = $page -1;
-          echo "<li class='page-item'><a class='page-link' href=\"forumList.html?page=$pre\" data-abc='true'>«</a></li>";
+          echo "<li class='page-item'><a class='page-link' href=\"forumList.html?page=$pre&sort=$sortOrder\" data-abc='true'>«</a></li>";
         }
         
 
@@ -346,10 +341,10 @@
         $page_num = 1;
         while($page_num <= $total_page){
             if($page == $page_num){
-                echo "<li class='page-item active'><a class='page-link' href=\"forumList.html?page=$page_num\" data-abc='true'>$page_num</a></li>";
+                echo "<li class='page-item active'><a class='page-link' href=\"forumList.html?page=$page_num&sort=$sortOrder\" data-abc='true'>$page_num</a></li>";
             }
             else {
-              echo "<li class='page-item'><a class='page-link' href=\"forumList.html?page=$page_num\" data-abc='true'>$page_num</a></li>";
+              echo "<li class='page-item'><a class='page-link' href=\"forumList.html?page=$page_num&sort=$sortOrder\" data-abc='true'>$page_num</a></li>";
             }
                 $page_num++;
         }
@@ -357,10 +352,10 @@
         // 3. 페이지 번호 중 끝/다음버튼 출력
         if($page < $total_page){
           $next = $page + 1;
-          echo "<li class='page-item'><a class='page-link' href=\"forumList.html?page=$next\" data-abc='true'>»</a></li>";
+          echo "<li class='page-item'><a class='page-link' href=\"forumList.html?page=$next&sort=$sortOrder\" data-abc='true'>»</a></li>";
         }
         if($page < $total_page){
-          echo "<li class='page-item'><a class='page-link' href=\"forumList.html?page=$total_page\" data-abc='true'>[끝]</a></li>";
+          echo "<li class='page-item'><a class='page-link' href=\"forumList.html?page=$total_page&sort=$sortOrder\" data-abc='true'>[끝]</a></li>";
         }
       
       ?>
