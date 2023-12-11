@@ -20,6 +20,9 @@
   error_reporting(E_ALL);
   ini_set('display_errors', 1);
 
+  // 새로운 검색어를 받아옴
+  $searchTerm = isset($_GET['search']) ? $_GET['search'] : null;
+
   // 정렬순서 쿠키
 
   // 최신순 or 조회순 or 추천순 정렬 순서를 확인
@@ -55,12 +58,19 @@
               FROM answers
               WHERE answers.forumId = forums.forumId
         )
+        
         /* WHERE 절은 쿼리에서 조건을 지정하여 특정 행을 선택하는 역할을 합니다 */
         /* 한개의 forum에 여러개의 answers 가 달리는 경우, 중복된 행이 생기는 문제가 발생 => 여러 행 중에서 WHERE문으로 하나의 행을 선택*/
         /* 특히, WHERE 절은 주로 SELECT, UPDATE, DELETE 등의 명령문과 자주 쓰입니다*/
 
         LEFT JOIN users ON answers.userId = users.userId 
         LEFT JOIN users AS users2 ON forums.userId = users2.userId"; /* users테이블 겹치니까 별칭사용함 */
+
+       // 검색어가 비어있지 않다면 쿼리에 추가합니다.
+       // WHERE 절 문자열을 더해서, 검색단어가 포함된 글 제목들만 보여줌
+       if (!empty($searchTerm)) {
+       $sql .= " WHERE forums.forumTitle LIKE '%$searchTerm%'";
+       }
 
         //PHP에서 '.' 연산자는 두 개의 문자열을 합치는 연산을 의미합니다.
         //$_COOKIE['sortOrder_history']의 값에 따라서, 데이터를 가져옴
