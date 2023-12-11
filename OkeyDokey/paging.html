@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <style>
+        body{
+            padding: 10px;
+        }
+    </style>
+    <table>
+        <h1>페이징</h1>
+        <thead>
+            <tr>
+                <th>번호</th>
+                <th>제목</th>
+                <th>내용</th>
+                <th>날짜</th>
+                <th>조회수</th>
+                <th>추천수</th>
+            </tr>
+        </thead>
+        <tbody>
+        <?php
+        include 'config_mysqli.php';
+
+        //페이지 번호를 넘어다닐 때는 GET 메소드를 사용할 것이기 때문에, GET으로 넘어올 page를 받아 $page에 할당해준다.
+        if(isset($_GET['page'])){
+            $page = $_GET['page'];
+        }else{
+            $page = 1;
+        }
+
+        // 게시글 페이징
+            
+            $sql = "SELECT * FROM forums";
+            $res = mysqli_query($connect, $sql);
+            $total_post = mysqli_num_rows($res);
+            //mysqli_num_rows(query) 함수를 사용해 게시글의 총 개수를 알아내 변수에 할당해준다.
+
+            $per = 5;
+            //한 페이지 당 출력할 게시글의 개수를 정해준다
+
+            $start = ($page-1)*$per + 1;
+            // 매 페이지를 시작할 게시글의 번호를 정해준다.
+
+            $start -= 1;
+            // LIMIT를 사용해 결과값을 제한하여 결과적으로 게시글을 잘라줄 것이기 때문에,limit의 용법에 맞춰 시작값을 조정해준다.
+            // LIMIT의 시작 행은 1이 아니라 0이기 때문에 $start에서 1을 빼주는 것이다.
+
+            $sql_page = "SELECT * FROM forums ORDER BY forumId DESC LIMIT $start, $per";
+            // $start부터 시작해 $per개 가져온다.
+            $res_page = mysqli_query($connect, $sql_page);
+
+            while($row = mysqli_fetch_array($res_page)){
+        ?>
+                <tr align=center>
+                    <td><?php echo $row['forumId'];?></td>
+                    <td><?php echo $row['forumTitle'];?></a></td>
+                    <td><?php echo $row['forumContents'];?></td>
+                    <td><?php echo $row['forumDate'];?></td>
+                    <td><?php echo $row['forumHits'];?></td>
+                    <td><?php echo $row['forumVotingCounts'];?></td>
+                </tr>
+                <?php } ?>
+        </tbody>
+    </table>
+    <?php
+
+        //페이지 번호 출력
+
+            // 현재 페이지가 첫 페이지가 아니라면
+            // 첫 페이지로 가는 [처음]과 이전 페이지로 가는 [이전]을 출력한다.
+
+            if($page > 1){
+                echo "<a href=\"paging.html?page=1\">[처음]</a>";
+            }
+
+            if($page >1){
+                $pre = $page -1;
+                echo "<a href=\"paging.html?page=$pre\"> 이전 </a>";
+            }
+
+            $total_post = mysqli_num_rows($res);
+            $total_page = ceil($total_post/ $per);
+            // 총 페이지 개수는 ceil() 을 사용해 (총 게시글 개수 / 페이지 당 게시글 개수) 를 올림해준 값 으로 정한다.
+
+
+            // 1, 2, 3.. 등 숫자 번호 출력
+            $page_num = 1;
+            while($page_num <= $total_page){
+                if($page == $page_num){
+                    echo "<a style=\"color:purple;\" href=\"paging.html?page=$page_num\">$page_num </a>";
+                }
+                else {
+                    echo "<a href=\"paging.html?page=$page_num\">$page_num </a>"; 
+                }
+                    $page_num++;
+            }
+
+            // 현재 페이지가 마지막 페이지가 아니라면?
+            // 마지막 페이지로 가는 [끝]과 다음 페이지로 가는 [다음]을 출력한다.
+
+            if($page < $total_page){
+                $next = $page + 1;
+                echo "<a href=\"paging.html?page=$next\">다음 </a>";
+            }
+            if($page < $total_page){
+                echo "<a href=\"paging.html?page=$total_page\">[끝]</a>";
+            }
+
+    ?>
+</body>
+</html>

@@ -71,6 +71,7 @@
        if (!empty($searchTerm)) {
        $sql .= " WHERE forums.forumTitle LIKE '%$searchTerm%'";
        }
+       // '%$searchTerm%'는 검색어가 포함된 부분 문자열을 찾습니다.
 
         //PHP에서 '.' 연산자는 두 개의 문자열을 합치는 연산을 의미합니다.
         //$_COOKIE['sortOrder_history']의 값에 따라서, 데이터를 가져옴
