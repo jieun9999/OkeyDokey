@@ -38,7 +38,6 @@
             
             $sql = "SELECT * FROM forums";
             $res = mysqli_query($connect, $sql);
-            $total_post = mysqli_num_rows($res);
             //mysqli_num_rows(query) 함수를 사용해 게시글의 총 개수를 알아내 변수에 할당해준다.
 
             $per = 5;
@@ -72,7 +71,7 @@
 
         //페이지 번호 출력
 
-            // 현재 페이지가 첫 페이지가 아니라면
+            // 1.현재 페이지가 첫 페이지가 아니라면
             // 첫 페이지로 가는 [처음]과 이전 페이지로 가는 [이전]을 출력한다.
 
             if($page > 1){
@@ -84,12 +83,11 @@
                 echo "<a href=\"paging.html?page=$pre\"> 이전 </a>";
             }
 
+            // 2. 1, 2, 3.. 등 숫자 번호 출력
             $total_post = mysqli_num_rows($res);
             $total_page = ceil($total_post/ $per);
             // 총 페이지 개수는 ceil() 을 사용해 (총 게시글 개수 / 페이지 당 게시글 개수) 를 올림해준 값 으로 정한다.
 
-
-            // 1, 2, 3.. 등 숫자 번호 출력
             $page_num = 1;
             while($page_num <= $total_page){
                 if($page == $page_num){
@@ -101,7 +99,7 @@
                     $page_num++;
             }
 
-            // 현재 페이지가 마지막 페이지가 아니라면?
+            // 3. 현재 페이지가 마지막 페이지가 아니라면?
             // 마지막 페이지로 가는 [끝]과 다음 페이지로 가는 [다음]을 출력한다.
 
             if($page < $total_page){

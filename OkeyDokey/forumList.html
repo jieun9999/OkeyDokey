@@ -20,11 +20,20 @@
   error_reporting(E_ALL);
   ini_set('display_errors', 1);
 
+  // 페이징
+  //페이지 번호를 넘어다닐 때는 GET 메소드를 사용할 것이기 때문에, GET으로 넘어올 page를 받아 $page에 할당해준다.
+  if(isset($_GET['page'])){
+    $page = $_GET['page'];
+    }else{
+      $page = 1;
+    }
+
+  // 검색 기능  
   // 새로운 검색어를 받아옴
   $searchTerm = isset($_GET['search']) ? $_GET['search'] : null;
 
-  // 정렬순서 쿠키
 
+  // 정렬순서 쿠키
   // 최신순 or 조회순 or 추천순 정렬 순서를 확인
   $sortOrder = isset($_GET['sort'])? $_GET['sort']: 'latest';
 
@@ -34,9 +43,26 @@
 
   //1. mysql과 연결하기
   include 'config_mysqli.php';
-  
+
   //2. SELECT 쿼리 전송 
   /* join사용해서 forums 테이블과 answers 테이블의 데이터를 한번에 가져온다 */
+
+  // 게시글 페이징
+  //mysqli_num_rows() 함수를 사용해 게시글의 총 개수를 알아내 변수에 할당해준다.
+  $sqlNum = "SELECT * FROM forums";
+  $res = mysqli_query($connect, $sqlNum);
+ 
+  $per = 5;
+  //한 페이지 당 출력할 게시글의 개수를 정해준다
+
+  $start = ($page-1)*$per + 1;
+  // 매 페이지를 시작할 게시글의 번호를 정해준다.
+
+  $start -= 1;
+  // LIMIT를 사용해 결과값을 제한하여 결과적으로 게시글을 잘라줄 것이기 때문에,limit의 용법에 맞춰 시작값을 조정해준다.
+  // LIMIT의 시작 행은 1이 아니라 0이기 때문에 $start에서 1을 빼주는 것이다.
+
+
 
   $sql = "SELECT forums.forumTitle, forums.userId, forums.forumDate, forums.forumId AS FI, /*forums.forumId는 아래에서 렌더링해야하니 별칭 정해줌 */
   answers.userId, answers.answerDate, users.userImg, users.userName, users2.userName AS forumUserName,
@@ -95,6 +121,9 @@
           $btnText ='최신순';
         }
        
+        // 페이징 쿼리 
+        $sql.=" LIMIT $start, $per";
+
 
   $result=$connect->query($sql);
 
@@ -252,8 +281,8 @@
       //3. 가져온 데이터로 목차 생성
 
       //while 반복문은 mysql 결과 집합에서 각 행을 하나씩 가져와서 html 목차를 동적으로 생성합니다.
-      //이때, 'fetch_assoc()' 함수를 통해  MySQL 결과 집합의 한 행을 연관배열(associative array)로 가져옵니다
-      
+      //이때, 'fetch_assoc()' 함수를 통해  MySQL 결과 집합의 한 행을 연관배열(associative array)로 가져옵니다 
+
       while($rows = mysqli_fetch_assoc($result)){
         ?>
         <div class="card-body py-3">
@@ -287,23 +316,60 @@
         </div>
         </div>
         <hr class="m-0">
-        <?php
-      }
-        // MySQL 연결 닫기
-        $connect->close();
+      <?php
+        }
+      // while 문 닫아주기
       ?>
 
       </div>
       <nav>
       <ul class="pagination mb-5">
-      <li class="page-item disabled"><a class="page-link" href="javascript:void(0)" data-abc="true">«</a></li>
-      <li class="page-item active"><a class="page-link" href="javascript:void(0)" data-abc="true">1</a></li>
-      <li class="page-item"><a class="page-link" href="javascript:void(0)" data-abc="true">2</a></li>
-      <li class="page-item"><a class="page-link" href="javascript:void(0)" data-abc="true">3</a></li>
-      <li class="page-item"><a class="page-link" href="javascript:void(0)" data-abc="true">»</a></li>
+
+        <?php
+        // 1. 페이지 번호 중 처음/이전버튼 출력
+        // 여기서 \"는 큰따옴표(")를 문자열 내에서 사용하기 위한 이스케이프입니
+        if($page >1 ){
+          echo "<li class='page-item'><a class='page-link' href=\"forumList.html?page=1\" data-abc='true'>[처음]</a></li>";
+        }
+
+        if($page >1 ){
+          $pre = $page -1;
+          echo "<li class='page-item'><a class='page-link' href=\"forumList.html?page=$pre\" data-abc='true'>«</a></li>";
+        }
+        
+
+        // 2. 페이지 번호 중 1/2/3 등 숫자버튼 출력, + 현재 버튼 active 
+        $total_post = mysqli_num_rows($res);
+        $total_page = ceil($total_post/ $per);
+        // 총 페이지 개수는 ceil() 을 사용해 (총 게시글 개수 / 페이지 당 게시글 개수) 를 올림해준 값 으로 정한다.
+
+        $page_num = 1;
+        while($page_num <= $total_page){
+            if($page == $page_num){
+                echo "<li class='page-item active'><a class='page-link' href=\"forumList.html?page=$page_num\" data-abc='true'>$page_num</a></li>";
+            }
+            else {
+              echo "<li class='page-item'><a class='page-link' href=\"forumList.html?page=$page_num\" data-abc='true'>$page_num</a></li>";
+            }
+                $page_num++;
+        }
+
+        // 3. 페이지 번호 중 끝/다음버튼 출력
+        if($page < $total_page){
+          $next = $page + 1;
+          echo "<li class='page-item'><a class='page-link' href=\"forumList.html?page=$next\" data-abc='true'>»</a></li>";
+        }
+        if($page < $total_page){
+          echo "<li class='page-item'><a class='page-link' href=\"forumList.html?page=$total_page\" data-abc='true'>[끝]</a></li>";
+        }
+      
+      ?>
+
       </ul>
       </nav>
       </div> 
+
+
     <!-- Footer-->
 
     <footer class="footer_area section_padding_130_0">
