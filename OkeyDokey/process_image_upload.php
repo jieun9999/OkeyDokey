@@ -8,12 +8,18 @@ session_start(); //세션시작
 
 include 'config_mysqli.php';
 
+// 서버로 들어오는 모든 데이터 : id, image, username, currentPassword, newPassword, confirmPassword
 
 $id = isset($_POST["id"])? $_POST["id"] : null;
 $name = isset($_POST["userName"])? $_POST["userName"] : null;
 $image = isset($_POST['["image"]'])? $_POST['["image"]'] :null;
+$currentPassword = isset($_POST['currentPassword']) ? $_POST['currentPassword'] : null;
+$newPassword = isset($_POST['newPassword']) ? $_POST['newPassword'] : null;
+$confirmPassword = isset($_POST['confirmPassword']) ? $_POST['confirmPassword']: null;
 
-// 서버로 들어오는 모든 데이터 : id, image, username
+// 1. 사진 업데이트 할지 말지 결정
+// 2. 이름 업데이트 할지 말지 결정
+// 3. 비번 업데이트 할지 말지 결정
 
 if(isset($_FILES["image"]["name"])){
   //양식 제출 시 "image"라는 이름의 파일이 포함되어 있는지 확인하는 중입니다.
@@ -36,8 +42,10 @@ if(isset($_FILES["image"]["name"])){
   $imageExtension = strtolower(end($imageExtension));
   //추출된 확장자를 소문자로 변환하고, 변수 $imageExtension에 할당합니다.
 
-  if (!empty($imageSize) && !in_array($imageExtension, $validImageExtension)){
 
+
+  // 1. 사진 업데이트 할지 말지 결정
+  if (!empty($imageSize) && !in_array($imageExtension, $validImageExtension)){
     // 이미지 파일이 존재하고, 이미지 확장자가 허용된 확장자 목록에 포함되어 있지 않을때
     echo
     "
@@ -56,8 +64,7 @@ if(isset($_FILES["image"]["name"])){
       document.location.href = 'changeProfileImage.php';
     </script>
     ";
-  }
-  elseif(!empty($imageSize)){
+  }elseif(!empty($imageSize)){
     // 이미지 파일이 존재하고, 이미지 변경에 적합할때
 
     // 임시 파일 옮길 디렉토리 및 파일명 
@@ -77,42 +84,73 @@ if(isset($_FILES["image"]["name"])){
     //쿼리 생성
     //파일명을 새로 만드는 건 알겠는데, 그걸 그냥 그대로 db에 넣는게 아니라, 
     //앞에 ip 주소 같은 경로를 붙여서 update 쿼리를 작성해야 할것 같아. 그래야 로컬에서 올린 이미지가 웹 주소를 갖게 되는 것
-    $query = "UPDATE users SET userImg = '$srcPath', userName = '$name'
+    $queryImg = "UPDATE users SET userImg = '$srcPath'
               WHERE userId = $id";
 
-    mysqli_query($connect, $query);
+    mysqli_query($connect, $queryImg);
 
-    if(!empty($name)){
-      //세션의 이름을 변경해줌
-      $_SESSION['userName'] = $name;
     }
-     echo '<script>alert("프로필이 정상적으로 변경되었습니다.")</script>';
-     echo '<script>history.back();</script>';
+  }
+
+  // 2. 이름 업데이트 할지 말지 결정
+  if(!empty($name)){
+    $queryName = "UPDATE users SET userName = '$name'
+    WHERE userId = $id";
+
+    mysqli_query($connect, $queryName);
+
+    //세션의 이름을 변경해줌
+    $_SESSION['userName'] = $name;
+  }
+
+
+
+    // 1. 만약 Current Password가 비었다면, 그냥 빼고 쿼리 업데이트를 한다
+    // 2. 만약 Current Password가 존재한다면, 세션아이디의 비밀번호와 같은지 확인한다
+      // 2-1. 같다면, New Password 와 Confirm Password 같은지 검사한다
+        //2-1-1. 같다면, New Password를 update 쿼리를 사용해서 변경함 + "프로필이 정상적으로 변경되었습니다." 라는 알림창
+        //2-1-2. 다르면, '새로운 비밀번호를 다시 확인하세요' 라는 알림창
+
+    // 2-2. 다르면, '입력한 비밀번호가 현재 비밀번호와 일치하지 않습니다' 라는 알림창
+
+
+  // 3. 비번 업데이트 할지 말지 결정
+  if($currentPassword && $newPassword && $confirmPassword){
+  
+   // 세션 아이디에 해당하는 users 테이블의 행을 가져온다
+   $sqlUser = "SELECT * FROM users WHERE userId = {$_SESSION['userId']}"; 
+   $result = $connect ->query($sqlUser);
+   $row = mysqli_fetch_assoc($result);
+
+  if($result -> num_rows == 1 && password_verify($currentPassword, $row['userPw'])){
+
+    if($newPassword == $confirmPassword){
+
+      //3.비밀번호 암호화
+      $hasedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
+
+      $queryPassword = "UPDATE users SET userPw = '$hasedPassword'
+      WHERE userId = $id";
+  
+      mysqli_query($connect, $queryPassword);
 
     }else{
-        echo '<script>alert("프로필이 변경에 실패하였습니다.")</script>';
+    echo '<script>alert("새로운 비밀번호를 다시 확인하세요.")</script>';
+    echo '<script>history.back();</script>';
+
     }
+
+  }else{
+
+    echo '<script>alert("입력한 비밀번호가 현재 비밀번호와 일치하지 않습니다.")</script>';
+    echo '<script>history.back();</script>';
   }
-  else{
-    // 프로필 변경사항 없음 or 문자열만 변경
-
-    //쿼리 생성
-    //파일명을 새로 만드는 건 알겠는데, 그걸 그냥 그대로 db에 넣는게 아니라, 
-    //앞에 ip 주소 같은 경로를 붙여서 update 쿼리를 작성해야 할것 같아. 그래야 로컬에서 올린 이미지가 웹 주소를 갖게 되는 것
-    $query = "UPDATE users SET userName = '$name'
-              WHERE userId = $id";
-
-    mysqli_query($connect, $query);
-
-    if(!empty($name)){
-      //세션의 이름을 변경해줌
-      $_SESSION['userName'] = $name;
-    }
+    
+  }
      echo '<script>alert("프로필이 정상적으로 변경되었습니다.")</script>';
      echo '<script>history.back();</script>';
+
     }
-  
-  }
   
 else{
     echo '<script>alert("양식 제출 시 "image"라는 이름의 파일이 포함되어 있지 않습니다")</script>';
