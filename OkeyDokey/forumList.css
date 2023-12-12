@@ -483,3 +483,7 @@ body {
 	font-size: 16px;
 	cursor: pointer;
 }
+
+.forum_container{
+	min-height: 605px;
+}

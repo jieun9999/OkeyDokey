@@ -195,7 +195,11 @@
             <form id="answerForm">
               <!-- $변수는 php 언어이기 때문에 php 코드 안에서 작성-->
               <input name="answersForumId" value="<?php echo $forumId ?>" type="hidden"/>
-              <textarea id="replyText" name="replyText" class="textarea" placeholder="Add your replies here..."></textarea>  
+              <div class="text_box">
+                <textarea id="replyText" name="replyText" class="textarea" placeholder="Add your replies here..."></textarea>  
+                <div class="count"><span>0</span>/10000</div>
+              </div>
+              
               <button id="submitButton" type="button" class="btn btn-success">Submit Reply</button>
             </form>
             
@@ -303,7 +307,11 @@
               <div class="comment-input-container" id="commentFormframe_<?php echo $rows['answerID']?>">
               <input name="commentsForumId" value="<?php echo $forumId ?>" type="hidden"/>
               <input name="commentsAnswerId" value="<?php echo $rows['answerID']?>" type="hidden"/>
-              <textarea id="commentText" name="commentText" class="comment-input" placeholder="코멘트를 작성해보세요."></textarea>
+              <div class="text_box_comment">
+                <textarea id="commentText" name="commentText" class="comment-input" placeholder="코멘트를 작성해보세요."></textarea>
+                <div class="count"><span>0</span>/5000</div>
+              </div>
+             
               <button type="button" class="btn btn-dark btn-dark-submit" id="submitButton_comment_<?php echo $rows['answerID']?>">submit</button>
               </div>
               </form>
@@ -797,6 +805,31 @@
         // 사용자가 취소를 눌렀을 때
       }
     }
+
+    //답변 글자 제한수
+
+    $('.text_box textarea').keyup(function(){
+      var content = $(this).val();
+      $('.text_box .count span').html(content.length);
+      if (content.length > 10000){
+        alert("최대 10000자까지 입력 가능합니다.");
+        $(this).val(content.substring(0, 10000));
+        $('.text_box .count span').html(10000);
+      }
+    });
+
+    //대댓글 글자 제한수
+
+    $('.text_box_comment textarea').keyup(function(){
+      var content = $(this).val();
+      $('.text_box_comment .count span').html(content.length);
+      if (content.length > 5000){
+        alert("최대 5000자까지 입력 가능합니다.");
+        $(this).val(content.substring(0, 5000));
+        $('.text_box_comment .count span').html(5000);
+      }
+    });
+    
     </script>
 </body>
 </html>

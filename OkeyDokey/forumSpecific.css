@@ -596,9 +596,8 @@ footer{
 }
 
 .comment-input{
-	width: 90%;
+	width: 100%;
 	height: 5rem;
-	margin-top: 30px;
 }
 
 .comment-border{
@@ -608,7 +607,7 @@ footer{
 
 .comment-input-container{
 	display: flex;
-	height: 20vh;
+	height: 25vh;
 	flex-direction: column;
 	justify-content: center;
     align-items: center;
@@ -624,8 +623,9 @@ footer{
  width: 4rem;
  height: 2rem;
  font-size: 0.8rem;
- margin: 1.5rem;
+ margin-right: 1.5rem;
  margin-left: auto;
+ margin-top: -2rem;
 }
 
 .btn-comment{
@@ -659,6 +659,13 @@ footer{
 	margin-top: 1rem;
 }
 
-.comment_input{
-	width: 100%;
+
+.count{
+	display: flex;
+    justify-content: end;
+}
+
+.text_box_comment{
+	width:100%;
+	padding:2rem;
 }

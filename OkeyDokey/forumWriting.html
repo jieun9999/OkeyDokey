@@ -70,12 +70,18 @@
                 
                 <div class="form-group">
                     <label for="title">Title</label>
-                    <input type="text" class="form-control" name="title"/>
+                    <div class="text_box_forumTitle">
+                      <input type="text" class="form-control" name="title" maxlength="100"/>
+                      <div class="count"><span>0</span>/100</div>
+                    </div>
                 </div>
                 
                 <div class="form-group">
                     <label for="description">Description</label>
-                    <textarea rows="5" class="form-control" name="description" ></textarea>
+                    <div class="text_box">
+                      <textarea rows="5" class="form-control" name="description" ></textarea>
+                      <div class="count"><span>0</span>/10000</div>
+                    </div>
                 </div>
                 
                 <div class="form-group">
@@ -178,6 +184,7 @@
     <script src="../jQuery/jquery-3.7.1.js"></script>
     <!-- <body> 태그가 끝나기 전 js 파일 로드 시 웹 페이지 로딩 속도 향상된다.-->
     <script src="../bootstrap-4.6.2-dist/js/bootstrap.js"></script>
+    <script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
 
     <!-- 버튼 클릭시 로그인 페이지로 이동-->
     <script>
@@ -201,7 +208,30 @@
     function goToProfile(){
     window.location.href = "profileEdit.html";
     } 
-    </script> 
 
+    //입력 글자 제한
+        $('.text_box textarea').keyup(function(){
+      var content = $(this).val();
+      $('.text_box .count span').html(content.length);
+      if (content.length > 10000){
+        alert("최대 10000자까지 입력 가능합니다.");
+        $(this).val(content.substring(0, 10000));
+        $('.text_box .count span').html(10000);
+      }
+    });
+
+    //입력 글자 제한 text_box_forumTitle
+    $('.text_box_forumTitle input').keyup(function(){
+      var content = $(this).val();
+      $('.text_box_forumTitle .count span').html(content.length);
+      if (content.length > 10000){
+        alert("최대 100자까지 입력 가능합니다.");
+        $(this).val(content.substring(0, 100));
+        $('.text_box_forumTitle .count span').html(100);
+      }
+    });
+
+    </script> 
+  
 </body>
 </html>

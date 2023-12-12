@@ -173,7 +173,7 @@
     </nav>
 
     <!-- Main-->
-    <div class="container-fluid mt-100">
+    <div class="container-fluid mt-100 forum_container">
       <!--new thread 버튼 -->
         <button type="button" class="btn btn-shadow btn-wide btn-primary" id="newThreadBtn"> 
           <div class="newThreadBtnTxt"><i class="fa fa-plus fa-w-20"></i> New thread</div>
@@ -282,7 +282,7 @@
 
       while($rows = mysqli_fetch_assoc($result)){
         ?>
-        <div class="card-body py-3">
+        <div class="card-body py-3 ">
         <div class="row no-gutters align-items-center">
         <div class="col">
           <!-- 이때, ?뒤의 파라미터의 키는 무조건 유일해야 한다. 따라서 한번쓴 단어인 forumId는 쓰지 않도록 한다! -->
