@@ -487,22 +487,60 @@
         commentFormframe.style.display = (commentFormframe.style.display !== "none") ? "none" : ""; 
       }
 
+  // 쿠키를 생성하는 함수
+  function setCookie(key, value, expiredays) {
+    var todayDate = new Date();
+    todayDate.setDate(todayDate.getDate() + expiredays);
+    document.cookie = key + "=" + escape(value)+";path=/;expires="+todayDate.toGMTString()+ ";"
+  }
+
+
+  // 쿠키를 가져오는 함수
+  function getCookie(key){
+   var result=null;
+   var cookie =document.cookie.split(';');
+   cookie.some(function(item){
+     // 공백을 제거
+  item = item.replace(' ', '');
+ 
+  var dic =item.split('=');
+ 
+  if(key === dic[0]){
+      result = dic[1];
+      return true; // break;
+      }
+    });
+    return result;
+}
 
   // 게시글 투표 버튼 클릭 이벤트
 
       $(document).ready(function(){
 
+        // 쿠키명: forumId_forumVoted
+        // 클라이언트 측에서 투표여부를 추적할 공통 쿠키이름
+        var forumVotedCommon = "forumVoted";
+
         //클릭한 버튼의 데이터 속성에서 정보 추출
-        $(".vote-btn").click(function(){
+        $(".vote-btn").click(function(){  
 
         // jQuery의 data() 메서드를 통해 이 데이터를 가져오는 기법
         // 속성 이름 앞에 data- 접두사를 사용하여 해당 속성이 데이터를 저장하는 용도임을 명시하는 것이 좋습니다.
-
         var forumId = $(this).data("forumId");
         var voteType = $(this).data("voteType");
-
         // 현재 클릭한 버튼의 형제 요소에서 .voteNum을 찾아 업데이트
         var voteNumElement = $(this).siblings(".voteNum");
+        var forumVotedCookieName = forumId + "_" + forumVotedCommon;
+
+
+        // 만약 쿠키가 있다면
+        if(getCookie(forumVotedCookieName)){
+          alert("이미 투표하셨습니다.");
+          return; // 더이상 처리 중단
+        }
+
+        // 만약 쿠키가 없다면, 투표한 내역 쿠키 저장
+        setCookie(forumVotedCookieName, true, 1);
 
         //jQuery Ajax 요청
         // Ajax를 사용하면 페이지 전체를 새로 고치지 않고도 서버와 통신하여 데이터를 가져오거나 전송할 수 있습니다.
@@ -534,6 +572,10 @@
 
       $(document).ready(function(){
 
+        // 쿠키명: answerId_answerVoted
+        // 클라이언트 측에서 투표여부를 추적할 공통 쿠키이름
+        var answerVotedCommon = "answerVoted";
+
       //클릭한 버튼의 데이터 속성에서 정보 추출
       $(".vote-btn-answer").click(function(){
 
@@ -545,6 +587,17 @@
 
       // 현재 클릭한 버튼의 형제 요소에서 .voteNum을 찾아 업데이트
       var voteNumElement = $(this).siblings(".voteNum");
+      var answerVotedCookieName = answerId + "_" + answerVotedCommon;
+
+      // 만약 쿠키가 있다면
+      if(getCookie(answerVotedCookieName)){
+        alert("이미 투표하셨습니다.");
+        return; // 더이상 처리 중단
+      }
+
+      // 만약 쿠키가 없다면, 투표한 내역 쿠키 저장
+      setCookie(answerVotedCookieName, true, 1);
+
 
       //jQuery Ajax 요청
       // Ajax를 사용하면 페이지 전체를 새로 고치지 않고도 서버와 통신하여 데이터를 가져오거나 전송할 수 있습니다.
@@ -570,6 +623,7 @@
 
       });
 
+  
     // 버튼 클릭시 로그아웃 페이지로 이동
 
     function goToLogout(){
