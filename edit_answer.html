@@ -329,17 +329,6 @@
                   </div>
                   <?php endif; ?> 
   
-                <!-- 수정버튼 누른 코멘트의 입력창이 생기도록 -->
-                <?php if($comment['commentContents'] != null && $_POST['editCommentId'] == $comment['commentId']): ?> 
-                <div class="card card-inner">
-                  <!-- 코멘트 수정창-->
-                  <form action="edit_comment.php" method="post">
-                  <textarea placeholder="<?php echo $comment['commentContents']?>"></textarea>
-                  <button type="button" class="btn btn-success btn-comment-edit-submit">완료</button>
-                  </form>
-                </div>
-                <?php endif; ?> 
-  
                 <?php endwhile; ?>
                 </div>
               </div>

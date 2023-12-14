@@ -760,7 +760,7 @@
           //2. JSON.parse()를 사용하는 것은 이 형식의 데이터를 JavaScript에서 사용하기 위한 자연스러운 방법
 
             if(jsonRes.status == 'success'){
-                alert("답변이 수정되었습니다.")
+                alert("코멘트가 수정되었습니다.")
 
              //상세페이지로 이동
              window.location.href = "forumSpecific.html?%EA%B8%80%EC%95%84%EC%9D%B4%EB%94%94=<?php echo $forumId ?>";
@@ -771,7 +771,7 @@
 
           },
           error:function(){
-            alert("답변 수정에 실패했습니다.");
+            alert("코멘트 수정에 실패했습니다.");
           }
         });
             
