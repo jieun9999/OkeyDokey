@@ -41,7 +41,7 @@
     if($result){
         echo '<script>alert("글이 성공적으로 수정되었습니다.");</script>';
         //get 요청으로 수정한 글 상세보기로 이동
-        $redirectUrl = "http://52.79.41.79/OkeyDokey/forumSpecific.html?글아이디=$finalEditForumId";
+        $redirectUrl = "forumSpecific.html?글아이디=$finalEditForumId";
         echo "<script>location.replace('$redirectUrl');</script>";
     }else{
         echo '<script>alert("글 수정에 실패했습니다.");</script>';

@@ -68,7 +68,7 @@ if(isset($_FILES["image"]["name"])){
     // 이미지 파일이 존재하고, 이미지 변경에 적합할때
 
     // 임시 파일 옮길 디렉토리 및 파일명 
-    $resFile = __DIR__ . "/img/{$imageName}";
+    $resFile = __DIR__ . "/OkeyDokey/img/{$imageName}";
 
     // 임시 저장된 파일을 나의 디렉토리 및 파일명으로 옮김
     // 이것은 사용자가 프로필 이미지를 업로드하면, 그 이미지를 내 서버에 저장하기 위함입니다.
@@ -76,7 +76,10 @@ if(isset($_FILES["image"]["name"])){
 
     //src로 띄워줄 사진 경로
     // ip 주소 + 현재 경로
-    $srcPath = "http://52.79.41.79/OkeyDokey/img/{$imageName}";
+    $srcPath = "http://www.okeydokey.shop/OkeyDokey/img/{$imageName}";
+
+    // http://52.79.41.79/OkeyDokey/img/%E1%84%8C%E1%85%B5%E1%86%BC%E1%84%8B%E1%85%B5.jpeg 잘들어옴
+    // http://www.okeydokey.shop/OkeyDokey/img/%e1%84%8c%e1%85%b5%e1%86%bc%e1%84%8b%e1%85%b5.jpeg 잘들어옴
 
     // 업로드 성공여부 확인
     if($imageUpload == true){
@@ -148,7 +151,7 @@ if(isset($_FILES["image"]["name"])){
     
   }
      echo '<script>alert("프로필이 정상적으로 변경되었습니다.")</script>';
-     echo '<script>history.back();</script>';
+      echo '<script>history.back();</script>';
 
     }
   

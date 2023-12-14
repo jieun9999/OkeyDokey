@@ -47,6 +47,7 @@ if(!session_id()){
 
         }else{
             echo "<script>alert('비번이 다릅니다');</script>";
+            echo '<script>history.back();</script>';
         }
  
     }else {

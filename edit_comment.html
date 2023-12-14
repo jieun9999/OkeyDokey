@@ -31,7 +31,7 @@
     //2. GET 요청으로 forumId 가져오기 
     //isset 함수를 사용하여 해당 매개변수가 있는지 확인하고, 있다면 $forumId 변수에 할당합니다.
     
-    $forumId = isset($_GET['글아이디']) ? $_GET['글아이디'] : null;
+    $forumId = isset($_POST['editCommentForumId']) ? $_POST['editCommentForumId'] : null;
 
     
     //3-1. 조회수 업데이트 하는 쿼리 생성함
@@ -65,8 +65,8 @@
     <!-- Header-->
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
          <!-- Logo -->
-    <a class="navbar-brand" href="http://52.79.41.79/OkeyDokey/forumList.html">
-        <img src="../img/okeydokey1.png" class="h-8" alt="...">
+    <a class="navbar-brand" href="forumList.html">
+        <img src="ex/logo.png" class="h-8" alt="...">
       </a>
 
         <!-- 세션 시작 -->
@@ -85,7 +85,7 @@
         if(isset($_SESSION['userId']) && isset($_SESSION['userName'])){
           // 로그인 세션 데이터가 있다면
 
-          echo '<div class=login_name onclick="goToProfile()">'.$_SESSION['userName'].'님</div>';
+          echo '<div class="login_name" onclick="goToProfile()">'.$_SESSION['userName'].'님</div>';
 
           echo '<div class="nav-item dropdown" onclick="goToLogout()">';
           echo '<a href="#" class="btn btn-primary dropdown-toggle sign-up-btn">Logout</a>';
@@ -138,8 +138,8 @@
                             <button type="submit" name="editForum"class="btn btn-dark" value="<?php echo $rows['forumIdToDelete'] ?>">수정</button>
                           </form>
                           <!-- 삭제: post 요청을 보낼때 name="deleteForum"가 key고 <?php echo $rows['forumIdToDelete']?>가 value가 된다. -->
-                          <form id="forum_deleteForm" action="delete_forum.php" method="post">
-                            <button onclick="confirmDeleteForum()" type="submit" name="deleteForum" class="btn btn-danger" value="<?php echo $rows['forumIdToDelete'] ?>">삭제</button>
+                          <form action="delete_forum.php" method="post">
+                            <button type="submit" name="deleteForum" class="btn btn-danger" value="<?php echo $rows['forumIdToDelete'] ?>">삭제</button>
                           </form>
                             <!-- if(isset($_SESSION['userId']) && $_SESSION['forumUserId'] == $rows['answerUserId']) 조건문 종료-->
                             <?php endif; ?>
@@ -195,11 +195,7 @@
             <form id="answerForm">
               <!-- $변수는 php 언어이기 때문에 php 코드 안에서 작성-->
               <input name="answersForumId" value="<?php echo $forumId ?>" type="hidden"/>
-              <div class="text_box">
-                <textarea id="replyText" name="replyText" class="textarea" placeholder="Add your replies here..."></textarea>  
-                <div class="count"><span>0</span>/10000</div>
-              </div>
-              
+              <textarea id="replyText" name="replyText" class="textarea" placeholder="Add your replies here..."></textarea>  
               <button id="submitButton" type="button" class="btn btn-success">Submit Reply</button>
             </form>
             
@@ -250,8 +246,8 @@
       <input type="hidden"  name="editAnswerForumId" value="<?php echo $rows['forumIdToDelete'] ?>"/>
       </form>
       <!-- 삭제: post 요청을 보낼때 name="deleteAnswer"가 key고 <?php echo $rows['answerID']?>가 value가 된다. -->
-      <form id="answer_deleteForm" action="delete_answer.php" method="post">
-      <button onclick="confirmDeleteAnswer()" type="submit" name="deleteAnswer" class="btn btn-danger btn-answer" value="<?php echo $rows['answerID'] ?>">삭제</button>
+      <form action="delete_answer.php" method="post">
+      <button type="submit" name="deleteAnswer" class="btn btn-danger btn-answer" value="<?php echo $rows['answerID'] ?>">삭제</button>
       </form>
 
       <!-- if(isset($_SESSION['userId']) && $_SESSION['userId'] == $rows['answerUserId']) 조건문 종료-->
@@ -307,11 +303,7 @@
               <div class="comment-input-container" id="commentFormframe_<?php echo $rows['answerID']?>">
               <input name="commentsForumId" value="<?php echo $forumId ?>" type="hidden"/>
               <input name="commentsAnswerId" value="<?php echo $rows['answerID']?>" type="hidden"/>
-              <div class="text_box_comment">
-                <textarea id="commentText" name="commentText" class="comment-input" placeholder="코멘트를 작성해보세요."></textarea>
-                <div class="count"><span>0</span>/5000</div>
-              </div>
-             
+              <textarea id="commentText" name="commentText" class="comment-input" placeholder="코멘트를 작성해보세요."></textarea>
               <button type="button" class="btn btn-dark btn-dark-submit" id="submitButton_comment_<?php echo $rows['answerID']?>">submit</button>
               </div>
               </form>
@@ -328,6 +320,9 @@
               <!-- comment 데이터들을 렌더링하기 -->
               <div class="comments-list-container">
               <?php while($comment = mysqli_fetch_assoc($commentResult)): ?>
+
+              <!-- 수정버튼 누른 코멘트는 사라지도록-->
+              <?php if($comment['commentContents'] != null && $_POST['editCommentId'] != $comment['commentId']): ?>
                 <div class="card card-inner">
                   <div class="media">
                     <div class="media-body comment-contents">
@@ -345,14 +340,14 @@
 
                     <?php if(isset($_SESSION['userId']) && $_SESSION['userId'] == $comment['commentUserId']): ?>
             
-                  <form action="edit_comment.html" method="post"> 
+                  <form action="edit_comment.php" method="post"> 
                   <input type="hidden" name="editCommentContents" class="btn btn-dark btn-comment" value="<?php echo $comment['commentContents'] ?>"/>
                   <input type="hidden" name="editCommentForumId" value="<?php echo $comment['forumId'] ?>" />
-                                    <button type="submit" name="editCommentId" class="btn btn-dark btn-comment" value="<?php echo $comment['commentId'] ?>">수정</button>
+                  <button type="submit" name="editCommentId" class="btn btn-dark btn-comment" value="<?php echo $comment['commentId'] ?>">수정</button>
                   </form>
 
                   <form id="comment_deleteForm" action="delete_comment.php" method="post">
-                  <button type="submit" name="deleteCommentId" class="btn btn-danger btn-comment btn-delete" value="<?php echo $comment['commentId'] ?>" onclick="confirmDeleteComment()">삭제</button>
+                  <button type="submit" name="deleteCommentId" class="btn btn-danger btn-comment btn-delete" value="<?php echo $comment['commentId'] ?>" onclick="confirmDelete()">삭제</button>
                   <!-- type를 submit으로 해줘야 form이 자동으로 제출됨! -->
                   </form>
             
@@ -360,6 +355,20 @@
                   <?php endif; ?>
                   </div> 
                 </div>
+                <?php endif; ?> 
+
+              <!-- 수정버튼 누른 코멘트의 입력창이 생기도록 -->
+              <?php if($comment['commentContents'] != null && $_POST['editCommentId'] == $comment['commentId']): ?> 
+              <div class="card card-inner">
+                <!-- 코멘트 수정창-->
+                <form id="commentEditForm">
+                <textarea name="commentContentsTextarea" class="comment_input"><?php echo $comment['commentContents']?></textarea>
+                <input name ="editCommentId" value="<?php echo $comment['commentId'] ?>"  type="hidden" />
+                <button id="editButton" type="button" class="btn btn-success btn-comment-edit-submit">완료</button>
+                </form>
+              </div>
+              <?php endif; ?> 
+
               <?php endwhile; ?>
               </div>
             </div>
@@ -465,20 +474,20 @@
 
     // 버튼 클릭시 목록으로 이동
     function goToForumList(){
-      window.location.href = "http://52.79.41.79/OkeyDokey/forumList.html";
+      window.location.href = "forumList.html";
     }
     
     
     // 버튼 클릭시 로그인 페이지로 이동
 
     function goToSignin(){
-    window.location.href = "http://52.79.41.79/OkeyDokey/signin.html";
+    window.location.href = "signin.html";
     }
 
     // 버튼 클릭시 회원가입 페이지로 이동
  
     function goToSignup(){
-    window.location.href = "http://52.79.41.79/OkeyDokey/signup.html";
+    window.location.href = "signup.html";
       }
 
 
@@ -495,60 +504,22 @@
         commentFormframe.style.display = (commentFormframe.style.display !== "none") ? "none" : ""; 
       }
 
-  // 쿠키를 생성하는 함수
-  function setCookie(key, value, expiredays) {
-    var todayDate = new Date();
-    todayDate.setDate(todayDate.getDate() + expiredays);
-    document.cookie = key + "=" + escape(value)+";path=/;expires="+todayDate.toGMTString()+ ";"
-  }
-
-
-  // 쿠키를 가져오는 함수
-  function getCookie(key){
-   var result=null;
-   var cookie =document.cookie.split(';');
-   cookie.some(function(item){
-     // 공백을 제거
-  item = item.replace(' ', '');
- 
-  var dic =item.split('=');
- 
-  if(key === dic[0]){
-      result = dic[1];
-      return true; // break;
-      }
-    });
-    return result;
-}
 
   // 게시글 투표 버튼 클릭 이벤트
 
       $(document).ready(function(){
 
-        // 쿠키명: forumId_forumVoted
-        // 클라이언트 측에서 투표여부를 추적할 공통 쿠키이름
-        var forumVotedCommon = "forumVoted";
-
         //클릭한 버튼의 데이터 속성에서 정보 추출
-        $(".vote-btn").click(function(){  
+        $(".vote-btn").click(function(){
 
         // jQuery의 data() 메서드를 통해 이 데이터를 가져오는 기법
         // 속성 이름 앞에 data- 접두사를 사용하여 해당 속성이 데이터를 저장하는 용도임을 명시하는 것이 좋습니다.
+
         var forumId = $(this).data("forumId");
         var voteType = $(this).data("voteType");
+
         // 현재 클릭한 버튼의 형제 요소에서 .voteNum을 찾아 업데이트
         var voteNumElement = $(this).siblings(".voteNum");
-        var forumVotedCookieName = forumId + "_" + forumVotedCommon;
-
-
-        // 만약 쿠키가 있다면
-        if(getCookie(forumVotedCookieName)){
-          alert("이미 투표하셨습니다.");
-          return; // 더이상 처리 중단
-        }
-
-        // 만약 쿠키가 없다면, 투표한 내역 쿠키 저장
-        setCookie(forumVotedCookieName, true, 1);
 
         //jQuery Ajax 요청
         // Ajax를 사용하면 페이지 전체를 새로 고치지 않고도 서버와 통신하여 데이터를 가져오거나 전송할 수 있습니다.
@@ -580,10 +551,6 @@
 
       $(document).ready(function(){
 
-        // 쿠키명: answerId_answerVoted
-        // 클라이언트 측에서 투표여부를 추적할 공통 쿠키이름
-        var answerVotedCommon = "answerVoted";
-
       //클릭한 버튼의 데이터 속성에서 정보 추출
       $(".vote-btn-answer").click(function(){
 
@@ -595,17 +562,6 @@
 
       // 현재 클릭한 버튼의 형제 요소에서 .voteNum을 찾아 업데이트
       var voteNumElement = $(this).siblings(".voteNum");
-      var answerVotedCookieName = answerId + "_" + answerVotedCommon;
-
-      // 만약 쿠키가 있다면
-      if(getCookie(answerVotedCookieName)){
-        alert("이미 투표하셨습니다.");
-        return; // 더이상 처리 중단
-      }
-
-      // 만약 쿠키가 없다면, 투표한 내역 쿠키 저장
-      setCookie(answerVotedCookieName, true, 1);
-
 
       //jQuery Ajax 요청
       // Ajax를 사용하면 페이지 전체를 새로 고치지 않고도 서버와 통신하여 데이터를 가져오거나 전송할 수 있습니다.
@@ -631,18 +587,11 @@
 
       });
 
-  
-    // 버튼 클릭시 로그아웃 페이지로 이동
+  // 버튼 클릭시 로그아웃 페이지로 이동
 
     function goToLogout(){
       window.location.href = "http://52.79.41.79/OkeyDokey/check_logout.php";
     }
-
-    // 00님을 누르면,  프로필 수정 페이지로 이동
-    function goToProfile(){
-      window.location.href = "profileEdit.html";
-    } 
-
    </script>
     <!-- 서버에 데이터가 저장되면, 답변 입력창 클리어 -->
 
@@ -764,35 +713,10 @@
           }
       });
     }  
-    // 게시글 삭제 클릭시 알림창
-    function confirmDeleteForum(){
-      var result = confirm("정말 삭제하시겠습니까?");
 
-      if(result){
-        // 사용자가 확인을 눌렀을때
-        var deleteForm = document.getElementById("forum_deleteForm");
-        deleteForm.submit();
-      }else{
-        // 사용자가 취소를 눌렀을 때
-      }
-    }
 
-    // 답변 삭제 클릭시 알림창
-    function confirmDeleteAnswer(){
-      var result = confirm("정말 삭제하시겠습니까?");
-
-      if(result){
-        // 사용자가 확인을 눌렀을때
-        var deleteForm = document.getElementById("answer_deleteForm");
-        deleteForm.submit();
-      }else{
-        // 사용자가 취소를 눌렀을 때
-      }
-
-    }
-
-    // 코멘트 삭제버튼 클릭시 알림창
-    function confirmDeleteComment(){
+    // 삭제버튼 클릭시 알림창
+    function confirmDelete(){
       var result = confirm("정말 삭제하시겠습니까?");
 
       if(result){
@@ -805,31 +729,58 @@
         // 사용자가 취소를 눌렀을 때
       }
     }
+    </script>
 
-    //답변 글자 제한수
+    <!-- 코멘트창 수정 버튼 누르면, php 파일로 ajax 요청 -->
+    <script>
+        $(document).ready(function(){
+            $("#editButton").click(function(){
+            editBtn();
+        });
+        });
 
-    $('.text_box textarea').keyup(function(){
-      var content = $(this).val();
-      $('.text_box .count span').html(content.length);
-      if (content.length > 10000){
-        alert("최대 10000자까지 입력 가능합니다.");
-        $(this).val(content.substring(0, 10000));
-        $('.text_box .count span').html(10000);
-      }
-    });
+        <!-- answerId과 textarea 값을 전송한다 -->
+        function editBtn(){
+        // FormData 객체를 사용하여 form 데이터를 가져옵니다.
 
-    //대댓글 글자 제한수
+        var formDataEdit = new FormData(document.getElementById("commentEditForm"));
+        console.log(document.getElementById("commentEditForm").commentContentsTextarea.value);
 
-    $('.text_box_comment textarea').keyup(function(){
-      var content = $(this).val();
-      $('.text_box_comment .count span').html(content.length);
-      if (content.length > 5000){
-        alert("최대 5000자까지 입력 가능합니다.");
-        $(this).val(content.substring(0, 5000));
-        $('.text_box_comment .count span').html(5000);
-      }
-    });
-    
+        // ajax jquey 요청 수행
+        $.ajax({
+          method:"POST",
+          url:"edit_comment.php",
+          data: formDataEdit,
+          processData: false,  // 중요: processData를 false로 설정해야 formData가 자동으로 변환되지 않습니다.
+          contentType: false,  // 중요: contentType을 false로 설정해야 파일 업로드가 올바르게 처리됩니다.
+          success:function(res){
+            var jsonRes = JSON.parse(res);
+          //왜 파싱?
+          //1. JSON은 서버와 클라이언트 간에 데이터를 교환하는 표준 형식 
+          //2. JSON.parse()를 사용하는 것은 이 형식의 데이터를 JavaScript에서 사용하기 위한 자연스러운 방법
+
+            if(jsonRes.status == 'success'){
+                alert("답변이 수정되었습니다.")
+
+             //상세페이지로 이동
+             window.location.href = "forumSpecific.html?%EA%B8%80%EC%95%84%EC%9D%B4%EB%94%94=<?php echo $forumId ?>";
+            }else{
+              //에러 메세지 보여주기
+              alert(jsonRes.message);
+            }
+
+          },
+          error:function(){
+            alert("답변 수정에 실패했습니다.");
+          }
+        });
+            
+        }
+
+    // 00님을 누르면,  프로필 수정 페이지로 이동
+      function goToProfile(){
+      window.location.href = "profileEdit.html";
+    } 
     </script>
 </body>
 </html>

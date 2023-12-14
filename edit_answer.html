@@ -60,8 +60,8 @@
     <!-- Header-->
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
          <!-- Logo -->
-    <a class="navbar-brand" href="http://52.79.41.79/OkeyDokey/forumList.html">
-        <img src="../img/okeydokey1.png" class="h-8" alt="...">
+    <a class="navbar-brand" href="forumList.html">
+        <img src="ex/logo.png" class="h-8" alt="...">
       </a>
 
         <!-- 세션 시작 -->
@@ -540,7 +540,7 @@
 
 
     function goToForumList(){
-      window.location.href = "http://52.79.41.79/OkeyDokey/forumList.html";
+      window.location.href = "forumList.html";
     }
     </script>
     <!--script-->
@@ -552,13 +552,13 @@
     <!-- 버튼 클릭시 로그인 페이지로 이동-->
     <script>
     function goToSignin(){
-    window.location.href = "http://52.79.41.79/OkeyDokey/signin.html";
+    window.location.href = "signin.html";
     }
     </script>
     <!-- 버튼 클릭시 회원가입 페이지로 이동-->
     <script>
     function goToSignup(){
-    window.location.href = "http://52.79.41.79/OkeyDokey/signup.html";
+    window.location.href = "signup.html";
       }
     </script>
 
@@ -661,7 +661,7 @@
       <!-- 버튼 클릭시 로그아웃 페이지로 이동-->
     <script>
     function goToLogout(){
-      window.location.href = "http://52.79.41.79/OkeyDokey/check_logout.php";
+      window.location.href = "check_logout.php";
     }
     </script> 
     <!-- 서버에 데이터가 저장되면, 입력창 클리어 -->
@@ -726,7 +726,7 @@
              console.log("Success. Response:", res);
 
              //상세페이지로 이동
-             window.location.href = "http://52.79.41.79/OkeyDokey/forumSpecific.html?%EA%B8%80%EC%95%84%EC%9D%B4%EB%94%94=<?php echo $forumId ?>";
+             window.location.href = "forumSpecific.html?%EA%B8%80%EC%95%84%EC%9D%B4%EB%94%94=<?php echo $forumId ?>";
         
           },
           error:function(){
