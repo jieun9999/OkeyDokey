@@ -45,8 +45,8 @@
 
   // 게시글 페이징
   //mysqli_num_rows() 함수를 사용해 게시글의 총 개수를 알아내 변수에 할당해준다.
-  $sqlNum = "SELECT * FROM forums";
-  $res = mysqli_query($connect, $sqlNum);
+  $sqlforumsNum = "SELECT * FROM forums";
+  $res = mysqli_query($connect, $sqlforumsNum);
  
   $per = 5;
   //한 페이지 당 출력할 게시글의 개수를 정해준다
@@ -92,8 +92,8 @@
        // WHERE 절 문자열을 더해서, 검색단어가 포함된 글 제목들만 보여줌
        if ($searchTerm !== "") {
         //mysqli_num_rows() 함수를 사용해 게시글의 총 개수를 다시 설정해준다
-        $sqlNum = "SELECT * FROM forums WHERE forums.forumTitle LIKE '%$searchTerm%'";
-        $res = mysqli_query($connect, $sqlNum);
+        $sqlforumsNum = "SELECT * FROM forums WHERE forums.forumTitle LIKE '%$searchTerm%'";
+        $res = mysqli_query($connect, $sqlforumsNum);
         $sql .= " WHERE forums.forumTitle LIKE '%$searchTerm%'";
        }
        // '%$searchTerm%'는 검색어가 포함된 부분 문자열을 찾습니다.
@@ -121,6 +121,8 @@
        
         // 페이징 쿼리 
         $sql.=" LIMIT $start, $per";
+        // LIMIT 쿼리 결과에서 가져올 행의 범위를 지정하는데 사용됩니다.
+        // $start는 시작행의 인덱스이고, $per는 가져올 행의 수입니다.
 
 
   $result=$connect->query($sql);
@@ -322,65 +324,8 @@
       <nav>
       <ul class="pagination mb-5">
 
-        <?php
-
-        // 검색어가 있을 경우 렌더링과 전체페이지 렌더링 구분하기
-        
-        // => mysqli_num_rows() 함수를 사용해 게시글의 총 개수를 다시 설정해준다
-        $sqlNum = "SELECT * FROM forums WHERE forums.forumTitle LIKE '%$searchTerm%'";
-
-          // 1. 페이지 번호 중 처음/이전버튼 출력
-          // 여기서 \"는 큰따옴표(")를 문자열 내에서 사용하기 위한 이스케이프입니다
-          if($page >1 ){
-            echo "<li class='page-item'><a class='page-link' href=\"forumList.html?page=1&sort=$sortOrder&search=$searchTerm\" data-abc='true'> 처음 </a></li>";
-          }
-  
-          if($page >1 ){
-            $pre_to5 = $page -5;
-            $pre = ($pre_to5 < 1) ? 1 : $pre_to5;
-            echo "<li class='page-item'><a class='page-link' href=\"forumList.html?page=$pre&sort=$sortOrder&search=$searchTerm\" data-abc='true'>«</a></li>";
-          }
-  
-          // 2. 페이지 번호 중 1/2/3 등 숫자버튼 출력, + 현재 버튼 active 
-          $total_post = mysqli_num_rows($res);
-          $total_page = ceil($total_post/ $per);
-          // 총 페이지 개수는 ceil() 을 사용해 (총 게시글 개수 / 페이지 당 게시글 개수) 를 올림해준 값 으로 정한다.
-
-          // 5개씩 하나의 블록을 이룬다 
-
-          // 현재 블록 번호 계산
-          $current_block = ceil($page/5);
-
-          // 시작 페이지 번호 계산
-          $start_page = ($current_block-1) * 5 + 1;
-
-          // 끝 페이지 번호 계산
-          $end_page = min($start_page + 4, $total_page);
-
-  
-          $page_num = $start_page;
-          while($page_num <= $end_page){
-              if($page == $page_num){
-                  echo "<li class='page-item active'><a class='page-link' href=\"forumList.html?page=$page_num&sort=$sortOrder&search=$searchTerm\" data-abc='true'>$page_num</a></li>";
-              }
-              else {
-                echo "<li class='page-item'><a class='page-link' href=\"forumList.html?page=$page_num&sort=$sortOrder&search=$searchTerm\" data-abc='true'>$page_num</a></li>";
-              }
-                  $page_num++;
-          }
-  
-          // 3. 페이지 번호 중 끝/다음버튼 출력
-          if($page < $total_page){
-            $next_to5 = $page + 5;
-            $next = min($next_to5, $total_page);
-            echo "<li class='page-item'><a class='page-link' href=\"forumList.html?page=$next&sort=$sortOrder&search=$searchTerm\" data-abc='true'>»</a></li>";
-          }
-          if($page < $total_page){
-            echo "<li class='page-item'><a class='page-link' href=\"forumList.html?page=$total_page&sort=$sortOrder&search=$searchTerm\" data-abc='true'> 끝 </a></li>";
-          }
-
-
-        ?>
+      <!--페이징 처리-->
+      <?php include 'forumPaging.php'; ?>
 
       </ul>
       </nav>
