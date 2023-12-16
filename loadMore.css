@@ -1,0 +1,27 @@
+*{ margin:0px; padding:0px }
+ol.timeline
+{
+list-style:none
+}
+ol.timeline li
+{
+position:relative;
+border-bottom:1px #dedede dashed;
+padding:8px;
+}
+.morebox
+{
+font-weight:bold;
+color:#333333;
+text-align:center;
+border:solid 1px #333333;
+padding:8px;
+margin-top:8px;
+margin-bottom:8px;
+border-radius: 6px;
+-webkit-border-radius: 6px;
+}
+
+.morebox a{ color:#333333; text-decoration:none}
+.morebox a:hover{ color:#333333; text-decoration:none}
+#container{margin-left:60px; width:580px }

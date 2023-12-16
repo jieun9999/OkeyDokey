@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="loadMore.css" rel="stylesheet">
+</head>
+<body>
+    <div id='container'>
+        <ol class="timeline" id="updates">
+        
+        <?php
+        // PHP 코드를 여기에 작성합니다.
+        //이렇게 하면 브라우저에 에러 메시지가 표시됩니다. 
+        error_reporting(E_ALL);
+        ini_set('display_errors', 1);
+        
+        include('config_mysqli.php');
+        $sql = mysqli_query($connect, "select * from forums ORDER BY forumId DESC LIMIT 9");
+
+        while($row=mysqli_fetch_array($sql))
+        {
+        $forumId=$row['forumId'];
+        $forumContents=$row['forumContents'];
+        ?>
+        <li>
+        <?php echo $forumContents; ?>
+        </li>
+        <?php } ?>
+        </ol>
+        
+        <!-- 가장 마지막에 출력된 forumId를 id값으로 가지고 있다. -->
+        <div id="more<?php echo $forumId; ?>" class="morebox">
+        <a href="#" class="more" id="<?php echo $forumId; ?>">more</a>
+        </div> 
+    </div>
+
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script type="text/javascript">
+    $(function()
+    {
+        $(document).on("click", '.more', function()
+    {
+    var ID = $(this).attr("id");
+    if(ID)
+    {
+    //"더 보기" 버튼의 내용을 로딩 이미지로 변경합니다.
+    $("#more"+ID).html('<img src="https://t1.daumcdn.net/cfile/tistory/99537A355AA267420B" />');
+
+    $.ajax({
+    type: "POST",
+    url: "ajax_more.php",
+    data: "lastmsg="+ ID,
+    cache: false,
+    success: function(html){
+      //ajax 요청이 성공했을때 받아온 html 데이터를 'ol#updates' 요소의 하위요소로 추가하는 역할을 합니다
+      // 결과적으로 사용자는 'more' 버튼을 클릭할때마다 새로운 포럼글이 페이지에 추가되게 됩니다.
+    $("ol#updates").append(html);
+    $("#more"+ID).remove(); //이전의 "더 보기" 버튼을 삭제합니다.
+    }
+    });
+    }
+    else
+    {
+    $(".morebox").html('The End');// 만약 더 이상 결과가 없다면 "The End" 메시지를 출력합니다.
+    }
+
+    return false;
+    });
+    });
+    </script>
+</body>
+</html>
