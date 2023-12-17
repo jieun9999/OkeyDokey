@@ -43,17 +43,18 @@
 
 
     //3-2. 쿼리문으로 메인 데이터 가져오기
+    // forums, answers, users 테이블을 가져와서 조인함
+
     $sql = "SELECT forums.forumId AS forumIdToDelete, forumTitle, forumContents, forumDate, forumUpdateDate, forumHits, forumVotingCounts,
             users.userName, users.userImg, users.userId AS forumUserId,
             answers.answerContents, answers.answerDate, answers.answerVotingCounts, answers.answerId AS answerID,
-            users2.userId AS answerUserId, users2.userName AS answerUserName, users2.userImg AS answerUserImg,
-            comments.commentContents, comments.commentDate, comments.answerId AS commentAnswerId
+            users2.userId AS answerUserId, users2.userName AS answerUserName, users2.userImg AS answerUserImg
             FROM forums 
             LEFT JOIN answers ON forums.forumId = answers.forumId
             LEFT JOIN users ON forums.userId = users.userId
             LEFT JOIN users AS users2 ON answers.userId = users2.userId /* users테이블 겹치니까 별칭사용함 */
-            LEFT JOIN comments ON forums.forumId = comments.forumId
-            WHERE forums.forumId = $forumId";
+            WHERE forums.forumId = $forumId
+            ORDER BY answers.answerId DESC LIMIT 5"; /* answerId 기준으로 내림차순 5개 행 */
 
     $result=$connect->query($sql);
     
