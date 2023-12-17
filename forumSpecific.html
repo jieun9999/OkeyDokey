@@ -114,6 +114,7 @@
               answers 관련 데이터는 모든 행에서 처리합니다 -->
 
     <!-- Main-->   
+    <div id="main-container">
     <?php
     $forumsData = null;
 
@@ -124,8 +125,13 @@
     /* 처음에는 $forumsData에 null 값을 넣어주고 */
 
     while ($rows=mysqli_fetch_assoc($result)){
+
+      $answerId=$rows['answerID'];
+      /* 더보기 버튼에 가장 마지막 answerID 할당 */
+
       if(!$forumsData){
-    /*forums 데이터 처리는 첫번째 행에서만 수행*/
+      /*forums 데이터 처리는 첫번째 행에서만 수행*/
+
         ?>
             <div class="container-fluid mt-100 forum-container">
                       <!-- 목록으로, 수정, 삭제 버튼-->
@@ -236,7 +242,7 @@
    <!-- 그렇지 않은 경우에는 버튼 ui를 안보여줌-->
    <!-- <참고> phps는 조건문과 반복문 등을 사용할 때 콜론(:)을 사용하여 코드 블록을 시작-->
 
-      <div class="container answer-container">
+      <div id="answer-container" class="container answer-container">
       <!-- 목록으로, 수정, 삭제 버튼-->
         <div class="buttons-forums-container">
          <div class="buttons-forums btn-answer-container">
@@ -372,6 +378,15 @@
        }
       }
     ?>
+
+    <!-- 더보기 버튼 -->
+    <!-- 가장 마지막에 출력된 answerID를 id값으로 가지고 있다. -->
+      <div id="more<?php echo $answerId; ?>" class="morebox">
+        <button id="<?php echo $answerId; ?>" type="button" class="btn btn-outline-primary more">더보기</button>
+        <input type="hidden" id="<?php echo $forumId; ?>"/>
+      </div> 
+
+    </div>
 
 
    <!-- Footer-->
@@ -830,7 +845,43 @@
         $('.text_box_comment .count span').html(5000);
       }
     });
+
+    //더보기 버튼을 누르면 새로운 답변들이 페이지에 추가됨
     
+    $(function()
+      {
+          $(document).on("click", '.more', function()
+      {
+      var answerID = $(this).attr("id");
+      var forumID = $(this).siblings('input[type="hidden"]').attr("id");
+      if(answerID)
+      {
+        //"더 보기" 버튼의 내용을 로딩 이미지로 변경합니다.
+        $("#more"+answerID).html('<img src="https://t1.daumcdn.net/cfile/tistory/99537A355AA267420B" />');
+
+        $.ajax({
+        type: "POST",
+        url: "ajax_answer_more.php",
+        // data는 객체 형태로 전달되어야 하며, 여러 개의 속성을 가질 때는 중괄호 {}를 사용하여 키-값 형태로 묶어주어야 합니다.
+        data: {lastmsg: answerID, forumId: forumID},
+        cache: false,
+        success: function(html){
+          //ajax 요청이 성공했을때 받아온 html 데이터를 '#main-container' 요소의 하위요소로 추가하는 역할을 합니다
+        $("#main-container").append(html);
+        $("#more"+answerID).remove(); //이전의 "더 보기" 버튼을 삭제합니다.
+        }
+        });
+        }
+      else
+        {
+        $(".morebox").html('마지막 댓글입니다');// 만약 더 이상 결과가 없다면 "The End" 메시지를 출력합니다.
+        }
+
+      return false;
+      });
+  });
+
     </script>
+
 </body>
 </html>

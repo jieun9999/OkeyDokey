@@ -674,3 +674,14 @@ footer{
 .comment_input{
 	width: 100%;
 }
+
+.morebox{
+	display: flex;
+	justify-content: center;
+	margin-top: 2rem;
+
+	button{
+		width:80%;
+		border: 1px solid gray;
+	}
+}
