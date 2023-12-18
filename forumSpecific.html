@@ -54,10 +54,9 @@
             LEFT JOIN users ON forums.userId = users.userId
             LEFT JOIN users AS users2 ON answers.userId = users2.userId /* users테이블 겹치니까 별칭사용함 */
             WHERE forums.forumId = $forumId
-            ORDER BY answers.answerId DESC LIMIT 5"; /* answerId 기준으로 내림차순 5개 행 */
+            ORDER BY answers.answerId DESC"; 
 
     $result=$connect->query($sql);
-    
 
     
     ?>
@@ -114,7 +113,6 @@
               answers 관련 데이터는 모든 행에서 처리합니다 -->
 
     <!-- Main-->   
-    <div id="main-container">
     <?php
     $forumsData = null;
 
@@ -125,9 +123,6 @@
     /* 처음에는 $forumsData에 null 값을 넣어주고 */
 
     while ($rows=mysqli_fetch_assoc($result)){
-
-      $answerId=$rows['answerID'];
-      /* 더보기 버튼에 가장 마지막 answerID 할당 */
 
       if(!$forumsData){
       /*forums 데이터 처리는 첫번째 행에서만 수행*/
@@ -242,7 +237,7 @@
    <!-- 그렇지 않은 경우에는 버튼 ui를 안보여줌-->
    <!-- <참고> phps는 조건문과 반복문 등을 사용할 때 콜론(:)을 사용하여 코드 블록을 시작-->
 
-      <div id="answer-container" class="container answer-container">
+      <div id="answer-container<?php echo $rows['answerID'] ?>" class="container answer-container">
       <!-- 목록으로, 수정, 삭제 버튼-->
         <div class="buttons-forums-container">
          <div class="buttons-forums btn-answer-container">
@@ -325,16 +320,33 @@
               <!-- 3-3. 쿼리문으로 코멘트 데이터 가져오기 -->
               <!-- 주의 : 문자열 안에서 배열 값을 사용하려면 중괄호 {}로 감싸야 합니다-->
               <?php
-              $commentQuery = "SELECT *, users.userName, users.userId AS commentUserId FROM comments 
+              $commentQuery = "SELECT *, users.userName, users.userId AS commentUserId,
+
+              /* 특정 조건에 해당하는 COUNT 댓글수를 구하기 위해서 서브쿼리를 사용했음 */
+              (SELECT COUNT(*) FROM comments WHERE answerId = {$rows['answerID']}) AS commentCount
+              FROM comments 
               LEFT JOIN users ON comments.userId = users.userId
-              WHERE answerId = {$rows['answerID']}";
+              WHERE answerId = {$rows['answerID']}
+              ORDER BY commentId DESC LIMIT 3";
 
               $commentResult = $connect ->query($commentQuery);
               ?>
     
-              <!-- comment 데이터들을 렌더링하기 -->
-              <div class="comments-list-container">
-              <?php while($comment = mysqli_fetch_assoc($commentResult)): ?>
+            <!-- comment 데이터들을 렌더링하기 -->
+            <div id= "comments-container<?php echo $rows['answerID']; ?>" class="comments-list-container">
+
+              <?php 
+               
+              $commentCount = 0; // 댓글 갯수 초기화
+
+            while($comment = mysqli_fetch_assoc($commentResult)): 
+              
+                $commentId= $comment['commentId'];
+                /* 더보기 버튼에 가장 마지막 commentId 할당 */
+
+                $commentCount = $comment['commentCount'];
+              ?>
+
                 <div class="card card-inner">
                   <div class="media">
                     <div class="media-body comment-contents">
@@ -355,7 +367,7 @@
                   <form action="edit_comment.html" method="post"> 
                   <input type="hidden" name="editCommentContents" class="btn btn-dark btn-comment" value="<?php echo $comment['commentContents'] ?>"/>
                   <input type="hidden" name="editCommentForumId" value="<?php echo $comment['forumId'] ?>" />
-                                    <button type="submit" name="editCommentId" class="btn btn-dark btn-comment" value="<?php echo $comment['commentId'] ?>">수정</button>
+                    <button type="submit" name="editCommentId" class="btn btn-dark btn-comment" value="<?php echo $comment['commentId'] ?>">수정</button>
                   </form>
 
                   <form id="comment_deleteForm" action="delete_comment.php" method="post">
@@ -367,26 +379,35 @@
                   <?php endif; ?>
                   </div> 
                 </div>
-              <?php endwhile; ?>
+
+            <?php endwhile; ?>
+
+            <!-- commentCount가 4랑 같거나 클때, 더보기 버튼ui를 보여줌-->  
+            <?php if ($commentCount >= 4): ?>
+           
+            <!-- 댓글 더보기 버튼 -->
+            <!-- 가장 마지막에 출력된 $commentId를 id값으로 가지고 있다. -->
+            <!-- 어떤 답변에 대한 댓글인지 알려주기 위해 $rows['answerID']를 id값으로 가지고 있다. -->
+              <div id="more<?php echo $commentId; ?>" class="morebox">
+                <button id="<?php echo $commentId; ?>" type="button" class="btn btn-outline-primary more">더보기</button>
+                <input type="hidden" id="<?php echo $rows['answerID']; ?>"/>
+              </div> 
+
+              <?php endif; ?>
+
+            </div>
+
               </div>
             </div>
         </div>
-      </div>
+
     <!--if (!in_array($answerKey, $renderedAnswers)) { 조건문 종료 -->
     <?php endif; ?>
     <?php
        }
       }
+      // while ($rows=mysqli_fetch_assoc($result))문 종료 (답변 반복문)
     ?>
-
-    <!-- 더보기 버튼 -->
-    <!-- 가장 마지막에 출력된 answerID를 id값으로 가지고 있다. -->
-      <div id="more<?php echo $answerId; ?>" class="morebox">
-        <button id="<?php echo $answerId; ?>" type="button" class="btn btn-outline-primary more">더보기</button>
-        <input type="hidden" id="<?php echo $forumId; ?>"/>
-      </div> 
-
-    </div>
 
 
    <!-- Footer-->
@@ -846,35 +867,36 @@
       }
     });
 
-    //더보기 버튼을 누르면 새로운 답변들이 페이지에 추가됨
+    //댓글 더보기 버튼을 누르면 새로운 댓글들이 페이지에 추가됨
     
     $(function()
       {
           $(document).on("click", '.more', function()
       {
-      var answerID = $(this).attr("id");
-      var forumID = $(this).siblings('input[type="hidden"]').attr("id");
-      if(answerID)
+      var commentID = $(this).attr("id");
+      var answerID = $(this).siblings('input[type="hidden"]').attr("id");
+
+      if(commentID)
       {
         //"더 보기" 버튼의 내용을 로딩 이미지로 변경합니다.
-        $("#more"+answerID).html('<img src="https://t1.daumcdn.net/cfile/tistory/99537A355AA267420B" />');
+        $("#more"+commentID).html('<img src="https://t1.daumcdn.net/cfile/tistory/99537A355AA267420B" />');
 
         $.ajax({
         type: "POST",
-        url: "ajax_answer_more.php",
+        url: "ajax_comment_more.php",
         // data는 객체 형태로 전달되어야 하며, 여러 개의 속성을 가질 때는 중괄호 {}를 사용하여 키-값 형태로 묶어주어야 합니다.
-        data: {lastmsg: answerID, forumId: forumID},
+        data: {lastmsg: commentID, answerId: answerID},
         cache: false,
         success: function(html){
-          //ajax 요청이 성공했을때 받아온 html 데이터를 '#main-container' 요소의 하위요소로 추가하는 역할을 합니다
-        $("#main-container").append(html);
-        $("#more"+answerID).remove(); //이전의 "더 보기" 버튼을 삭제합니다.
+          //ajax 요청이 성공했을때 받아온 html 데이터를 '#comments-container+answerID' 요소의 하위요소로 추가하는 역할을 합니다
+        $("#comments-container"+answerID).append(html);
+        $("#more"+commentID).remove(); //이전의 "더 보기" 버튼을 삭제합니다.
         }
         });
         }
       else
         {
-        $(".morebox").html('마지막 댓글입니다');// 만약 더 이상 결과가 없다면 "The End" 메시지를 출력합니다.
+        $("#more"+commentID).html('');// 만약 더 이상 결과가 없다면 "The End" 메시지를 출력합니다.
         }
 
       return false;

@@ -607,7 +607,7 @@ footer{
 
 .comment-input-container{
 	display: flex;
-	height: 35vh;
+	height: 25vh;
 	flex-direction: column;
 	justify-content: center;
     align-items: center;
@@ -678,10 +678,10 @@ footer{
 .morebox{
 	display: flex;
 	justify-content: center;
-	margin-top: 2rem;
+	margin-bottom: 2rem;
 
 	button{
-		width:80%;
+		width:20%;
 		border: 1px solid gray;
 	}
 }
