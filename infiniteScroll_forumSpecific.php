@@ -41,29 +41,11 @@
     //2. 코멘트 렌더링
     // NumberedComments라는 임시 테이블을 사용하는 Common Table Expression (CTE)로 정의하고 있고, 그 후에 해당 테이블을 활용하여 순위가 4 이하인 댓글들을 선택
     // PARTITION BY comments.answerId 는 answerId를 기준으로 그룹화하라는 의미입니다
-    $commentQuery = "WITH NumberedComments AS (
-        SELECT
-          comments.*,
-          users.userName,
-          users.userId AS commentUserId,
-          ROW_NUMBER() OVER (PARTITION BY comments.answerId ORDER BY comments.commentId ASC) AS commentNumber
-          
-        FROM
-          comments
-        LEFT JOIN
-          users ON comments.userId = users.userId
-        WHERE
-          comments.forumId = '$forumId'
-      )
-      
-      SELECT *
-      FROM
-        NumberedComments
-      WHERE
-        commentNumber <= 4
-      ORDER BY
-        answerId DESC, commentId DESC;
-      ";
+    $commentQuery = "SELECT *, users.userName, users.userId AS commentUserId
+    FROM comments 
+    LEFT JOIN users ON comments.userId = users.userId
+    WHERE comments.forumId = '$forumId'
+    ORDER BY comments.commentId DESC";
 
     $commentResult = $connect ->query($commentQuery);
 

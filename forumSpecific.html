@@ -1099,9 +1099,13 @@
                   </div> 
                 </div>
                 `;
-                
-                // 4개의 댓글이 있다면, "더 보기" 버튼을 추가 => 2번째 인덱스 코멘트 아래에
-               if(commentsByAnswerId[answer.answerId].length === 4 && index === array.length - 2){
+
+                // 4개이상 댓글이 있는데, 인덱스가 3이상이라면 => 안보이게
+                if(commentsByAnswerId[answer.answerId].length >= 4 && index >= 3){
+                return "";
+                }
+                // 4개이상 댓글이 있다면, "더 보기" 버튼을 추가 
+                else if(commentsByAnswerId[answer.answerId].length >= 4 && index === 2){
 
                 return `
                 ${commentHTML}
@@ -1115,10 +1119,7 @@
               </div> 
                 `;
 
-                // 4개의 댓글이 있는데, 4번째 코멘트라면 => 안보이게
-               }else if(commentsByAnswerId[answer.answerId].length === 4 && index === array.length - 1){
-                return "";
-              }else{
+               }else{
                 return commentHTML;
               }
 
