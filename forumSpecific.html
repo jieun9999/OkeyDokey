@@ -829,7 +829,7 @@
         }
       else
         {
-        $("#more"+commentID).html('');// 만약 더 이상 결과가 없다면 "The End" 메시지를 출력합니다.
+        $("#more"+commentID).html('The End');// 만약 더 이상 결과가 없다면 "The End" 메시지를 출력합니다.
         }
 
       return false;
@@ -919,6 +919,7 @@
                       <!-- data-answer-id 사용해서 각각의 card를 구분할 수 있음-->
                       <a class="float-right btn btn-outline-primary ml-2" onclick="toggleCommentForm(this)" data-answer-id="${answer.answerID}"> <i class="fa fa-reply"></i> Reply</a>
                   </div>
+          </div>
           </div>
           </div>`;
 
