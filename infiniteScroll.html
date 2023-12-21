@@ -99,14 +99,14 @@
         if($(window).scrollTop()+200>=$(document).height() - $(window).height()){
             //$(window).scrollTop()은 현재 스크롤 위치를 나타내며,
             // $(document).height() - $(window).height()는 문서의 총 높이에서 현재 브라우저 창의 높이를 뺀 값입니다. 
-            
             //만약 스크롤이 맨 아래에 도달했다면 조건이 참이 됩니다.
+
             if(!loading)    //실행 가능 상태라면?
         {
             loading = true; //실행 불가능 상태로 변경
             next_load(); 
         }
-        else //실행 불가능 상태라면?
+        else //실행 불가능 상태라면? (다시 새로운 페이지를 불러올때)
         {
             alert('다음페이지를 로딩중입니다.');  
         }

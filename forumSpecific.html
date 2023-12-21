@@ -54,7 +54,7 @@
             LEFT JOIN users ON forums.userId = users.userId
             LEFT JOIN users AS users2 ON answers.userId = users2.userId /* users테이블 겹치니까 별칭사용함 */
             WHERE forums.forumId = $forumId
-            ORDER BY answers.answerId DESC"; 
+            ORDER BY answers.answerId DESC LIMIT 5"; 
 
     $result=$connect->query($sql);
 
@@ -231,13 +231,15 @@
 
 ?>
 
-<?php if($rows['answerContents'] != null): ?>
+  <div id ="total-answer-container">
+
+  <?php if($rows['answerContents'] != null): ?>
 
    <!-- 로그인 정보가 있고, 로그인 세션의 userId와 해당 답변의 userId가 동일한 경우에만 버튼 ui를 보여줌 -->
    <!-- 그렇지 않은 경우에는 버튼 ui를 안보여줌-->
    <!-- <참고> phps는 조건문과 반복문 등을 사용할 때 콜론(:)을 사용하여 코드 블록을 시작-->
 
-      <div id="answer-container<?php echo $rows['answerID'] ?>" class="container answer-container">
+        <div id="answer-container<?php echo $rows['answerID'] ?>" class="container answer-container">
       <!-- 목록으로, 수정, 삭제 버튼-->
         <div class="buttons-forums-container">
          <div class="buttons-forums btn-answer-container">
@@ -296,7 +298,7 @@
                       <!-- data-answer-id 사용해서 각각의 card를 구분할 수 있음-->
                       <a class="float-right btn btn-outline-primary ml-2" onclick="toggleCommentForm(this)" data-answer-id="<?php echo $rows['answerID'] ?>"> <i class="fa fa-reply"></i> Reply</a>
                   </div>
-              </div>
+          </div>
               <!-- comments 부분 -->
 
               <!-- comment 입력창-->
@@ -307,7 +309,7 @@
               <!-- commentForm이 여러개 라는 문제 발생 -->
               <form id="commentForm_<?php echo $rows['answerID']?>" data-answer-id="<?php echo $rows['answerID'] ?>" >
               <div class="comment-input-container" id="commentFormframe_<?php echo $rows['answerID']?>">
-              <input name="commentsForumId" value="<?php echo $forumId ?>" type="hidden"/>
+              <input id="commentsForumId" name="commentsForumId" value="<?php echo $forumId ?>" type="hidden"/>
               <input name="commentsAnswerId" value="<?php echo $rows['answerID']?>" type="hidden"/>
               <div class="text_box_comment">
                 <textarea id="commentText" name="commentText" class="comment-input" placeholder="코멘트를 작성해보세요."></textarea>
@@ -408,78 +410,9 @@
       }
       // while ($rows=mysqli_fetch_assoc($result))문 종료 (답변 반복문)
     ?>
+  </div>
 
 
-   <!-- Footer-->
-  <footer class="footer_area section_padding_130_0">
-          <div class="container">
-            <div class="row">
-              <!-- Single Widget-->
-              <div class="col-12 col-sm-6 col-lg-4">
-                <div class="single-footer-widget section_padding_0_130">
-                  <!-- Footer Logo-->
-                  <div class="footer-logo mb-3"></div>
-                  <p>Appland is completely creative, lightweight, clean app landing page.</p>
-                  <!-- Copywrite Text-->
-                  <div class="copywrite-text mb-5">
-                    <p class="mb-0">Made with <i class="lni-heart mr-1"></i>by<a class="ml-1" href="https://wrapbootstrap.com/user/DesigningWorld">Designing World</a></p>
-                  </div>
-                  <!-- Footer Social Area-->
-                  <div class="footer_social_area"><a href="#" data-toggle="tooltip" data-placement="top" title="" data-original-title="Facebook"><i class="fa fa-facebook"></i></a><a href="#" data-toggle="tooltip" data-placement="top" title="" data-original-title="Pinterest"><i class="fa fa-pinterest"></i></a><a href="#" data-toggle="tooltip" data-placement="top" title="" data-original-title="Skype"><i class="fa fa-skype"></i></a><a href="#" data-toggle="tooltip" data-placement="top" title="" data-original-title="Twitter"><i class="fa fa-twitter"></i></a></div>
-                </div>
-              </div>
-              <!-- Single Widget-->
-              <div class="col-12 col-sm-6 col-lg">
-                <div class="single-footer-widget section_padding_0_130">
-                  <!-- Widget Title-->
-                  <h5 class="widget-title">About</h5>
-                  <!-- Footer Menu-->
-                  <div class="footer_menu">
-                    <ul>
-                      <li><a href="#">About Us</a></li>
-                      <li><a href="#">Corporate Sale</a></li>
-                      <li><a href="#">Terms &amp; Policy</a></li>
-                      <li><a href="#">Community</a></li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-              <!-- Single Widget-->
-              <div class="col-12 col-sm-6 col-lg">
-                <div class="single-footer-widget section_padding_0_130">
-                  <!-- Widget Title-->
-                  <h5 class="widget-title">Support</h5>
-                  <!-- Footer Menu-->
-                  <div class="footer_menu">
-                    <ul>
-                      <li><a href="#">Help</a></li>
-                      <li><a href="#">Support</a></li>
-                      <li><a href="#">Privacy Policy</a></li>
-                      <li><a href="#">Term &amp; Conditions</a></li>
-                      <li><a href="#">Help &amp; Support</a></li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-              <!-- Single Widget-->
-              <div class="col-12 col-sm-6 col-lg">
-                <div class="single-footer-widget section_padding_0_130">
-                  <!-- Widget Title-->
-                  <h5 class="widget-title">Contact</h5>
-                  <!-- Footer Menu-->
-                  <div class="footer_menu">
-                    <ul>
-                      <li><a href="#">Call Centre</a></li>
-                      <li><a href="#">Email Us</a></li>
-                      <li><a href="#">Term &amp;Conditions</a></li>
-                      <li><a href="#">Help Center</a></li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-  </footer>
 
     <!--script-->
     <!--jQuery는 bootstrap의 js가 사용하므로 bootstrap js 파일 로드 전 로드한다.-->
@@ -902,6 +835,213 @@
       return false;
       });
   });
+
+
+  var loading = false; //중복실행여부 확인변수
+  var page = 1; // 불러올 페이지
+  var isLastPage = false; // 마지막 페이지인지 여부 확인 변수
+  var forumId =  document.getElementById('commentsForumId').value; 
+
+    /* 다음 페이지 로드 함수*/
+
+    function next_load(){
+
+        $.ajax({
+            type:"GET",
+            url:"infiniteScroll_forumSpecific.php",
+            data:{page: page, forumId: forumId},
+            dataType:"json",
+            success:function(data){
+
+              if(data.success){
+
+              console.log(page + ' page load');
+
+              //받아온 데이터를 생성하고 추가합니다.
+              data.answers.forEach(function(answer){
+               var append_node = 
+      `<div id="answer-container${answer.answerID}" class="container answer-container">
+      <!-- 목록으로, 수정, 삭제 버튼-->
+        <div class="buttons-forums-container">
+         <div class="buttons-forums btn-answer-container">
+
+        <?php if(isset($_SESSION['userId']) && $_SESSION['userId'] == ${answer.answerId}): ?>
+        <!-- 답변 위의 버튼들 -->
+
+      <button type="button" class="btn btn-light btn-answer" onclick="goToForumList()">목록으로</button>
+      <!--수정: post 요청을 보낼때 name="editAnswer"가 key이고, key는 ${answer.answerID}가 value가 된다.-->
+      <form action="edit_answer.html" method="post">
+      <button type="submit" name="editAnswer"class="btn btn-dark btn-answer" value="${answer.answerID}">수정</button>
+      <input type="hidden"  name="editAnswerForumId" value="${answer.answerID}"/>
+      </form>
+      <!-- 삭제: post 요청을 보낼때 name="deleteAnswer"가 key고 ${answer.answerID}가 value가 된다. -->
+      <form id="answer_deleteForm" action="delete_answer.php" method="post">
+      <button onclick="confirmDeleteAnswer()" type="submit" name="deleteAnswer" class="btn btn-danger btn-answer" value="${answer.answerID}">삭제</button>
+      </form>
+
+      <!-- if(isset($_SESSION['userId']) && $_SESSION['userId'] ==  ${answer.answerId}) 조건문 종료-->
+      <?php endif; ?>
+         </div> 
+        </div>
+
+        <div class="card">
+          <div class="card-body card-answers">
+              <div class="row answer-total-box">
+                  <div class=" answer-profile">
+                    <!-- up/down 버튼에 각각 class, data-forum-id, data-vote-type 속성을 지정해줌-->
+
+                      <!-- jQuery의 data() 메서드를 통해 이 데이터를 가져오는 기법 -->
+                      <!-- HTML data attribute names: kebab-case (data-forum-id, data-vote-type) -->
+                    <div class = "box vote-box">
+                      <div class = "vote-btn-answer up" data-answer-id="${answer.answerID}" data-vote-type="up">&#9650;</div>
+                      <div class = "voteNum">${answer.answerVotingCounts}</div>
+                      <div class = "vote-btn-answer down" data-answer-id="${answer.answerID}" data-vote-type="down">&#9660;</div>
+                    </div>
+
+                    <div class="answer-date-box">
+                      <img class="answer-user-img" src="${answer.answerUserImg}" class="img img-rounded img-fluid"/>
+                      <div class="text-secondary text-center answerDate">${answer.answerDate}</div></div>
+                    </div>
+                  </div>
+                  <div class="answer-content-box">
+                      <p>
+                          <a class="float-left" href="https://maniruzzaman-akash.blogspot.com/p/contact.html"><strong>${answer.answerUserName}</strong></a>
+                          <span class="float-right"><i class="text-warning fa fa-star"></i></span>
+                            <span class="float-right"><i class="text-warning fa fa-star"></i></span>
+                          <span class="float-right"><i class="text-warning fa fa-star"></i></span>
+                          <span class="float-right"><i class="text-warning fa fa-star"></i></span>
+                    </p>
+
+                    <div class="clearfix"></div>
+                      <div class="answerContents">${answer.answerContents}</div>
+                      <!-- 주의 :  여러 댓글 입력 컨테이너에 동일한 ID(commentFormframe)를 사용하면 버그가 생긴다-->
+                      <!-- toggleCommentForm() 함수가 두번째 렌더링된 card에서 실행될때, 첫번째 card의 comment input 부분이 생겼다 사라졌다함-->
+                      <!-- data-answer-id 사용해서 각각의 card를 구분할 수 있음-->
+                      <a class="float-right btn btn-outline-primary ml-2" onclick="toggleCommentForm(this)" data-answer-id="${answer.answerID}"> <i class="fa fa-reply"></i> Reply</a>
+                  </div>
+          </div>
+          </div>`;
+
+               $('#total-answer-container').append(append_node);
+
+              });
+
+              page++; //페이지 증가
+              loading = false; //실행 가능 상태로 변경
+
+              }else{
+                isLastPage = true; // 마지막 페이지 설정
+                alert(data.message);
+
+                //마지막 페이지 일때 푸터의 html을 추가
+                var footer_html =
+                `<!-- Footer-->
+    <footer class="footer_area section_padding_130_0">
+      <div class="container">
+        <div class="row">
+          <!-- Single Widget-->
+          <div class="col-12 col-sm-6 col-lg-4">
+            <div class="single-footer-widget section_padding_0_130">
+              <!-- Footer Logo-->
+              <div class="footer-logo mb-3"></div>
+              <p>Appland is completely creative, lightweight, clean app landing page.</p>
+              <!-- Copywrite Text-->
+              <div class="copywrite-text mb-5">
+                <p class="mb-0">Made with <i class="lni-heart mr-1"></i>by<a class="ml-1" href="https://wrapbootstrap.com/user/DesigningWorld">Designing World</a></p>
+              </div>
+              <!-- Footer Social Area-->
+              <div class="footer_social_area"><a href="#" data-toggle="tooltip" data-placement="top" title="" data-original-title="Facebook"><i class="fa fa-facebook"></i></a><a href="#" data-toggle="tooltip" data-placement="top" title="" data-original-title="Pinterest"><i class="fa fa-pinterest"></i></a><a href="#" data-toggle="tooltip" data-placement="top" title="" data-original-title="Skype"><i class="fa fa-skype"></i></a><a href="#" data-toggle="tooltip" data-placement="top" title="" data-original-title="Twitter"><i class="fa fa-twitter"></i></a></div>
+            </div>
+          </div>
+          <!-- Single Widget-->
+          <div class="col-12 col-sm-6 col-lg">
+            <div class="single-footer-widget section_padding_0_130">
+              <!-- Widget Title-->
+              <h5 class="widget-title">About</h5>
+              <!-- Footer Menu-->
+              <div class="footer_menu">
+                <ul>
+                  <li><a href="#">About Us</a></li>
+                  <li><a href="#">Corporate Sale</a></li>
+                  <li><a href="#">Terms &amp; Policy</a></li>
+                  <li><a href="#">Community</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <!-- Single Widget-->
+          <div class="col-12 col-sm-6 col-lg">
+            <div class="single-footer-widget section_padding_0_130">
+              <!-- Widget Title-->
+              <h5 class="widget-title">Support</h5>
+              <!-- Footer Menu-->
+              <div class="footer_menu">
+                <ul>
+                  <li><a href="#">Help</a></li>
+                  <li><a href="#">Support</a></li>
+                  <li><a href="#">Privacy Policy</a></li>
+                  <li><a href="#">Term &amp; Conditions</a></li>
+                  <li><a href="#">Help &amp; Support</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <!-- Single Widget-->
+          <div class="col-12 col-sm-6 col-lg">
+            <div class="single-footer-widget section_padding_0_130">
+              <!-- Widget Title-->
+              <h5 class="widget-title">Contact</h5>
+              <!-- Footer Menu-->
+              <div class="footer_menu">
+                <ul>
+                  <li><a href="#">Call Centre</a></li>
+                  <li><a href="#">Email Us</a></li>
+                  <li><a href="#">Term &amp;Conditions</a></li>
+                  <li><a href="#">Help Center</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>`;
+
+    // 더이상 조회할 수 있는 데이터가 없을 때 푸터를 붙여줌
+     $('#total-answer-container').append(footer_html);
+
+              }
+
+            },
+            error: function(xhr, status, error){
+                alert(error);
+            }
+
+        });
+    }
+    $(window).scroll(function(){
+
+        if($(window).scrollTop()+ $(window).height() >=$(document).height()- 200){
+          // 스크롤이 맨 아래에서 200px 이내로 가까워졌을때 참이 된다. 
+          // 여유값(200px)이 커질수록 조금만 내려도 새로운 페이지가 뜬다
+
+          // $(window).scrollTop(): 사용자가 현재 스크롤한 위치의 수직 좌표 값
+          // $(window).height(): 현재 브라우저 창의 높이
+          // $(document).height(): 전체 페이지의 높이
+
+          if(!loading)   //실행 가능 상태라면?
+        {
+        loading = true; //실행 불가능 상태로 변경
+        next_load(); 
+        }else if(isLastPage){
+
+          
+        } else {
+            alert('다음페이지를 로딩중입니다.');
+        }
+        }
+    });
+
+
 
     </script>
 
