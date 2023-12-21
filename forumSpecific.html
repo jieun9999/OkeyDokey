@@ -916,12 +916,8 @@
         $("#more"+commentID).remove(); //이전의 "더 보기" 버튼을 삭제합니다.
         }
         });
-        }
-      else
-        {
-        $("#more"+commentID).html('The End');// 만약 더 이상 결과가 없다면 "The End" 메시지를 출력합니다.
-        }
-
+      }
+      //벤트 핸들러가 실행된 후에 브라우저가 해당 이벤트의 기본 동작을 실행하면서 페이지의 리로딩이 발생할 수 있습니다. 하지만 이러한 동작을 막고자 return false;를 사용합니다.
       return false;
       });
   });
@@ -1045,10 +1041,13 @@
 
               <!-- 동적으로 문자열 생성-->
               <!-- 삼항 연산자, 댓글 데이터와 answerId가 존재하면 map 함수로 html 생성 -->
-              ${data.success_comment && commentsByAnswerId[answer.answerId] ? commentsByAnswerId[answer.answerId].map(function(comment){
+              ${data.success_comment && commentsByAnswerId[answer.answerId] ? commentsByAnswerId[answer.answerId].map(function(comment, index, array){
+                //map 함수의 콜백 함수의 첫 번째 매개변수는 배열의 각 요소에 대한 값이고, 두 번째 매개변수는 해당 요소의 인덱스이며, 세 번째 매개변수는 배열 자체입니다.
 
                 //각 답변에 댓글코드를 반환합니다.
-              return  `
+                //주의: map 함수 내에서 한 번의 return 문으로 모든 렌더링을 처리
+
+                  const commentHTML = `
                 <div class="card card-inner">
                   <div class="media">
                     <div class="media-body comment-contents">
@@ -1078,8 +1077,31 @@
                   </div> 
                 </div>
                 `;
+                
+                // 4개의 댓글이 있다면, "더 보기" 버튼을 추가 => 2번째 인덱스 코멘트 아래에
+               if(commentsByAnswerId[answer.answerId].length === 4 && index === array.length - 2){
+
+                return `
+                ${commentHTML}
+                <!-- 댓글 더보기 버튼 -->
+                <!-- 가장 마지막에 출력된 $commentId를 id값으로 가지고 있다. -->
+                <!-- 어떤 답변에 대한 댓글인지 알려주기 위해 $rows['answerID']를 id값으로 가지고 있다. -->
+
+              <div id="more${comment.commentId}" class="morebox">
+                <button id="${comment.commentId}" type="button" class="btn btn-outline-primary more">더보기</button>
+                <input type="hidden" id="${comment.answerId}"/>
+              </div> 
+                `;
+
+                // 4개의 댓글이 있는데, 4번째 코멘트라면 => 안보이게
+               }else if(commentsByAnswerId[answer.answerId].length === 4 && index === array.length - 1){
+                return "";
+              }else{
+                return commentHTML;
+              }
 
               }).join(''): ''}
+
                 
             </div>
           </div>
@@ -1087,9 +1109,9 @@
       </div>
       `;
 
-               $('#new-answer-container').append(append_node);
+      $('#new-answer-container').append(append_node);
 
-              });
+      });
 
 
               page++; //페이지 증가

@@ -685,3 +685,10 @@ footer{
 		border: 1px solid gray;
 	}
 }
+
+.end-message {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 100%; /* 화면의 높이 만큼 세로 중앙 정렬 */
+  }

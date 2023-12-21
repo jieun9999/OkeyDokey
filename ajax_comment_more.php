@@ -61,11 +61,17 @@
         }
 ?>
 
-          <!-- 댓글 더보기 버튼 -->
-            <!-- 가장 마지막에 출력된 $lastCommentId를 id값으로 가지고 있다. -->
-            <!-- 어떤 답변에 대한 댓글인지 알려주기 위해 $answerId를 id값으로 가지고 있다. -->
-            <div id="more<?php echo $lastCommentId; ?>" class="morebox">
-                <button id="<?php echo $lastCommentId; ?>" type="button" class="btn btn-outline-primary more">더보기</button>
-                <input type="hidden" id="<?php echo  $answerId; ?>"/>
-            </div> 
+      <!-- 댓글 더보기 버튼 -->
+      <!-- 가장 마지막에 출력된 $lastCommentId를 id값으로 가지고 있다. -->
+      <!-- 어떤 답변에 대한 댓글인지 알려주기 위해 $answerId를 id값으로 가지고 있다. -->
+      <?php if ($lastCommentId !== null): ?>
+        <div id="more<?php echo $lastCommentId; ?>" class="morebox">
+          <button id="<?php echo $lastCommentId; ?>" type="button" class="btn btn-outline-primary more">더보기</button>
+          <input type="hidden" id="<?php echo  $answerId; ?>"/>
+        </div>
+      <?php else: ?>
+        <div class="end-message">
+          The end
+        </div>
+      <?php endif; ?>
 
