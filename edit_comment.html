@@ -53,7 +53,8 @@
             LEFT JOIN users ON forums.userId = users.userId
             LEFT JOIN users AS users2 ON answers.userId = users2.userId /* users테이블 겹치니까 별칭사용함 */
             LEFT JOIN comments ON forums.forumId = comments.forumId
-            WHERE forums.forumId = $forumId";
+            WHERE forums.forumId = $forumId
+            ORDER BY answers.answerId DESC";
 
     $result=$connect->query($sql);
     
@@ -312,7 +313,8 @@
               <?php
               $commentQuery = "SELECT *, users.userName, users.userId AS commentUserId FROM comments 
               LEFT JOIN users ON comments.userId = users.userId
-              WHERE answerId = {$rows['answerID']}";
+              WHERE answerId = {$rows['answerID']}
+              ORDER BY commentId DESC;";
 
               $commentResult = $connect ->query($commentQuery);
               ?>

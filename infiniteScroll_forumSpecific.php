@@ -10,6 +10,8 @@
     $page = isset($_GET['page']) ? $_GET['page'] : 1;
     $perPageItem = 5; // 페이지당 답변의 수
 
+    try{
+    // 1. 답변 렌더링
     //페이지당 시작하는 아이템행의 수 (특정 페이지에 표시되는 데이터의 시작점을 결정)
     $startRow = ($page-1) * $perPageItem;
 
@@ -17,8 +19,8 @@
     $sql = "SELECT * , users.userName AS answerUserName, users.userImg AS answerUserImg
     FROM answers 
     LEFT JOIN users ON answers.userId = users.userId
-    WHERE answers.forumId = $forumId
-    ORDER BY answerID DESC LIMIT $startRow, $perPageItem";
+    WHERE answers.forumId = '$forumId'
+    ORDER BY answers.answerId DESC LIMIT $startRow, $perPageItem";
 
     $result = $connect->query($sql);
 
@@ -32,17 +34,62 @@
             $answers[] = $row;
         }
 
-        // 서버가 클라이언트에게 전송하는 데이터의 유형을 명시적으로 지정하는 부분이다.
-        // 웹 브라우저에게 전송된 데이터의 유형을 알려주고, 그에 대한 적절한 처리를 하도록 하는데 도움이 됩니다.
-        header('Content-Type: application/json');
-
-        // PHP에서 JSON 형식으로 데이터를 생성하여 출력하는 부분
-        echo json_encode(array('success' => true, 'answers' => $answers));
-
     }else{
-        echo json_encode(array('success' => false, 'message' => '조회할 수 있는 데이터가 없습니다'));
+        $answers = array();
     }
 
-    // Close the database connection
-    $connect->close();
+    //2. 코멘트 렌더링
+    $commentQuery = "SELECT *, users.userName, users.userId AS commentUserId
+    FROM comments 
+    LEFT JOIN users ON comments.userId = users.userId
+    WHERE comments.forumId = '$forumId'
+    ORDER BY comments.commentId DESC";
+
+    $commentResult = $connect ->query($commentQuery);
+
+    //결과가 있는지 확인
+    if($commentResult -> num_rows > 0){
+        $comments = array(); //댓글을 담을 배열을 생성합니다.
+
+        //결과 집합에서 데이터를 가져옵니다
+        while($row2 = $commentResult ->fetch_assoc()){
+            $comments[] = $row2;
+        }
+
+    }else{
+        $comments = array();
+    }
+
+    // 하나의 연관 배열에 데이터를 담는다.
+    if (!empty($answers)) {
+        // 답변 데이터가 존재할 때
+        $data = array(
+            'success' => true,
+            'success_comment' => !empty($comments),
+            'answers' => $answers,
+            'comments' => $comments
+        );
+    } else {
+        // 답변 데이터가 존재하지 않을 때
+        $data = array(
+            'success' => false
+        );
+    }
+
+     // PHP에서 JSON 형식으로 데이터를 생성하여 출력하는 부분
+     echo json_encode($data);
+
+    }
+    catch (Exception $e) {
+        // 예외가 발생하면 에러 메시지를 전송
+        $data = array(
+            'success' => false,
+            'message' => $e->getMessage()
+        );
+        echo json_encode($data);
+    }
+    
+    
+
 ?>
+
