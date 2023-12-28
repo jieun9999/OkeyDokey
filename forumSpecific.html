@@ -985,8 +985,8 @@
             <button type="button" class="btn btn-light btn-answer" onclick="goToForumList()">목록으로</button>
             <!--수정: post 요청을 보낼때 name="editAnswer"가 key이고, key는 ${answer.answerId}가 value가 된다.-->
             <form action="edit_answer.html" method="post">
-            <button type="submit" name="editAnswer"class="btn btn-dark btn-answer" value="${answer.answerId}">수정</button>
-            <input type="hidden"  name="editAnswerForumId" value="${answer.answerId}"/>
+            <button type="submit" name="editAnswer" class="btn btn-dark btn-answer" value="${answer.answerId}">수정</button>
+            <input type="hidden" name="editAnswerForumId" value="${answer.forumId}"/>
             </form>
             <!-- 삭제: post 요청을 보낼때 name="deleteAnswer"가 key고 ${answer.answerId}가 value가 된다. -->
             <form id="answer_deleteForm" action="delete_answer.php" method="post">
