@@ -1,6 +1,4 @@
-# NeighborhoodBookshop
-
-OkeyDokey
+# OkeyDokey
 개발자 지식공유 플랫폼
 
   
