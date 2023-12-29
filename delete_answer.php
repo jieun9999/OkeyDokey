@@ -44,7 +44,7 @@
 
     // 삭제 성공 여부에 따른 처리
     if($commentCount > 0){
-        echo '<script>alert("답변이 있는 게시글은 삭제할 수 없습니다.");</script>';
+        echo '<script>alert("댓글이 있는 답변은 삭제할 수 없습니다.");</script>';
         echo '<script>history.back();</script>';
  
     }else{
