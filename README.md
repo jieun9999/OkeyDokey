@@ -166,6 +166,7 @@ https://github.com/jieun9999/OkeyDokey/assets/112951633/193f87ba-439f-43e0-a82c-
 - 회원 탈퇴시 로그아웃됨
 
 - 이메일이나 비밀번호 등 개인정보를 NULL로 변경
+![스크린샷 2023-12-29 오후 9 41 47](https://github.com/jieun9999/OkeyDokey/assets/112951633/bcd105a6-aa72-40c1-9d72-5be775489e6c)
 
 - 회원이 탈퇴해도 그 회원이 작성한 게시물들은 그대로 남아있음
 
